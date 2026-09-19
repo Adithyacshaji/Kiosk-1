@@ -1,15 +1,8 @@
 import React, { createContext, useContext, useState, useEffect, useMemo } from 'react';
 import { supabase, isSupabaseConfigured } from '../utils/supabaseClient';
+import { formatRoomId } from '../utils/formatRoomId';
 
-// Static fallbacks
-import { LOCATIONS as STATIC_LOCATIONS } from '../data/locations';
-import { NODES as STATIC_NODES, EDGES as STATIC_EDGES } from '../data/graph';
-import { INDOOR_NODES as STATIC_INDOOR_NODES } from '../data/indoorNodes';
-import { INDOOR_EDGES as STATIC_INDOOR_EDGES } from '../data/indoorGraph';
-import { CHAVARA_INDOOR_NODES as STATIC_CHAVARA_INDOOR_NODES } from '../data/chavaraIndoorNodes';
-import { CHAVARA_INDOOR_EDGES as STATIC_CHAVARA_INDOOR_EDGES } from '../data/chavaraIndoorGraph';
-import { QR_LOCATIONS as STATIC_QR_LOCATIONS } from '../data/qrLocations';
-import { bottomSheetData as STATIC_BOTTOM_SHEET_DATA } from '../data/bottomSheetData';
+
 
 const DatabaseContext = createContext(null);
 
@@ -25,16 +18,16 @@ export const DatabaseProvider = ({ children }) => {
   const [loading, setLoading] = useState(true);
   const [usingFallback, setUsingFallback] = useState(!isSupabaseConfigured);
 
-  // States initialized with fallbacks
-  const [locations, setLocations] = useState(STATIC_LOCATIONS);
-  const [nodes, setNodes] = useState(STATIC_NODES);
-  const [edges, setEdges] = useState(STATIC_EDGES);
-  const [indoorNodes, setIndoorNodes] = useState(STATIC_INDOOR_NODES);
-  const [indoorEdges, setIndoorEdges] = useState(STATIC_INDOOR_EDGES);
-  const [chavaraIndoorNodes, setChavaraIndoorNodes] = useState(STATIC_CHAVARA_INDOOR_NODES);
-  const [chavaraIndoorEdges, setChavaraIndoorEdges] = useState(STATIC_CHAVARA_INDOOR_EDGES);
-  const [qrLocations, setQrLocations] = useState(STATIC_QR_LOCATIONS);
-  const [bottomSheetData, setBottomSheetData] = useState(STATIC_BOTTOM_SHEET_DATA);
+  // States — all start empty; populated exclusively from Supabase on load
+  const [locations, setLocations] = useState([]);
+  const [nodes, setNodes] = useState({});
+  const [edges, setEdges] = useState([]);
+  const [indoorNodes, setIndoorNodes] = useState({});
+  const [indoorEdges, setIndoorEdges] = useState([]);
+  const [chavaraIndoorNodes, setChavaraIndoorNodes] = useState({});
+  const [chavaraIndoorEdges, setChavaraIndoorEdges] = useState([]);
+  const [qrLocations, setQrLocations] = useState([]);
+  const [bottomSheetData, setBottomSheetData] = useState({ departments: [], classrooms: [] });
   const [dbRooms, setDbRooms] = useState([]);
 
   // Re-fetch individual tables to guarantee alignment with realtime updates
@@ -77,47 +70,24 @@ export const DatabaseProvider = ({ children }) => {
     const chavara = {};
     
     data.forEach(node => {
-      // Label comes ONLY from the DB — no static fallback
+      // Use DB data only — no static fallback merging
       const formatted = {
+        id: node.id,
         floor: node.floor,
         position: [node.lat, node.lng],
-        // Only set label if DB has a non-empty value
         ...(node.label ? { label: node.label } : {}),
-        // Only set labelPosition if DB has explicit coordinates
-        ...(node.label_lat != null && node.label_lng != null ? { labelPosition: [node.label_lat, node.label_lng] } : {})
+        ...(node.label_lat != null && node.label_lng != null
+          ? { labelPosition: [node.label_lat, node.label_lng] }
+          : {})
       };
-      
+
       if (node.building === 'stmarys') {
-        const { label: _l, labelPosition: _lp, ...staticRest } = STATIC_INDOOR_NODES[node.id] || {};
-        stmarys[node.id] = { 
-          ...staticRest,   // position/floor/edges from static, but NO label
-          ...formatted,    // DB values win; label only present if DB has it
-        };
+        stmarys[node.id] = formatted;
       } else {
-        const { label: _l, labelPosition: _lp, ...staticRest } = STATIC_CHAVARA_INDOOR_NODES[node.id] || {};
-        chavara[node.id] = {
-          ...staticRest,
-          id: node.id,
-          ...formatted,
-        };
+        chavara[node.id] = formatted;
       }
     });
-    
-    // Add static nodes that are NOT in the DB yet — strip labels so only DB controls them
-    Object.keys(STATIC_INDOOR_NODES).forEach(id => {
-      if (!stmarys[id]) {
-        const { label: _l, labelPosition: _lp, ...rest } = STATIC_INDOOR_NODES[id];
-        stmarys[id] = { id, ...rest };
-      }
-    });
-    
-    Object.keys(STATIC_CHAVARA_INDOOR_NODES).forEach(id => {
-      if (!chavara[id]) {
-        const { label: _l, labelPosition: _lp, ...rest } = STATIC_CHAVARA_INDOOR_NODES[id];
-        chavara[id] = { id, ...rest };
-      }
-    });
-    
+
     setIndoorNodes(stmarys);
     setChavaraIndoorNodes(chavara);
   };
@@ -165,7 +135,13 @@ export const DatabaseProvider = ({ children }) => {
     if (!isSupabaseConfigured) return;
     const { data, error } = await supabase.from('rooms').select('*');
     if (error) throw error;
-    setDbRooms(data || []);
+    
+    // Auto-migrate legacy N/F prefixes to SM/CH for frontend display
+    const cleanedData = (data || []).map(room => ({
+      ...room,
+      name: formatRoomId(room.name)
+    }));
+    setDbRooms(cleanedData);
   };
 
   // Returns a sort rank so faculties appear in order: HOD → Deputy HOD → everyone else
@@ -189,7 +165,7 @@ export const DatabaseProvider = ({ children }) => {
         .map(f => ({
           name: f.name,
           designation: f.designation,
-          room: f.room || undefined,
+          room: formatRoomId(f.room) || undefined,
           floor: f.floor || undefined,
           building: f.building || undefined,
           hasIndoorNavigation: f.has_indoor_navigation,
@@ -214,9 +190,47 @@ export const DatabaseProvider = ({ children }) => {
       };
     });
     
+    // Also fetch rooms for the Classrooms tab in BottomSheet
+    const { data: roomsData } = await supabase.from('rooms').select('*');
+    const classrooms = (roomsData || []).map(r => {
+      const cleanName = formatRoomId(r.name);
+      return {
+        id: r.room_id,
+        name: cleanName,
+        title: cleanName,
+        description: `Room ${cleanName}`,
+        floor: r.floor,
+        building: r.building,
+        room: r.room_id,
+        indoorNode: r.indoor_node,
+        routeNode: r.route_node
+      };
+    });
+
+    const { data: locationsData } = await supabase.from('locations').select('*');
+    const outdoorLocations = (locationsData || []).map(l => ({
+      id: l.id,
+      name: l.name,
+      title: l.name,
+      description: 'Outdoor Location',
+      building: l.id,
+      routeNode: l.route_node || l.id
+    }));
+
+    const labs = classrooms.filter(r => r.name?.toLowerCase()?.includes('lab'));
+    const library = classrooms.filter(r => r.name?.toLowerCase()?.includes('library') || r.name?.toLowerCase()?.includes('lib'));
+    
+    const indoorCafeterias = classrooms.filter(r => r.name?.toLowerCase()?.includes('canteen') || r.name?.toLowerCase()?.includes('cafe'));
+    const outdoorCafeterias = outdoorLocations.filter(l => l.name?.toLowerCase()?.includes('canteen') || l.name?.toLowerCase()?.includes('cafe'));
+    
+    const cafeteria = [...outdoorCafeterias, ...indoorCafeterias];
+
     setBottomSheetData({
-      ...STATIC_BOTTOM_SHEET_DATA,
-      departments
+      departments,
+      classrooms,
+      labs,
+      library,
+      cafeteria
     });
   };
 
@@ -278,6 +292,9 @@ export const DatabaseProvider = ({ children }) => {
       })
       .on('postgres_changes', { event: '*', schema: 'public', table: 'faculties' }, () => {
         fetchBottomSheetData(),
+        fetchRooms().catch(console.error);
+      })
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'rooms' }, () => {
         fetchRooms().catch(console.error);
       })
       .subscribe();
@@ -346,6 +363,7 @@ export const DatabaseProvider = ({ children }) => {
         qrLocations,
         bottomSheetData,
         searchItems,
+        rooms: dbRooms,
         reloadData: loadAllData
       }}
     >

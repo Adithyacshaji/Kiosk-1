@@ -36,7 +36,7 @@ import { findNearestStMarysEntrance, findNearestBuildingEntrance, findNearestCha
 import { calculateHaversineDistance } from "./utils/haversine";
 import { getDistanceToRoute } from "./utils/distanceToRoute";
 import { FLOOR_IMAGES, CHAVARA_FLOOR_IMAGES } from "./data/floorImages";
-import { FLOORS } from "./data/floors";
+
 import LoadingScreen from "./components/common/LoadingScreen";
 import YDCard from "./components/common/YDCard";
 import { getBuildingDisplayName } from "./utils/buildingPolygons";
@@ -44,6 +44,7 @@ import LocationAlertCard from "./components/common/LocationAlertCard";
 import { SignalLow } from "lucide-react";
 import { routeIndoor, routeOutdoor, geofence } from "./utils/edgeFunctions";
 import OutsideCampusModal from "./components/common/OutsideCampusModal";
+import DestinationInfoCard from "./components/common/DestinationInfoCard";
 
 // ── Floor label formatter ──────────────────────────────────────────────────────
 // Converts raw floor keys ("G", "1", "2", "3", "B1", "B2") to readable labels.
@@ -172,10 +173,25 @@ function getIndoorEntranceNode(building, outdoorEntrance, _userLoc = null) {
 
 // ── GPS debug toggle ─────────────────────────────────────────────────────────
 // Set to true while testing away from campus; set it back to false for real GPS.
-const USE_DEBUG_LOCATION = false;
+const USE_DEBUG_LOCATION = true;
 const USER_LOCATION = {
   lat:10.356260,
   lng: 76.212599,
+};
+
+// ── DEMO MODE ─────────────────────────────────────────────────────────────────
+// When true: app starts on B1 indoor view (Exam Cell), search shows info card,
+// "View Indoor Location" shows destination pin only — no routing UI shown.
+// Set to false to restore the full outdoor navigation flow.
+const DEMO_MODE = false;
+
+// Fixed demo start: Exam Cell (N208) on St Mary's B1
+const DEMO_START = {
+  nearestNode: "SM208",
+  name: "Exam Cell",
+  floor: "B1",
+  building: "stmarys",
+  position: [10.357929, 76.212969],
 };
 
 // St Mary's Block main entrance – used for geofence proximity check
@@ -215,6 +231,7 @@ function MainApp() {
     qrLocations: QR_LOCATIONS,
     bottomSheetData,
     searchItems: SEARCH_ITEMS,
+    rooms = [],
   } = useDatabase();
 
   const [selectedLocation, setSelectedLocation] = useState(null);
@@ -223,8 +240,12 @@ function MainApp() {
 
   const [destination, setDestination] = useState(null);
 
-  const [currentFloor, setCurrentFloor] = useState("G");
-        const [mapMode, setMapMode] = useState("OUTDOOR");
+  const [currentFloor, setCurrentFloor] = useState(DEMO_MODE ? DEMO_START.floor : "G");
+  const [mapMode, setMapMode] = useState(DEMO_MODE ? "INDOOR" : "OUTDOOR");
+
+  // ── Demo mode state ──────────────────────────────────────────────────────
+  const [showDestInfoCard, setShowDestInfoCard] = useState(false);
+  const [destInfoTarget, setDestInfoTarget] = useState(null);
 
   const initialUrlChecked = useRef(false);
 
@@ -272,7 +293,8 @@ function MainApp() {
 
   const [transportMode, setTransportMode] = useState(null);
 
-  const [navStep, setNavStep] = useState(STEPS.IDLE);
+  const [navStep, setNavStep] = useState(DEMO_MODE ? STEPS.INDOOR_READY : STEPS.IDLE);
+
 
 
   // const [usingGoogleMaps, setUsingGoogleMaps] = useState(false);
@@ -396,9 +418,17 @@ function MainApp() {
   const [selectedCategory, setSelectedCategory] = useState("all");
   const [selectedDepartment, setSelectedDepartment] = useState(null);
 
-  const [indoorUserLocation, setIndoorUserLocation] = useState(null);
+  const [indoorUserLocation, setIndoorUserLocation] = useState(
+    DEMO_MODE
+      ? { position: DEMO_START.position, nearestNode: DEMO_START.nearestNode, floor: DEMO_START.floor }
+      : null
+  );
 
-  const [indoorStart, setIndoorStart] = useState(null);
+  const [indoorStart, setIndoorStart] = useState(
+    DEMO_MODE
+      ? { name: DEMO_START.name, nearestNode: DEMO_START.nearestNode, floor: DEMO_START.floor }
+      : null
+  );
 
   const [indoorDestination, setIndoorDestination] = useState(null);
 
@@ -468,7 +498,7 @@ function MainApp() {
   const locationToUse = USE_DEBUG_LOCATION
     ? USER_LOCATION
     : snappedLocation || location;
-  const [currentBuilding, setCurrentBuilding] = useState("stmarys");
+  const [currentBuilding, setCurrentBuilding] = useState(DEMO_MODE ? "stmarys" : "stmarys");
 
 
 
@@ -503,28 +533,8 @@ function MainApp() {
       return [normalizeKey(a), normalizeKey(b)];
     });
 
-    // ── For St. Mary's: enrich nodes with human-readable names from FLOORS ──
-    // Only used as a fallback for nodes that have no label set in the DB.
-    if (currentBuilding !== "chavara") {
-      const roomNameLookup = {};
-      Object.values(FLOORS).forEach((floorData) => {
-        (floorData.rooms || []).forEach(({ id, name }) => {
-          if (name && name !== id && !roomNameLookup[id]) {
-            roomNameLookup[id] = name;
-          }
-        });
-      });
-      Object.keys(normalizedNodes).forEach((key) => {
-        const name = roomNameLookup[key];
-        // Only apply static name if the node has no label from the DB
-        if (name && !normalizedNodes[key].label) {
-          normalizedNodes[key] = { ...normalizedNodes[key], label: name };
-        }
-      });
-    }
-
     return { normalizedNodes, normalizedEdges, normalizeKey };
-  }, [currentBuilding, INDOOR_NODES, CHAVARA_INDOOR_NODES]);
+  }, [currentBuilding, INDOOR_NODES, CHAVARA_INDOOR_NODES, rooms]);
 
   const ACTIVE_INDOOR_NODES = normalizedIndoorData.normalizedNodes;
   const ACTIVE_INDOOR_EDGES = normalizedIndoorData.normalizedEdges;
@@ -659,11 +669,56 @@ function MainApp() {
     return () => window.clearTimeout(timer);
   }, [mapMode, navStep, indoorRoute]);
 
+  // Ref to imperatively clear the demo-mode search bar
+  const demoSearchClearRef = useRef(null);
+
   useEffect(() => {
     const onPopState = () => {
       if (window.__POPPING_SEARCH || window.__SEARCH_OPEN) {
         return; // Ignore popstate if the search dropdown is managing its own history state
       }
+
+      // ── DEMO MODE layered back flow ────────────────────────────────────────
+      if (DEMO_MODE) {
+        // Layer 1: search bar has text → clear it and stay on the page
+        if (demoSearchClearRef.current && typeof demoSearchClearRef.current === 'function') {
+          // We call the clear fn and check if there was actually something to clear
+          // by reading a flag the SearchBar sets on the ref
+          const hadContent = demoSearchClearRef.current._hasContent?.();
+          if (hadContent) {
+            demoSearchClearRef.current();
+            // Push a new history entry so the next back has something to consume
+            window.history.pushState({ demoBack: 'cleared' }, '');
+            return;
+          }
+        }
+
+        // Layer 2: destination info card is open → dismiss it
+        if (showDestInfoCard) {
+          setShowDestInfoCard(false);
+          setDestInfoTarget(null);
+          window.history.pushState({ demoBack: 'card-dismissed' }, '');
+          return;
+        }
+
+        // Layer 3: a destination pin is shown → reset back to Exam Cell home
+        if (destination) {
+          setDestination(null);
+          setSelectedLocation(null);
+          setCurrentFloor(DEMO_START.floor);
+          setCurrentBuilding('stmarys');
+          setMapMode('INDOOR');
+          setNavStep(STEPS.INDOOR_READY);
+          setMapCenter({ id: 'demo-start', position: DEMO_START.position });
+          window.history.pushState({ demoBack: 'home' }, '');
+          return;
+        }
+
+        // Layer 4: clean state → let the browser navigate away naturally
+        // (don't pushState, let this popstate propagate to the browser)
+        return;
+      }
+      // ── END DEMO MODE ──────────────────────────────────────────────────────
 
       // A system Back press ends the active route and returns to the clean
       // outdoor map. The next Back press is then handled by the browser/app
@@ -693,7 +748,7 @@ function MainApp() {
 
     window.addEventListener("popstate", onPopState);
     return () => window.removeEventListener("popstate", onPopState);
-  }, [sheetOpen, mapMode, navStep]);
+  }, [sheetOpen, mapMode, navStep, showDestInfoCard, destination]);
 
   useEffect(() => {
 
@@ -779,6 +834,18 @@ function MainApp() {
 
     // Reset the search UI back to the single search bar
     setHasSearched(false);
+
+    // Reset demo state
+    if (DEMO_MODE) {
+      setShowDestInfoCard(false);
+      setDestInfoTarget(null);
+      setIndoorUserLocation({ position: DEMO_START.position, nearestNode: DEMO_START.nearestNode, floor: DEMO_START.floor });
+      setIndoorStart({ name: DEMO_START.name, nearestNode: DEMO_START.nearestNode, floor: DEMO_START.floor });
+      setCurrentFloor(DEMO_START.floor);
+      setMapMode("INDOOR");
+      setCurrentBuilding("stmarys");
+      setNavStep(STEPS.INDOOR_READY);
+    }
 
   };
 
@@ -1328,7 +1395,59 @@ function MainApp() {
     }
   };
 
-  const [mapCenter, setMapCenter] = useState(null);
+  const [mapCenter, setMapCenter] = useState(
+    DEMO_MODE ? { id: "demo-start", position: DEMO_START.position } : null
+  );
+
+  // ── Demo mode: search handler & view-indoor handler ─────────────────────
+  /**
+   * Called when a search result is selected in DEMO_MODE.
+   * Instead of routing, shows the DestinationInfoCard.
+   */
+  const handleDemoSearch = (location) => {
+    setDestInfoTarget(location);
+    setShowDestInfoCard(true);
+  };
+
+  /**
+   * Called when the user clicks "View Indoor Location" on DestinationInfoCard.
+   * Switches to the destination's building/floor and places only the red pin.
+   * No route is calculated or drawn.
+   */
+  const handleViewIndoorDestination = () => {
+    if (!destInfoTarget) return;
+    const loc = destInfoTarget;
+    const targetBuilding = (loc.building || "").toLowerCase().includes("chavara") ? "chavara" : "stmarys";
+    const rawFloor = loc.floor ? String(loc.floor).toUpperCase() : "G";
+    const targetFloor = rawFloor.startsWith("B") ? rawFloor : (rawFloor === "G" || rawFloor === "GROUND" ? "G" : rawFloor);
+
+    // Set destination for the red pin marker in CampusMap
+    setDestination(loc);
+    setSelectedLocation(loc);
+
+    // Clear any existing routes (show pin only, no path)
+    setRoute([]);
+    setIndoorRoute([]);
+    setIndoorRouteNodes([]);
+
+    // Switch to the target building/floor in indoor mode
+    setCurrentBuilding(targetBuilding);
+    setCurrentFloor(targetFloor);
+    setMapMode("INDOOR");
+    setNavStep(STEPS.IDLE);
+
+    // Center the map on the destination node
+    const activeNodes = targetBuilding === "chavara" ? CHAVARA_INDOOR_NODES : INDOOR_NODES;
+    const nodeId = loc.indoorNode || loc.id;
+    const node = activeNodes[nodeId];
+    if (node?.position) {
+      setMapCenter({ id: `demo-dest-${Date.now()}`, position: node.position });
+    }
+
+    // Dismiss the info card
+    setShowDestInfoCard(false);
+    setDestInfoTarget(null);
+  };
   const openBottomSheet = (title, data) => {
     setSheetTitle(title);
     setSheetData(data);
@@ -1747,11 +1866,17 @@ function MainApp() {
   console.log("indoorStart:", indoorStart);
 
   useEffect(() => {
-    window.history.replaceState(
-      { campusRouteX: "outdoor" },
-      "",
-      window.location.pathname
-    );
+    if (DEMO_MODE) {
+      // Push one history entry on load so the first Back press is absorbed
+      // by the app's popstate handler instead of closing the browser tab/app.
+      window.history.pushState({ demoBack: 'home' }, '');
+    } else {
+      window.history.replaceState(
+        { campusRouteX: "outdoor" },
+        "",
+        window.location.pathname
+      );
+    }
   }, []);
   const changeFloor = (floor) => {
     pushState(navStep);
@@ -2066,8 +2191,20 @@ function MainApp() {
         {/* ── Floating Search & Chips Overlay ─────────────────────────────────── */}
         <div className="absolute top-[env(safe-area-inset-top,16px)] left-0 right-0 flex flex-col z-1500 pointer-events-none mt-2">
 
-          {/* INDOOR MODE: always show YD Card */}
-          {mapMode === "INDOOR" && [STEPS.IDLE, STEPS.INDOOR_READY, STEPS.COMPLETED].includes(navStep) && (
+          {/* DEMO MODE: show a simple search bar in indoor mode, skip YDCard */}
+          {DEMO_MODE && mapMode === "INDOOR" && (
+            <SearchBar
+              currentFloor={currentFloor}
+              isIndoorMode={true}
+              clearRef={demoSearchClearRef}
+              onSelect={(location) => {
+                handleDemoSearch(location);
+              }}
+            />
+          )}
+
+          {/* INDOOR MODE (non-demo): always show YD Card */}
+          {!DEMO_MODE && mapMode === "INDOOR" && [STEPS.IDLE, STEPS.INDOOR_READY, STEPS.COMPLETED].includes(navStep) && (
             <YDCard
               mode="indoor"
               currentFloor={currentFloor}
@@ -2287,6 +2424,18 @@ function MainApp() {
 
         {/* ── Indoor routing — now handled by YDCard in the overlay above ─────── */}
 
+        {/* ── DEMO MODE: Destination Info Card ───────────────────────────────── */}
+        {DEMO_MODE && showDestInfoCard && destInfoTarget && (
+          <DestinationInfoCard
+            destination={destInfoTarget}
+            onViewIndoor={handleViewIndoorDestination}
+            onClose={() => {
+              setShowDestInfoCard(false);
+              setDestInfoTarget(null);
+            }}
+          />
+        )}
+
         {/* Outside Campus Indoor Preview Modal */}
         {outsideCampusTarget && (
           <OutsideCampusModal
@@ -2322,7 +2471,8 @@ function MainApp() {
         )}
 
         {/* ── Building Detection Modal (on-load GPS polygon check) ─────────────── */}
-        {showBuildingModal && detectedBuilding && (
+        {!DEMO_MODE && showBuildingModal && detectedBuilding && (
+
           <>
             <div className="modal-backdrop" />
             <section className="navigation-card building-modal">

@@ -78,10 +78,10 @@ function formatBuilding(building) {
 }
 
 const DEFAULT_SUGGESTIONS = [
-  { name: "Executive Director", type: "room", id: "N311", building: "stmarys", floor: "G" },
-  { name: "Principal's Office", type: "room", id: "N314", building: "stmarys", floor: "G" },
-  { name: "Office", type: "room", id: "N319", building: "stmarys", floor: "G" },
-  { name: "Placement Cell", type: "room", id: "N106", building: "stmarys", floor: "B2" },
+  { name: "Executive Director", type: "room", id: "SM311", building: "stmarys", floor: "G" },
+  { name: "Principal's Office", type: "room", id: "SM314", building: "stmarys", floor: "G" },
+  { name: "Office", type: "room", id: "SM319", building: "stmarys", floor: "G" },
+  { name: "Placement Cell", type: "room", id: "SM106", building: "stmarys", floor: "B2" },
   { name: "Main Canteen", type: "location", id: "canteen" },
 ];
 
@@ -91,7 +91,7 @@ const DEFAULT_SUGGESTIONS = [
  * @param {string}  [props.currentFloor]  – active floor key; used for toilet smart filter
  * @param {boolean} [props.isIndoorMode]  – true when the app is in indoor map mode
  */
-function SearchBar({ onSelect, currentFloor = "G", isIndoorMode = false }) {
+function SearchBar({ onSelect, currentFloor = "G", isIndoorMode = false, clearRef }) {
   const { searchItems: SEARCH_ITEMS } = useDatabase();
   const [selectedImage, setSelectedImage] = useState(null);
   const [query, setQuery] = useState("");
@@ -106,13 +106,27 @@ function SearchBar({ onSelect, currentFloor = "G", isIndoorMode = false }) {
     "Search for St Chavara Block...",
     "Search for faculty..."
   ], []);
-  
+
   // Use refs for animation state to bypass React renders and guarantee 60fps smoothness
   const placeholderIndexRef = useRef(0);
   const charIndexRef = useRef(0);
   const isDeletingRef = useRef(false);
   const timerRef = useRef(null);
   const pushedHistoryRef = useRef(false);
+
+  // Expose clear() + _hasContent() to the parent so back-button logic
+  // can imperatively clear the bar when query or dropdown is open.
+  useEffect(() => {
+    if (!clearRef) return;
+    const clearFn = () => {
+      setQuery("");
+      setShowResults(false);
+      setActiveIndex(-1);
+      if (inputRef.current) inputRef.current.blur();
+    };
+    clearFn._hasContent = () => !!(query || showResults);
+    clearRef.current = clearFn;
+  }); // runs every render so _hasContent closure is always fresh
 
   // Hardware Back Button Intercept for Mobile
   useEffect(() => {
@@ -235,7 +249,7 @@ function SearchBar({ onSelect, currentFloor = "G", isIndoorMode = false }) {
       const floor = (item.floor || "").toString().toLowerCase();
       const room = (item.room || "").toString().toLowerCase();
       const type = (item.type || "").toLowerCase();
-      
+
       const fullText = [nameLower, dept, desig, bldg, floor, room, type].join(" ");
 
       return {
@@ -340,13 +354,13 @@ function SearchBar({ onSelect, currentFloor = "G", isIndoorMode = false }) {
             }
           }
         }
-        
+
         // 2. Check if the spaceless query is a typo of the spaceless name (e.g. "sanjaysntosh")
         if (score === 0 && Math.abs(meta.nameSpaceless.length - qSpaceless.length) <= 2) {
-            const distance = getEditDistance(meta.nameSpaceless, qSpaceless);
-            if (distance <= 2) {
-                score += 80 - (distance * 10);
-            }
+          const distance = getEditDistance(meta.nameSpaceless, qSpaceless);
+          if (distance <= 2) {
+            score += 80 - (distance * 10);
+          }
         }
       }
 
@@ -502,33 +516,34 @@ function SearchBar({ onSelect, currentFloor = "G", isIndoorMode = false }) {
                 const photoPath = isFaculty ? FACULTY_PHOTOS[normalizedName] : null;
 
                 return (
-                <button
-                  className={`w-full text-left px-5 py-3 flex items-center gap-4 transition-colors ${index === activeIndex ? "bg-blue-50/80" : "hover:bg-gray-50"}`}
-                  key={`${location.id}-${index}`}
-                  onClick={() => handleSelect(location)}
-                  onMouseEnter={() => setActiveIndex(index)}
-                >
-                  <div 
-                    className={`flex items-center justify-center w-10 h-10 rounded-full shrink-0 overflow-hidden ${photoPath ? 'cursor-pointer hover:opacity-80 transition-opacity bg-gray-100 border border-gray-200' : getItemIconWrapperClass(location, index === activeIndex)}`}
-                    onClick={(e) => {
-                      if (photoPath) {
-                        e.stopPropagation();
-                        setSelectedImage({ url: photoPath, alt: location.name });
-                      }
-                    }}
+                  <button
+                    className={`w-full text-left px-5 py-3 flex items-center gap-4 transition-colors ${index === activeIndex ? "bg-blue-50/80" : "hover:bg-gray-50"}`}
+                    key={`${location.id}-${index}`}
+                    onClick={() => handleSelect(location)}
+                    onMouseEnter={() => setActiveIndex(index)}
                   >
-                    {photoPath ? (
-                      <img src={photoPath} alt={location.name} className="w-full h-full object-cover object-center" />
-                    ) : (
-                      getItemIcon(location)
-                    )}
-                  </div>
-                  <div className="flex flex-col min-w-0">
-                    <span className="text-[15px] font-semibold text-gray-900 truncate">{location.name}</span>
-                    <span className="text-[13px] text-gray-500 truncate">{getItemMeta(location)}</span>
-                  </div>
-                </button>
-              )})}
+                    <div
+                      className={`flex items-center justify-center w-10 h-10 rounded-full shrink-0 overflow-hidden ${photoPath ? 'cursor-pointer hover:opacity-80 transition-opacity bg-gray-100 border border-gray-200' : getItemIconWrapperClass(location, index === activeIndex)}`}
+                      onClick={(e) => {
+                        if (photoPath) {
+                          e.stopPropagation();
+                          setSelectedImage({ url: photoPath, alt: location.name });
+                        }
+                      }}
+                    >
+                      {photoPath ? (
+                        <img src={photoPath} alt={location.name} className="w-full h-full object-cover object-center" />
+                      ) : (
+                        getItemIcon(location)
+                      )}
+                    </div>
+                    <div className="flex flex-col min-w-0">
+                      <span className="text-[15px] font-semibold text-gray-900 truncate">{location.name}</span>
+                      <span className="text-[13px] text-gray-500 truncate">{getItemMeta(location)}</span>
+                    </div>
+                  </button>
+                )
+              })}
             </div>
           ) : (
             <div className="p-8 flex flex-col items-center justify-center text-gray-400">
@@ -538,10 +553,10 @@ function SearchBar({ onSelect, currentFloor = "G", isIndoorMode = false }) {
           )}
         </div>
       )}
-      <ImageModal 
-        imageUrl={selectedImage?.url} 
-        altText={selectedImage?.alt} 
-        onClose={() => setSelectedImage(null)} 
+      <ImageModal
+        imageUrl={selectedImage?.url}
+        altText={selectedImage?.alt}
+        onClose={() => setSelectedImage(null)}
       />
     </div>
   );

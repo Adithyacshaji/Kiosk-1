@@ -1,4 +1,5 @@
 import { Sheet } from "react-modal-sheet";
+import { formatRoomId } from "../../utils/formatRoomId";
 import { memo, useState } from "react";
 import ImageModal from "./ImageModal";
 import { ChevronRight, School, Layers, TestTube, Car, Bath, Library, Users, Coffee, Navigation, User } from "lucide-react";
@@ -307,9 +308,11 @@ function BottomSheet({
                     const photoPath = faculty.image_url || FACULTY_PHOTOS[normalizedName];
                     const facultyBuilding = formatBuilding(faculty.building || faculty.routeNode);
                     const facultyFloor = formatFloor(faculty.floor);
-                    const facultyRoom = (faculty.indoorNode && !faculty.indoorNode.includes(" ") && faculty.indoorNode !== faculty.building)
-                      ? faculty.indoorNode
-                      : (faculty.room && !faculty.room.toLowerCase().includes("block") ? faculty.room : (faculty.indoorNode || faculty.room));
+                    const facultyRoom = formatRoomId(
+                      (faculty.indoorNode && !faculty.indoorNode.includes(" ") && faculty.indoorNode !== faculty.building)
+                        ? faculty.indoorNode
+                        : (faculty.room && !faculty.room.toLowerCase().includes("block") ? faculty.room : (faculty.indoorNode || faculty.room))
+                    );
 
                     return (
                       <div className="p-4 mb-3 bg-white rounded-[20px] shadow-[0_2px_10px_rgb(0,0,0,0.05)] border border-gray-100 flex flex-col gap-1" key={index}>
@@ -380,7 +383,7 @@ function BottomSheet({
                   : null;
                 const bldg = isDept ? formatBuilding(item.building || destination?.building || destination?.routeNode || (item.name?.toLowerCase().includes("chavara") ? "chavara" : "stmarys")) : null;
                 const flr = isDept ? formatFloor(item.floor || destination?.floor) : null;
-                const room = isDept ? ((destination?.indoorNode && !destination?.indoorNode?.includes(" ")) ? destination.indoorNode : (item.room || (destination?.room && !destination?.room?.toLowerCase().includes("block") ? destination.room : destination?.indoorNode))) : null;
+                const room = isDept ? formatRoomId((destination?.indoorNode && !destination?.indoorNode?.includes(" ")) ? destination.indoorNode : (item.room || (destination?.room && !destination?.room?.toLowerCase().includes("block") ? destination.room : destination?.indoorNode))) : null;
 
                 return (
                   <div className="p-4 mb-3 bg-white rounded-[20px] shadow-[0_2px_10px_rgb(0,0,0,0.05)] border border-gray-100 flex flex-col gap-2" key={item.id || index}>

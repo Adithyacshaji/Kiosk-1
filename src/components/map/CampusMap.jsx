@@ -8,6 +8,7 @@ import {
   Popup,
   Tooltip,
   TileLayer,
+  ZoomControl,
   useMap,
   useMapEvents,
 } from "react-leaflet";
@@ -17,7 +18,7 @@ import L from "leaflet";
 import { CAMPUS_BOUNDS } from "../../data/locations";
 import { useDatabase } from "../../context/DatabaseContext";
 import { FLOOR_IMAGES, CHAVARA_FLOOR_IMAGES } from "../../data/floorImages";
-import { INDOOR_NODES } from "../../data/indoorNodes";
+
 import { findNearestIndoorNode } from "../../utils/findNearestIndoorNode";
 import { calculateHaversineDistance } from "../../utils/haversine";
 import { getDistanceToRoute } from "../../utils/distanceToRoute";
@@ -565,7 +566,7 @@ function CampusMap({
       maxBoundsViscosity={1.0}
       minZoom={OUTDOOR_ZOOM.min}
       maxZoom={OUTDOOR_ZOOM.max}
-      zoomControl={mapMode === "INDOOR"}
+      zoomControl={false}
       attributionControl={false}
       scrollWheelZoom
       doubleClickZoom
@@ -596,6 +597,11 @@ function CampusMap({
       >
         &copy; OpenStreetMap contributors &copy; CARTO
       </div>
+
+      {/* ── Indoor Zoom Control (Bottom Left) ── */}
+      {mapMode === "INDOOR" && (
+        <ZoomControl position="bottomleft" />
+      )}
 
       {/* Map zoom + rotation manager */}
       <MapZoomManager

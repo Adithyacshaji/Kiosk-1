@@ -73,7 +73,7 @@ export default function ControlPanel() {
           </button>
           <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-br from-blue-50/50 to-transparent -z-10"></div>
           <div className="w-16 h-16 mx-auto mb-4 bg-white rounded-2xl shadow-sm border border-slate-100 flex items-center justify-center p-2">
-            <img src="/logo.png" alt="Logo" className="w-full h-full object-contain" />
+            <img src="/campus-compass-logo.svg" alt="Campus Compass Logo" className="w-full h-full object-contain" />
           </div>
           <h2 className="font-bold text-xl text-slate-800 tracking-tight">Admin Console</h2>
           <p className="text-xs text-slate-500 font-medium mt-1">Campus RouteX</p>
@@ -147,7 +147,7 @@ export default function ControlPanel() {
         {/* Mobile Header */}
         <header className="flex items-center justify-between px-6 py-4 bg-white/80 backdrop-blur-md border-b border-slate-200/50 md:hidden z-20">
           <div className="flex items-center gap-3">
-            <img src="/logo.png" alt="Logo" className="w-8 h-8 object-contain" />
+            <img src="/campus-compass-logo.svg" alt="Campus Compass Logo" className="w-8 h-8 object-contain" />
             <span className="font-bold text-slate-800 text-lg">Admin Console</span>
           </div>
           <button 
