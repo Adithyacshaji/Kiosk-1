@@ -23,6 +23,14 @@
 * {
   box-sizing: border-box;
   -webkit-tap-highlight-color: transparent;
+  scrollbar-width: none !important;
+  -ms-overflow-style: none !important;
+}
+
+*::-webkit-scrollbar {
+  display: none !important;
+  width: 0 !important;
+  height: 0 !important;
 }
 
 html,
@@ -33,6 +41,8 @@ body,
   margin: 0;
   padding: 0;
   overscroll-behavior-y: none;
+  scrollbar-width: none !important;
+  -ms-overflow-style: none !important;
 }
 
 body {

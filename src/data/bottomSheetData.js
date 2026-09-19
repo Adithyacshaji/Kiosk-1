@@ -466,41 +466,46 @@ export const bottomSheetData = {
   ],
 
   classrooms: [
-    {
-      id: "N102",
-      name: "Seminar Hall",
-      title: "Seminar Hall",
-      description: "Main seminar hall located in St. Mary's Block, B2 Floor.",
-      type: "room",
-      building: "stmarys",
-      floor: "B2",
-      routeNode: "b2",
-      indoorNode: "N102",
-      hasIndoorNavigation: true,
-    },
-    {
-      id: "N103",
-      name: "Christ Hall",
-      title: "Christ Hall",
-      description: "Auditorium/Hall located in St. Mary's Block, B2 Floor.",
-      type: "room",
-      building: "stmarys",
-      floor: "B2",
-      routeNode: "b2",
-      indoorNode: "N103",
-      hasIndoorNavigation: true,
-    },
-    {
-      id: "F208",
-      name: "Seminar Hall (MBA)",
-      title: "Seminar Hall (MBA)",
-      description: "MBA department seminar hall located in St Chavara Block, 2nd Floor.",
-      type: "room",
-      building: "chavara",
-      floor: "2",
-      routeNode: "chavara",
-      indoorNode: "F208",
-      hasIndoorNavigation: true,
-    }
+    // --- 1st Year (S1 / S2) ---
+    { id: "F007", name: "S1 CE", title: "S1 CE", building: "chavara", floor: "G", routeNode: "entrance_G1", indoorNode: "F007", hasIndoorNavigation: true },
+    { id: "F113", name: "S1 CSC", title: "S1 CS-C", building: "chavara", floor: "1", routeNode: "lift_stair_1", indoorNode: "F113", hasIndoorNavigation: true },
+    { id: "F109", name: "S1 EEE", title: "S1 EEE", building: "chavara", floor: "1", routeNode: "lift_stair_1", indoorNode: "F109", hasIndoorNavigation: true },
+    { id: "F404", name: "S1 Mtech- CE", title: "S1 MTech CE", building: "chavara", floor: "4", routeNode: "entrance_G1", indoorNode: "F404", hasIndoorNavigation: true },
+    { id: "612", name: "S1 ECE VLSI", title: "S1 ECE VLSI", building: "chavara", floor: "6", routeNode: "liftA_3", indoorNode: "612", hasIndoorNavigation: true },
+    { id: "N514", name: "MBA S1 A", title: "MBA S1 A", building: "stmarys", floor: "2", routeNode: "g", indoorNode: "N514", hasIndoorNavigation: true },
+    { id: "N513", name: "MBA S1 B", title: "MBA S1 B", building: "stmarys", floor: "2", routeNode: "g", indoorNode: "N513", hasIndoorNavigation: true },
+
+    // --- 2nd Year (S3 / S4) ---
+    { id: "F118", name: "S3 CSA", title: "S3 CS-A", building: "chavara", floor: "1", routeNode: "lift_stair_1", indoorNode: "F118", hasIndoorNavigation: true },
+    { id: "F111", name: "S3 CSB", title: "S3 CS-B", building: "chavara", floor: "1", routeNode: "lift_stair_1", indoorNode: "F111", hasIndoorNavigation: true },
+    { id: "F112", name: "S3 CSD", title: "S3 CS-D", building: "chavara", floor: "1", routeNode: "lift_stair_1", indoorNode: "F112", hasIndoorNavigation: true },
+    { id: "F116", name: "S3 CSDS", title: "S3 CS-DS", building: "chavara", floor: "1", routeNode: "lift_stair_1", indoorNode: "F116", hasIndoorNavigation: true },
+    { id: "F406", name: "S3 Mtech- CE", title: "S3 MTech CE", building: "chavara", floor: "4", routeNode: "entrance_G1", indoorNode: "F406", hasIndoorNavigation: true },
+    { id: "N515", name: "MBA S3", title: "MBA S3", building: "stmarys", floor: "2", routeNode: "g", indoorNode: "N515", hasIndoorNavigation: true },
+    { id: "N410", name: "S3 CE", title: "S3 CE", building: "stmarys", floor: "1", routeNode: "g", indoorNode: "N410", hasIndoorNavigation: true },
+    { id: "N212", name: "S3 EC", title: "S3 EC", building: "stmarys", floor: "B1", routeNode: "b1", indoorNode: "N212", hasIndoorNavigation: true },
+    { id: "N209", name: "S3 EEE", title: "S3 EEE", building: "stmarys", floor: "B1", routeNode: "b1", indoorNode: "N209", hasIndoorNavigation: true },
+    { id: "N202", name: "S3 ME", title: "S3 ME", building: "stmarys", floor: "B1", routeNode: "b1", indoorNode: "N202", hasIndoorNavigation: true },
+
+    // --- 3rd Year (S5 / S6) ---
+    { id: "F507", name: "S5 CS A", title: "S5 CS-A", building: "chavara", floor: "5", routeNode: "entrance_G1", indoorNode: "F507", hasIndoorNavigation: true },
+    { id: "F511", name: "S5 CS B", title: "S5 CS-B", building: "chavara", floor: "5", routeNode: "entrance_G1", indoorNode: "F511", hasIndoorNavigation: true },
+    { id: "F513", name: "S5 CS C", title: "S5 CS-C", building: "chavara", floor: "5", routeNode: "entrance_G1", indoorNode: "F513", hasIndoorNavigation: true },
+    { id: "F514", name: "S5 CS DS", title: "S5 CS-DS", building: "chavara", floor: "5", routeNode: "entrance_G1", indoorNode: "F514", hasIndoorNavigation: true },
+    { id: "F515", name: "S5 CS(PG)", title: "S5 CS PG", building: "chavara", floor: "5", routeNode: "entrance_G1", indoorNode: "F515", hasIndoorNavigation: true },
+    { id: "N409", name: "S5 CE", title: "S5 CE", building: "stmarys", floor: "1", routeNode: "g", indoorNode: "N409", hasIndoorNavigation: true },
+    { id: "N211", name: "S5 EC", title: "S5 EC", building: "stmarys", floor: "B1", routeNode: "b1", indoorNode: "N211", hasIndoorNavigation: true },
+    { id: "N210", name: "S5 EEE", title: "S5 EEE", building: "stmarys", floor: "B1", routeNode: "b1", indoorNode: "N210", hasIndoorNavigation: true },
+    { id: "N203", name: "S5 ME", title: "S5 ME", building: "stmarys", floor: "B1", routeNode: "b1", indoorNode: "N203", hasIndoorNavigation: true },
+
+    // --- 4th Year (S7 / S8) ---
+    { id: "F504", name: "S7 CS A", title: "S7 CS-A", building: "chavara", floor: "5", routeNode: "entrance_G1", indoorNode: "F504", hasIndoorNavigation: true },
+    { id: "F506", name: "S7 CS B", title: "S7 CS-B", building: "chavara", floor: "5", routeNode: "entrance_G1", indoorNode: "F506", hasIndoorNavigation: true },
+    { id: "615", name: "S7 ME", title: "S7 ME", building: "chavara", floor: "6", routeNode: "liftA_3", indoorNode: "615", hasIndoorNavigation: true },
+    { id: "N214", name: "S7 CS", title: "S7 CS", building: "stmarys", floor: "B1", routeNode: "b1", indoorNode: "N214", hasIndoorNavigation: true },
+    { id: "N405", name: "S7 CE", title: "S7 CE", building: "stmarys", floor: "1", routeNode: "g", indoorNode: "N405", hasIndoorNavigation: true },
+    { id: "N403", name: "S7 ECE", title: "S7 ECE", building: "stmarys", floor: "1", routeNode: "g", indoorNode: "N403", hasIndoorNavigation: true },
+    { id: "N404", name: "S7 EEE", title: "S7 EEE", building: "stmarys", floor: "1", routeNode: "g", indoorNode: "N404", hasIndoorNavigation: true },
+    { id: "N402", name: "S7 ME", title: "S7 ME", building: "stmarys", floor: "1", routeNode: "g", indoorNode: "N402", hasIndoorNavigation: true }
   ]
 };

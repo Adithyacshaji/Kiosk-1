@@ -13,6 +13,15 @@ import { openGoogleMapsNavigation } from "./utils/openGoogleMaps";
 import { useDatabase } from "./context/DatabaseContext";
 
 import "./App.css";
+import "./kiosk.css";
+
+import { LandingScreen } from "./components/kiosk/LandingScreen";
+import { InstructionDashboard } from "./components/kiosk/InstructionDashboard";
+import { ClassroomsScreen } from "./components/kiosk/ClassroomsScreen";
+import { FacultyScreen } from "./components/kiosk/FacultyScreen";
+import { QrModal } from "./components/kiosk/QrModal";
+import { InactivityModal } from "./components/kiosk/InactivityModal";
+import { audioService } from "./utils/kiosk/audio";
 
 import FloorSelector from "./components/map/FloorSelector";
 
@@ -236,9 +245,87 @@ function MainApp() {
 
   const [selectedLocation, setSelectedLocation] = useState(null);
 
+  const [destination, setDestination] = useState(null);
+
   const [route, setRoute] = useState([]);
 
-  const [destination, setDestination] = useState(null);
+  const [currentScreen, setCurrentScreen] = useState('landing');
+  const [theme, setTheme] = useState('light');
+  const [soundEnabled, setSoundEnabled] = useState(true);
+  const [currentTime, setCurrentTime] = useState('');
+  const [qrModalPoi, setQrModalPoi] = useState(null);
+  
+  // Inactivity Safeguard (60s idle reset with 10s warning)
+  const [isInactivityWarningOpen, setIsInactivityWarningOpen] = useState(false);
+  const [remainingWarningSeconds, setRemainingWarningSeconds] = useState(10);
+  const idleTimerRef = useRef(null);
+  const warningIntervalRef = useRef(null);
+
+  useEffect(() => {
+    const updateTime = () => {
+      const now = new Date();
+      setCurrentTime(now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }));
+    };
+    updateTime();
+    const interval = setInterval(updateTime, 1000);
+    return () => clearInterval(interval);
+  }, []);
+
+  useEffect(() => {
+    audioService.enabled = soundEnabled;
+  }, [soundEnabled]);
+
+  const resetToLanding = () => {
+    setDestination(null);
+    setQrModalPoi(null);
+    setCurrentFloor("G");
+    setCurrentScreen('landing');
+    setIsInactivityWarningOpen(false);
+  };
+
+  const resetInactivityTimer = () => {
+    if (idleTimerRef.current) clearTimeout(idleTimerRef.current);
+    if (warningIntervalRef.current) clearInterval(warningIntervalRef.current);
+    setIsInactivityWarningOpen(false);
+
+    if (currentScreen !== 'landing') {
+      const timeoutMs = 50000;
+      idleTimerRef.current = setTimeout(() => {
+        setRemainingWarningSeconds(10);
+        setIsInactivityWarningOpen(true);
+
+        warningIntervalRef.current = setInterval(() => {
+          setRemainingWarningSeconds((prev) => {
+            if (prev <= 1) {
+              clearInterval(warningIntervalRef.current);
+              resetToLanding();
+              return 10;
+            }
+            return prev - 1;
+          });
+        }, 1000);
+      }, timeoutMs);
+    }
+  };
+
+  useEffect(() => {
+    const onUserActivity = () => {
+      if (currentScreen !== 'landing') {
+        resetInactivityTimer();
+      }
+    };
+    ['touchstart', 'mousedown', 'mousemove', 'keydown', 'scroll'].forEach((evt) => {
+      window.addEventListener(evt, onUserActivity, { passive: true });
+    });
+    resetInactivityTimer();
+    return () => {
+      if (idleTimerRef.current) clearTimeout(idleTimerRef.current);
+      if (warningIntervalRef.current) clearInterval(warningIntervalRef.current);
+      ['touchstart', 'mousedown', 'mousemove', 'keydown', 'scroll'].forEach((evt) => {
+        window.removeEventListener(evt, onUserActivity);
+      });
+    };
+  }, [currentScreen]);
 
   const [currentFloor, setCurrentFloor] = useState(DEMO_MODE ? DEMO_START.floor : "G");
   const [mapMode, setMapMode] = useState(DEMO_MODE ? "INDOOR" : "OUTDOOR");
@@ -2121,6 +2208,127 @@ function MainApp() {
   const isLocalIndoorDest = Boolean(activeIndoorDest?.floor) && !isDifferentBldg;
   const displayTargetFloor = isLocalIndoorDest ? normalizeFloor(activeIndoorDest.floor) : "G";
 
+  if (currentScreen !== 'map') {
+    return (
+      <div id="kiosk-app" className={`app-root theme-${theme}`}>
+        {currentScreen === 'landing' && (
+          <LandingScreen
+            onStart={() => {
+              audioService.playClick();
+              setCurrentScreen('instructions');
+            }}
+            currentTime={currentTime}
+            theme={theme}
+            onToggleTheme={() => {
+              audioService.playClick();
+              setTheme(prev => prev === 'light' ? 'dark' : 'light');
+            }}
+            soundEnabled={soundEnabled}
+            onToggleSound={() => {
+              setSoundEnabled(prev => {
+                if (!prev) audioService.playClick();
+                return !prev;
+              });
+            }}
+            language="en"
+          />
+        )}
+        {currentScreen === 'instructions' && (
+          <InstructionDashboard
+            onViewMap={() => {
+              audioService.playClick();
+              setCurrentScreen('map');
+            }}
+            onGoHome={() => setCurrentScreen('landing')}
+            onSelectService={(category, floor = 1) => {
+              audioService.playClick();
+              setCurrentFloor(floor);
+              setCurrentScreen('map');
+            }}
+            onOpenClassrooms={() => {
+              audioService.playClick();
+              setCurrentScreen('classrooms');
+            }}
+            onOpenFaculty={() => {
+              audioService.playClick();
+              setCurrentScreen('faculty');
+            }}
+            currentTime={currentTime}
+            theme={theme}
+            onToggleTheme={() => setTheme(prev => prev === 'light' ? 'dark' : 'light')}
+            soundEnabled={soundEnabled}
+            onToggleSound={() => setSoundEnabled(prev => !prev)}
+            language="en"
+          />
+        )}
+        {currentScreen === 'classrooms' && (
+          <ClassroomsScreen
+            classrooms={bottomSheetData.classrooms}
+            onBack={() => setCurrentScreen('instructions')}
+            onGoHome={() => setCurrentScreen('landing')}
+            onSelectClassroom={(cls) => {
+              audioService.playClick();
+              setDestination(cls);
+              if (isIndoorDestination(cls)) {
+                setCurrentBuilding(isChavaraBuilding(cls.building) ? "chavara" : "stmarys");
+                setCurrentFloor(cls.floor || "G");
+                setMapMode("INDOOR");
+                setNavStep(STEPS.INDOOR_READY);
+              }
+              setCurrentScreen('map');
+            }}
+            currentTime={currentTime}
+            theme={theme}
+            onToggleTheme={() => setTheme(prev => prev === 'light' ? 'dark' : 'light')}
+            soundEnabled={soundEnabled}
+            onToggleSound={() => setSoundEnabled(prev => !prev)}
+            language="en"
+          />
+        )}
+        {currentScreen === 'faculty' && (
+          <FacultyScreen
+            departments={bottomSheetData.departments}
+            onBack={() => setCurrentScreen('instructions')}
+            onGoHome={() => setCurrentScreen('landing')}
+            onSelectFaculty={(fac) => {
+              audioService.playClick();
+              setDestination(fac);
+              if (isIndoorDestination(fac)) {
+                setCurrentBuilding(isChavaraBuilding(fac.building) ? "chavara" : "stmarys");
+                setCurrentFloor(fac.floor || "G");
+                setMapMode("INDOOR");
+                setNavStep(STEPS.INDOOR_READY);
+              }
+              setCurrentScreen('map');
+            }}
+            currentTime={currentTime}
+            theme={theme}
+            onToggleTheme={() => setTheme(prev => prev === 'light' ? 'dark' : 'light')}
+            soundEnabled={soundEnabled}
+            onToggleSound={() => setSoundEnabled(prev => !prev)}
+            language="en"
+          />
+        )}
+        <QrModal
+          isOpen={!!qrModalPoi}
+          poi={qrModalPoi}
+          onClose={() => setQrModalPoi(null)}
+        />
+        <InactivityModal
+          isOpen={isInactivityWarningOpen}
+          remainingSeconds={remainingWarningSeconds}
+          totalWarningSeconds={10}
+          onStay={() => {
+            audioService.playClick();
+            setIsInactivityWarningOpen(false);
+            if (idleTimerRef.current) clearTimeout(idleTimerRef.current);
+            if (warningIntervalRef.current) clearInterval(warningIntervalRef.current);
+          }}
+        />
+      </div>
+    );
+  }
+
   return (
 
     <main className="app-shell flex flex-col h-screen overflow-hidden bg-gray-100">
@@ -2132,6 +2340,19 @@ function MainApp() {
 
       {/* ── Map Container Wrapper ────────────────────────────────────────────── */}
       <div className="flex-1 relative overflow-hidden bg-white z-1300">
+        
+        {currentScreen === 'map' && (
+          <button 
+            className="kiosk-map-home-btn"
+            title="Return to Welcome Screen"
+            onClick={() => {
+              audioService.playClick();
+              resetToLanding();
+            }}
+          >
+            <Home size={30} color="#ffffff" />
+          </button>
+        )}
 
         {/* ── QR Simulator (dev/testing) ───────────────────────────────────── */}
 

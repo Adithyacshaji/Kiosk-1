@@ -190,9 +190,16 @@ export const DatabaseProvider = ({ children }) => {
       };
     });
     
+    // Helper to check if a room name matches a classroom (S1, S2, S3, S4, S5, S6, S7, S8, etc.)
+    const isClassroomName = (name) => {
+      if (!name) return false;
+      const t = name.trim();
+      return /\bS[1-8]\b/i.test(t) || /^S[1-8]/i.test(t) || /Class\s*Room\s*S[1-8]/i.test(t) || /MBA\s*S[1-8]/i.test(t);
+    };
+
     // Also fetch rooms for the Classrooms tab in BottomSheet
     const { data: roomsData } = await supabase.from('rooms').select('*');
-    const classrooms = (roomsData || []).map(r => {
+    const allRooms = (roomsData || []).map(r => {
       const cleanName = formatRoomId(r.name);
       return {
         id: r.room_id,
@@ -207,6 +214,9 @@ export const DatabaseProvider = ({ children }) => {
       };
     });
 
+    const dbClassrooms = allRooms.filter(r => isClassroomName(r.name));
+    const classrooms = dbClassrooms.length > 0 ? dbClassrooms : (bottomSheetData.classrooms || []);
+
     const { data: locationsData } = await supabase.from('locations').select('*');
     const outdoorLocations = (locationsData || []).map(l => ({
       id: l.id,
@@ -217,10 +227,10 @@ export const DatabaseProvider = ({ children }) => {
       routeNode: l.route_node || l.id
     }));
 
-    const labs = classrooms.filter(r => r.name?.toLowerCase()?.includes('lab'));
-    const library = classrooms.filter(r => r.name?.toLowerCase()?.includes('library') || r.name?.toLowerCase()?.includes('lib'));
+    const labs = allRooms.filter(r => r.name?.toLowerCase()?.includes('lab'));
+    const library = allRooms.filter(r => r.name?.toLowerCase()?.includes('library') || r.name?.toLowerCase()?.includes('lib'));
     
-    const indoorCafeterias = classrooms.filter(r => r.name?.toLowerCase()?.includes('canteen') || r.name?.toLowerCase()?.includes('cafe'));
+    const indoorCafeterias = allRooms.filter(r => r.name?.toLowerCase()?.includes('canteen') || r.name?.toLowerCase()?.includes('cafe'));
     const outdoorCafeterias = outdoorLocations.filter(l => l.name?.toLowerCase()?.includes('canteen') || l.name?.toLowerCase()?.includes('cafe'));
     
     const cafeteria = [...outdoorCafeterias, ...indoorCafeterias];
