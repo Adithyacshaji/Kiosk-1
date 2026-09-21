@@ -23,6 +23,7 @@ export const InstructionDashboard = ({
   onSelectService,
   onOpenClassrooms,
   onOpenFaculty,
+  onOpenOutdoor,
   currentTime,
   language = 'en',
   soundEnabled,
@@ -36,6 +37,8 @@ export const InstructionDashboard = ({
       onOpenClassrooms();
     } else if (serviceId === 'faculty' && onOpenFaculty) {
       onOpenFaculty();
+    } else if (serviceId === 'outdoor' && onOpenOutdoor) {
+      onOpenOutdoor();
     } else if (onSelectService) {
       onSelectService(serviceId, 0);
     } else {

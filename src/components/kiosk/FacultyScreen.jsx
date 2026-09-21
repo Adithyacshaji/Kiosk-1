@@ -71,9 +71,9 @@ export const FacultyScreen = ({
       {/* Top Welcome/Navigation Bar for Faculty */}
       <header className="directory-top-bar">
         <div className="dir-bar-left">
-          <button className="btn-dir-back" onClick={handleBack} title={selectedDeptId ? "Back to Departments" : "Back to Services"}>
+          <button className="btn-dir-back" onClick={handleBack} title={selectedDeptId ? "Back to Departments" : "Back"}>
             <ArrowLeft size={20} />
-            <span>{selectedDeptId ? "Back to Departments" : "Back to Services"}</span>
+            <span>{selectedDeptId ? "Back to Departments" : "Back"}</span>
           </button>
           <div className="dir-brand-badge" onClick={onGoHome}>
             <img src={logoImg} alt="Logo" className="dir-logo-mini" />

@@ -68,8 +68,8 @@ export const ClassroomsScreen = ({
   language = 'en',
   classrooms = []
 }) => {
-  const [selectedYear, setSelectedYear] = useState('All'); // 'All' | '1' | '2' | '3' | '4'
-  const [selectedSemester, setSelectedSemester] = useState('All'); // 'All' | 'S1' | 'S2' ... | 'S8'
+  const [selectedYear, setSelectedYear] = useState('1'); // '1' | '2' | '3' | '4'
+  const [selectedSemester, setSelectedSemester] = useState('S1'); // 'S1' | 'S2' ... | 'S8'
   const t = TRANSLATIONS[language] || TRANSLATIONS.en;
 
   // Filter only valid classrooms matching S1-S8 or classroom designations
@@ -80,7 +80,6 @@ export const ClassroomsScreen = ({
   }, [classrooms]);
 
   const yearChips = [
-    { id: 'All', label: 'All Years' },
     { id: '1', label: '1st Year (S1/S2)' },
     { id: '2', label: '2nd Year (S3/S4)' },
     { id: '3', label: '3rd Year (S5/S6)' },
@@ -89,11 +88,11 @@ export const ClassroomsScreen = ({
 
   // Available semesters for the selected year
   const semesterChips = useMemo(() => {
-    if (selectedYear === '1') return ['All', 'S1', 'S2'];
-    if (selectedYear === '2') return ['All', 'S3', 'S4'];
-    if (selectedYear === '3') return ['All', 'S5', 'S6'];
-    if (selectedYear === '4') return ['All', 'S7', 'S8'];
-    return ['All', 'S1', 'S2', 'S3', 'S4', 'S5', 'S6', 'S7', 'S8'];
+    if (selectedYear === '1') return ['S1', 'S2'];
+    if (selectedYear === '2') return ['S3', 'S4'];
+    if (selectedYear === '3') return ['S5', 'S6'];
+    if (selectedYear === '4') return ['S7', 'S8'];
+    return ['S1', 'S2', 'S3', 'S4', 'S5', 'S6', 'S7', 'S8'];
   }, [selectedYear]);
 
   // Filter classrooms by selected year and semester
@@ -107,7 +106,10 @@ export const ClassroomsScreen = ({
 
   const handleYearChange = (yearId) => {
     setSelectedYear(yearId);
-    setSelectedSemester('All');
+    if (yearId === '1') setSelectedSemester('S1');
+    else if (yearId === '2') setSelectedSemester('S3');
+    else if (yearId === '3') setSelectedSemester('S5');
+    else if (yearId === '4') setSelectedSemester('S7');
   };
 
   return (
@@ -122,9 +124,9 @@ export const ClassroomsScreen = ({
         {/* Top Navigation Bar */}
         <header className="directory-top-bar">
           <div className="dir-bar-left">
-            <button className="btn-dir-back" onClick={onBack} title="Back to Services">
+            <button className="btn-dir-back" onClick={onBack} title="Back">
               <ArrowLeft size={20} />
-              <span>Back to Services</span>
+              <span>Back</span>
             </button>
             <div className="dir-brand-badge" onClick={onGoHome}>
               <img src={logoImg} alt="Logo" className="dir-logo-mini" />
@@ -159,6 +161,7 @@ export const ClassroomsScreen = ({
         {/* Main Content Area */}
         <main className="directory-main-content" style={{ gap: '1.25rem', paddingTop: '1.5rem', paddingBottom: '1.5rem' }}>
           {/* Header Title & Small Year / Semester Chips */}
+          {/* Header Title */}
           <div style={{ display: 'flex', flexDirection: 'column', gap: '0.85rem' }}>
             <h1 style={{ fontSize: '2.4rem', fontWeight: 800, color: '#ffffff', letterSpacing: '-0.02em', margin: 0, textShadow: '0 2px 10px rgba(0,0,0,0.2)' }}>
               Find Your Classroom
@@ -236,14 +239,16 @@ export const ClassroomsScreen = ({
                   justifyContent: 'space-between',
                   borderRadius: '20px',
                   minHeight: 'auto',
-                  cursor: 'pointer'
+                  cursor: 'pointer',
+                  backgroundColor: 'white',
+                  color: 'black'
                 }}
               >
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '0.25rem' }}>
-                  <h3 style={{ fontSize: '1.35rem', fontWeight: 800, color: '#ffffff', margin: 0, lineHeight: 1.2 }}>
+                  <h3 style={{ fontSize: '1.35rem', fontWeight: 800, color: 'black', margin: 0, lineHeight: 1.2 }}>
                     {cls.displayTitle}
                   </h3>
-                  <span style={{ fontSize: '0.85rem', color: 'rgba(255, 255, 255, 0.82)', fontWeight: 600 }}>
+                  <span style={{ fontSize: '0.85rem', color: 'rgba(0, 0, 0, 0.7)', fontWeight: 600 }}>
                     {cls.buildingName} • Room {cls.roomId} ({cls.floorName})
                   </span>
                 </div>
@@ -254,11 +259,12 @@ export const ClassroomsScreen = ({
                     width: '42px', 
                     height: '42px', 
                     flexShrink: 0,
-                    background: 'rgba(144, 187, 172, 0.35)',
-                    border: '1px solid rgba(255, 255, 255, 0.5)'
+                    background: 'rgba(0, 0, 0, 0.05)',
+                    border: '1px solid rgba(0, 0, 0, 0.1)',
+                    color: 'black'
                   }}
                 >
-                  <Navigation size={18} />
+                  <Navigation size={18} color="black" />
                 </div>
               </div>
             ))}
@@ -267,7 +273,7 @@ export const ClassroomsScreen = ({
               <div style={{ gridColumn: '1 / -1', padding: '2.5rem', textAlign: 'center', background: 'rgba(255,255,255,0.08)', borderRadius: '20px' }}>
                 <p style={{ fontSize: '1.1rem', fontWeight: 600, color: '#ffffff' }}>No classrooms found matching this filter.</p>
                 <button 
-                  onClick={() => { setSelectedYear('All'); setSelectedSemester('All'); }}
+                  onClick={() => { setSelectedYear('1'); setSelectedSemester('S1'); }}
                   style={{ marginTop: '0.8rem', padding: '0.5rem 1.2rem', borderRadius: '30px', background: 'rgba(144,187,172,0.4)', color: '#fff', border: '1px solid #fff', cursor: 'pointer', fontWeight: 700 }}
                 >
                   Reset Filters

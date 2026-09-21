@@ -1,33 +1,13 @@
 import React from 'react';
-import { Sun, Moon, Volume2, VolumeX } from 'lucide-react';
+import { Volume2, VolumeX } from 'lucide-react';
 
 export const ThemeToggle = ({ 
-  theme = 'light', 
-  onToggleTheme, 
   soundEnabled = true, 
   onToggleSound 
 }) => {
   return (
     <div className="theme-toggle-bar">
-      {/* Light / Dark Mode Toggle Button */}
-      <button 
-        className="btn-theme-switch"
-        onClick={onToggleTheme}
-        title={theme === 'light' ? 'Switch to Dark Mode' : 'Switch to Light Mode'}
-        aria-label="Toggle Dark/Light Mode"
-      >
-        {theme === 'light' ? (
-          <>
-            <Moon size={18} className="theme-icon" />
-            <span className="theme-label">Dark</span>
-          </>
-        ) : (
-          <>
-            <Sun size={18} className="theme-icon" />
-            <span className="theme-label">Light</span>
-          </>
-        )}
-      </button>
+
 
       {/* Sound Feedback Toggle */}
       {onToggleSound && (
@@ -36,6 +16,7 @@ export const ThemeToggle = ({
           onClick={onToggleSound}
           title={soundEnabled ? 'Sound On' : 'Sound Muted'}
           aria-label="Toggle Sound"
+          style={{ boxShadow: '0 0 15px rgba(255,255,255,0.6)', border: '1px solid rgba(255,255,255,0.4)' }}
         >
           {soundEnabled ? <Volume2 size={18} /> : <VolumeX size={18} />}
         </button>

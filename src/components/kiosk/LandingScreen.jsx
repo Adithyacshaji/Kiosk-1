@@ -1,9 +1,8 @@
 import React, { useState } from 'react';
 import { SunMedium, Clock } from 'lucide-react';
-import { KioskLogo } from './KioskLogo';
 import { ThemeToggle } from './ThemeToggle';
 import { TRANSLATIONS } from '../../data/kiosk/translations';
-import collegeBg from '../../assets/kiosk/college.png';
+import landingBg from '../../assets/kiosk/landing-bg.jpg';
 
 export const LandingScreen = ({ 
   onStart, 
@@ -28,9 +27,15 @@ export const LandingScreen = ({
   return (
     <section 
       id="screen-landing" 
-      className={`screen active glass-dashboard-screen minimal-landing theme-${theme} ${isZoomingOut ? 'screen-exit-zoom' : ''}`}
+      className={`screen active minimal-landing theme-${theme} ${isZoomingOut ? 'screen-exit-zoom' : ''}`}
       onClick={handleScreenTouch}
-      style={{ backgroundImage: `url(${collegeBg})`, color: 'white' }}
+      style={{ 
+        backgroundImage: `url(${landingBg})`, 
+        backgroundSize: 'cover', 
+        backgroundPosition: 'center',
+        backgroundRepeat: 'no-repeat',
+        color: 'white' 
+      }}
       role="region" 
       aria-label="Welcome Landing Page"
     >
@@ -38,11 +43,11 @@ export const LandingScreen = ({
         {/* Top Status Bar with Time, Weather & Light/Dark Switch */}
         <header className="landing-minimal-header" onClick={(e) => e.stopPropagation()}>
           <div className="landing-header-left">
-            <div className="landing-weather-pill">
+            <div className="landing-weather-pill" style={{ boxShadow: '0 0 15px rgba(255,255,255,0.6)', border: '1px solid rgba(255,255,255,0.4)' }}>
               <SunMedium size={18} className="pill-icon-weather" />
               <span>{t.weather || '24°C'}</span>
             </div>
-            <div className="landing-time-pill">
+            <div className="landing-time-pill" style={{ boxShadow: '0 0 15px rgba(255,255,255,0.6)', border: '1px solid rgba(255,255,255,0.4)' }}>
               <Clock size={18} className="pill-icon-time" />
               <span className="time-clock">{currentTime}</span>
             </div>
@@ -58,16 +63,13 @@ export const LandingScreen = ({
           </div>
         </header>
 
-        {/* Center: Large Logo that Zooms Out on Touch */}
-        <main className="landing-minimal-center">
-          <div className={`landing-logo-scale-box ${isZoomingOut ? 'zoom-out-anim' : ''}`}>
-            <KioskLogo size={340} animated={!isZoomingOut} />
-          </div>
+        {/* The center content is now baked into the background image directly */}
+        <main className="landing-minimal-center" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', marginTop: '-3vh' }}>
+          {/* Empty main to preserve layout spacing if needed, or just let background handle it */}
         </main>
 
         {/* Subtle Bottom Instruction */}
         <footer className="landing-minimal-footer">
-          <p className="touch-hint-text" style={{ color: 'white' }}>{t.touchAnywhere || "Touch anywhere to explore Campus Compass"}</p>
         </footer>
       </div>
     </section>

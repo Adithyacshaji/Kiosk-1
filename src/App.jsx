@@ -19,6 +19,7 @@ import { LandingScreen } from "./components/kiosk/LandingScreen";
 import { InstructionDashboard } from "./components/kiosk/InstructionDashboard";
 import { ClassroomsScreen } from "./components/kiosk/ClassroomsScreen";
 import { FacultyScreen } from "./components/kiosk/FacultyScreen";
+import { OutdoorScreen } from "./components/kiosk/OutdoorScreen";
 import { QrModal } from "./components/kiosk/QrModal";
 import { InactivityModal } from "./components/kiosk/InactivityModal";
 import { audioService } from "./utils/kiosk/audio";
@@ -2858,6 +2859,10 @@ function MainApp() {
               audioService.playClick();
               setCurrentScreen('faculty');
             }}
+            onOpenOutdoor={() => {
+              audioService.playClick();
+              setCurrentScreen('outdoor');
+            }}
             currentTime={currentTime}
             theme={theme}
             onToggleTheme={() => setTheme(prev => prev === 'light' ? 'dark' : 'light')}
@@ -2903,6 +2908,32 @@ function MainApp() {
                 setCurrentFloor(fac.floor || "G");
                 setMapMode("INDOOR");
                 setNavStep(STEPS.INDOOR_READY);
+              }
+              setCurrentScreen('map');
+            }}
+            currentTime={currentTime}
+            theme={theme}
+            onToggleTheme={() => setTheme(prev => prev === 'light' ? 'dark' : 'light')}
+            soundEnabled={soundEnabled}
+            onToggleSound={() => setSoundEnabled(prev => !prev)}
+            language="en"
+          />
+        )}
+        {currentScreen === 'outdoor' && (
+          <OutdoorScreen
+            onBack={() => setCurrentScreen('instructions')}
+            onGoHome={() => setCurrentScreen('landing')}
+            onSelectOutdoor={(poi) => {
+              audioService.playClick();
+              setDestination(poi);
+              if (isIndoorDestination(poi)) {
+                setCurrentBuilding(isChavaraBuilding(poi.building) ? "chavara" : "stmarys");
+                setCurrentFloor(poi.floor || "G");
+                setMapMode("INDOOR");
+                setNavStep(STEPS.INDOOR_READY);
+              } else {
+                setMapMode("OUTDOOR");
+                setNavStep(STEPS.OUTDOOR_ROUTE);
               }
               setCurrentScreen('map');
             }}
