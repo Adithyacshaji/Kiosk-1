@@ -54,6 +54,8 @@ export function KioskQRCode({ destination }) {
   if (building) queryParams.set('building', building);
   if (floor !== '') queryParams.set('floor', String(floor));
   if (type) queryParams.set('type', type);
+  queryParams.set('mobile', 'true');
+  queryParams.set('qrSession', 'true');
 
   const qrUrl = `${baseOrigin}/?${queryParams.toString()}`;
 

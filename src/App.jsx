@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef, useMemo, lazy, Suspense } from "react";
 import { Routes, Route } from "react-router-dom";
-import { Home, Building, Clock, CloudSun, MapPin } from "lucide-react";
+import { Home, Building, Clock, CloudSun, MapPin, ChevronRight } from "lucide-react";
 
 const CampusMap = lazy(() => import("./components/map/CampusMap"));
 
@@ -420,25 +420,32 @@ function MainApp() {
     return new URLSearchParams(window.location.search);
   }, []);
 
-  const [isMobileOrQrSession, setIsMobileOrQrSession] = useState(() => {
+  const checkIsMobileOrPhoneSession = () => {
     if (typeof window === 'undefined') return false;
-    return (
-      initialUrlParams.has('dest') ||
-      initialUrlParams.get('kiosk') === 'false' ||
-      window.innerWidth <= 768 ||
-      /Mobi|Android|iPhone|iPad|iPod/i.test(navigator.userAgent)
-    );
+    const params = new URLSearchParams(window.location.search);
+    if (params.get('kiosk') === 'true') return false; // Explicit force kiosk mode
+    if (params.get('kiosk') === 'false' || params.get('mobile') === 'true' || params.get('qrSession') === 'true') return true; // Explicit force mobile
+    if (params.has('dest') || params.has('qr')) return true; // Scanned QR code with destination
+    if (window.innerWidth <= 850 || window.innerHeight <= 550) return true; // Mobile phone viewport
+    const isMobileUA = /Mobi|Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+    return isMobileUA;
+  };
+
+  const [isMobileOrQrSession, setIsMobileOrQrSession] = useState(() => {
+    return checkIsMobileOrPhoneSession();
   });
+
+  const [isQrScannedInitialSession, setIsQrScannedInitialSession] = useState(() => {
+    if (typeof window === 'undefined') return false;
+    const params = new URLSearchParams(window.location.search);
+    return params.has('dest') || params.get('qrSession') === 'true' || params.get('start') === 'stmarys_entrance';
+  });
+
+  const [showStMarysEntranceCard, setShowStMarysEntranceCard] = useState(false);
 
   useEffect(() => {
     const handleDeviceCheck = () => {
-      if (typeof window === 'undefined') return;
-      const isMobile =
-        initialUrlParams.has('dest') ||
-        initialUrlParams.get('kiosk') === 'false' ||
-        window.innerWidth <= 768 ||
-        /Mobi|Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
-      setIsMobileOrQrSession(isMobile);
+      setIsMobileOrQrSession(checkIsMobileOrPhoneSession());
     };
 
     window.addEventListener('resize', handleDeviceCheck, { passive: true });
@@ -447,7 +454,7 @@ function MainApp() {
       window.removeEventListener('resize', handleDeviceCheck);
       window.removeEventListener('orientationchange', handleDeviceCheck);
     };
-  }, [initialUrlParams]);
+  }, []);
 
   const resetInactivityTimer = () => {
     if (idleTimerRef.current) clearTimeout(idleTimerRef.current);
@@ -478,6 +485,13 @@ function MainApp() {
   };
 
   useEffect(() => {
+    if (isMobileOrQrSession) {
+      if (idleTimerRef.current) clearTimeout(idleTimerRef.current);
+      if (warningIntervalRef.current) clearInterval(warningIntervalRef.current);
+      setIsInactivityWarningOpen(false);
+      return;
+    }
+
     const onUserActivity = () => {
       if (currentScreen !== 'landing') {
         resetInactivityTimer();
@@ -494,7 +508,7 @@ function MainApp() {
         window.removeEventListener(evt, onUserActivity);
       });
     };
-  }, [currentScreen]);
+  }, [currentScreen, isMobileOrQrSession]);
 
   const [currentFloor, setCurrentFloor] = useState(DEMO_MODE ? DEMO_START.floor : "G");
   const [mapMode, setMapMode] = useState(DEMO_MODE ? "INDOOR" : "OUTDOOR");
@@ -535,6 +549,10 @@ function MainApp() {
         setIsAppLoading(false);
         setCurrentScreen('map');
 
+        // Suppress "Are you inside?" modal during initial QR scan session
+        buildingCheckDoneRef.current = true;
+        setShowBuildingModal(false);
+
         const isIndoor = isIndoorDestination(activeDest);
         const bldg = (paramBuilding || activeDest.building || "").toLowerCase();
         const isStMarys = !isChavaraBuilding(bldg) && (bldg.includes("stmary") || bldg.includes("mary") || isIndoor || activeDest.routeNode === "st-marys-block");
@@ -547,7 +565,8 @@ function MainApp() {
             setRoute([]);
             const targetFloor = normalizeFloor(paramFloor !== null && paramFloor !== undefined ? paramFloor : (activeDest.floor || "G"));
             setCurrentBuilding("stmarys");
-            setCurrentFloor(targetFloor);
+            // If destination is on a different floor, start user on Ground Floor entrance where they are standing
+            setCurrentFloor("G");
             if (isIndoor) {
               setMapMode("INDOOR");
               const startNodeId = "entrance_G";
@@ -556,18 +575,36 @@ function MainApp() {
               if (INDOOR_NODES?.[startNodeId]?.position) {
                 setIndoorUserLocation({ position: INDOOR_NODES[startNodeId].position, nearestNode: startNodeId, floor: "G" });
               }
-              if (targetFloor === "G" && INDOOR_EDGES && INDOOR_NODES) {
-                routeIndoor(
-                  { building: "stmarys", startNodeId: normalizeIndoorKey(startNodeId), endNodeId: normalizeIndoorKey(endNodeId) },
-                  { startNode: normalizeIndoorKey(startNodeId), endNode: normalizeIndoorKey(endNodeId), edges: INDOOR_EDGES, nodes: INDOOR_NODES }
-                ).then(res => {
-                  if (res?.path?.length) {
-                    setIndoorRouteNodes(res.path);
-                    setIndoorRoute(getPathCoordinates(res.path, INDOOR_NODES));
-                  }
-                }).catch(() => {});
+              // Show St. Mary's Entrance Onboarding Guidance Card (Step 1)
+              setShowStMarysEntranceCard(true);
+
+              if (targetFloor === "G") {
+                if (INDOOR_EDGES && INDOOR_NODES) {
+                  routeIndoor(
+                    { building: "stmarys", startNodeId: normalizeIndoorKey(startNodeId), endNodeId: normalizeIndoorKey(endNodeId) },
+                    { startNode: normalizeIndoorKey(startNodeId), endNode: normalizeIndoorKey(endNodeId), edges: INDOOR_EDGES, nodes: INDOOR_NODES }
+                  ).then(res => {
+                    if (res?.path?.length) {
+                      setIndoorRouteNodes(res.path);
+                      setIndoorRoute(getPathCoordinates(res.path, INDOOR_NODES));
+                    }
+                  }).catch(() => {});
+                }
                 setNavStep(STEPS.FLOOR_NAVIGATION);
               } else {
+                // Multi-floor destination: route from entrance_G to stairs on Ground Floor
+                const stairNodeId = getStairNode("G", targetFloor);
+                if (INDOOR_EDGES && INDOOR_NODES) {
+                  routeIndoor(
+                    { building: "stmarys", startNodeId: normalizeIndoorKey(startNodeId), endNodeId: normalizeIndoorKey(stairNodeId) },
+                    { startNode: normalizeIndoorKey(startNodeId), endNode: normalizeIndoorKey(stairNodeId), edges: INDOOR_EDGES, nodes: INDOOR_NODES }
+                  ).then(res => {
+                    if (res?.path?.length) {
+                      setIndoorRouteNodes(res.path);
+                      setIndoorRoute(getPathCoordinates(res.path, INDOOR_NODES));
+                    }
+                  }).catch(() => {});
+                }
                 setNavStep(STEPS.FLOOR_CHOICE);
               }
               setKioskViewState('split-indoor');
@@ -722,15 +759,20 @@ function MainApp() {
 
         // Run building detection once, right when the loading screen hides
         if (!buildingCheckDoneRef.current) {
-          const checkLoc = USE_DEBUG_LOCATION ? USER_LOCATION : (location || null);
-          if (checkLoc?.lat && checkLoc?.lng) {
-            // Try edge function first, fall back to local polygon
-            const result = await geofence(checkLoc.lat, checkLoc.lng);
-            const detected = result?.zone && result.zone !== 'campus' ? result.zone : null;
-            if (detected) {
-              buildingCheckDoneRef.current = true;
-              setDetectedBuilding(detected);
-              setShowBuildingModal(true);
+          if (isQrScannedInitialSession) {
+            buildingCheckDoneRef.current = true;
+            setShowBuildingModal(false);
+          } else {
+            const checkLoc = USE_DEBUG_LOCATION ? USER_LOCATION : (location || null);
+            if (checkLoc?.lat && checkLoc?.lng) {
+              // Try edge function first, fall back to local polygon
+              const result = await geofence(checkLoc.lat, checkLoc.lng);
+              const detected = result?.zone && result.zone !== 'campus' ? result.zone : null;
+              if (detected) {
+                buildingCheckDoneRef.current = true;
+                setDetectedBuilding(detected);
+                setShowBuildingModal(true);
+              }
             }
           }
         }
@@ -866,6 +908,19 @@ function MainApp() {
     const normalizeKey = (key) => {
       if (!key) return key;
       const clean = key.trim().toLowerCase();
+      if (keyMap[clean]) return keyMap[clean];
+      // Strip 'sm' prefix if present (e.g. sm314 -> n314, or sm_314 -> n314)
+      if (clean.startsWith("sm")) {
+        const withoutSm = clean.replace(/^sm_?/, "");
+        const withN = "n" + withoutSm;
+        if (keyMap[withN]) return keyMap[withN];
+        if (keyMap[withoutSm]) return keyMap[withoutSm];
+      }
+      // If just room number digits (e.g. 314 -> n314)
+      if (/^\d+$/.test(clean)) {
+        const withN = "n" + clean;
+        if (keyMap[withN]) return keyMap[withN];
+      }
       return keyMap[clean] || key.trim();
     };
 
@@ -1202,6 +1257,8 @@ function MainApp() {
 
 
   const finishNavigation = () => {
+    setIsQrScannedInitialSession(false);
+    setShowStMarysEntranceCard(false);
     // Keep the indoor floor plan open after completion. The active navigation
     // history entry remains, so the system Back button is what returns the
     // user to the clean outdoor map.
@@ -1841,6 +1898,8 @@ function MainApp() {
     if (window.history.state?.campusRouteX === "sheet") window.history.back();
   };
   const handleSelectCategory = (categoryId) => {
+    setIsQrScannedInitialSession(false);
+    setShowStMarysEntranceCard(false);
     if (categoryId === "departments") {
       const academicDepts = (bottomSheetData.departments || []).filter(
         d => !d.name?.toLowerCase().includes("administration")
@@ -2402,6 +2461,9 @@ function MainApp() {
       return;
     }
     // ── END KIOSK MODE ────────────────────────────────────────────────────────
+
+    setIsQrScannedInitialSession(false);
+    setShowStMarysEntranceCard(false);
 
     if (
       mapMode === "INDOOR" &&
@@ -3335,6 +3397,86 @@ function MainApp() {
           destination={destination}
           activeFloorImages={ACTIVE_FLOOR_IMAGES}
         />
+
+        {/* ── St. Mary's Entrance Onboarding Guidance Card (Step 1 of QR scan) ── */}
+        {showStMarysEntranceCard && destination && (
+          <div
+            className="stmarys-entrance-card"
+            style={{
+              position: 'absolute',
+              bottom: 24,
+              left: 16,
+              right: 16,
+              zIndex: 1600,
+              background: 'rgba(255, 255, 255, 0.98)',
+              backdropFilter: 'blur(16px)',
+              WebkitBackdropFilter: 'blur(16px)',
+              borderRadius: 20,
+              padding: '20px 20px 18px',
+              boxShadow: '0 12px 36px rgba(0, 0, 0, 0.18), 0 2px 8px rgba(0, 0, 0, 0.08)',
+              border: '1px solid rgba(226, 232, 240, 0.9)',
+              animation: 'kioskPanelSlideIn 0.3s cubic-bezier(0.16, 1, 0.3, 1)',
+              display: 'flex',
+              flexDirection: 'column',
+              gap: 14,
+            }}
+          >
+            <div style={{ display: 'flex', alignItems: 'flex-start', gap: 14 }}>
+              <div
+                style={{
+                  width: 44,
+                  height: 44,
+                  borderRadius: 14,
+                  background: '#dcfce7',
+                  border: '1.5px solid #86efac',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  flexShrink: 0,
+                }}
+              >
+                <MapPin size={24} color="#15803d" />
+              </div>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 2, flex: 1 }}>
+                <div style={{ fontSize: 11, fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.06em', color: '#16a34a' }}>
+                  📍 Starting at St. Mary&apos;s Entrance
+                </div>
+                <div style={{ fontSize: 16, fontWeight: 800, color: '#0f172a', lineHeight: 1.25 }}>
+                  You are at St. Mary&apos;s Entrance
+                </div>
+                <div style={{ fontSize: 13, color: '#475569', marginTop: 2, lineHeight: 1.4 }}>
+                  Please enter the building to navigate to <strong>{destination.name || destination.id}</strong> on <strong>{formatFloor(destination.floor || currentFloor)}</strong>.
+                </div>
+              </div>
+            </div>
+
+            <button
+              className="primary-action"
+              onClick={() => {
+                setShowStMarysEntranceCard(false);
+              }}
+              style={{
+                width: '100%',
+                height: 46,
+                borderRadius: 12,
+                background: '#2563eb',
+                color: '#ffffff',
+                border: 'none',
+                fontWeight: 700,
+                fontSize: 15,
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                gap: 8,
+                cursor: 'pointer',
+                boxShadow: '0 4px 14px rgba(37, 99, 235, 0.35)',
+              }}
+            >
+              <span>Okay, Start Navigation</span>
+              <ChevronRight size={18} />
+            </button>
+          </div>
+        )}
 
 
 
