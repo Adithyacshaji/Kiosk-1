@@ -531,6 +531,10 @@ function MainApp() {
       const paramFloor = params.get("floor");
       const paramBuilding = params.get("building");
       const paramName = params.get("name");
+      const paramStart = params.get("start");
+      const paramStartNode = params.get("startNode");
+      const paramQrSession = params.get("qrSession") === "true";
+      const isFromKiosk = isQrScannedInitialSession || paramQrSession || paramStart === "stmarys_entrance" || paramStartNode === "g";
 
       if (destId) {
         const found = findDestinationByQuery(destId, SEARCH_ITEMS, locations, bottomSheetData, rooms);
@@ -555,12 +559,14 @@ function MainApp() {
         const isIndoor = isIndoorDestination(activeDest);
         const bldg = (paramBuilding || activeDest.building || "").toLowerCase();
         const isStMarys = !isChavaraBuilding(bldg) && (bldg.includes("stmary") || bldg.includes("mary") || isIndoor || activeDest.routeNode === "st-marys-block");
-        const currentGPS = locationToUse || snappedLocation || fixedUserLocation || location;
-        const nearStMarys = isUserNearStMarysEntrance(currentGPS, NODES);
+        const currentGPS = isFromKiosk
+          ? (NODES?.['g'] ? { lat: NODES['g'][0], lng: NODES['g'][1] } : USER_LOCATION)
+          : (locationToUse || snappedLocation || fixedUserLocation || location);
+        const nearStMarys = isFromKiosk || isUserNearStMarysEntrance(currentGPS, NODES);
 
         if (isStMarys) {
           if (nearStMarys) {
-            // Already near St. Mary's entrance: NO outdoor path, show indoor floor view & walking path
+            // Already near St. Mary's entrance or scanned from Kiosk: NO outdoor path, show indoor floor view & walking path
             setRoute([]);
             const targetFloor = normalizeFloor(paramFloor !== null && paramFloor !== undefined ? paramFloor : (activeDest.floor || "G"));
             setCurrentBuilding("stmarys");
@@ -621,7 +627,6 @@ function MainApp() {
           }
         } else if (isIndoor) {
           // Chavara indoor
-          const isFromKiosk = paramStart === "stmarys_entrance" || paramStartNode === "g";
           if (isFromKiosk && NODES?.['g']) {
             // User scanned from Kiosk at St. Mary's: show outdoor route from St. Mary's entrance to Chavara
             setMapMode("OUTDOOR");
@@ -665,7 +670,7 @@ function MainApp() {
         }
       }
     }
-  }, [dbLoading, SEARCH_ITEMS, locations, bottomSheetData, rooms, initialUrlParams]);
+  }, [dbLoading, SEARCH_ITEMS, locations, bottomSheetData, rooms, initialUrlParams, isQrScannedInitialSession]);
 
   useEffect(() => {
     if (!initialUrlChecked.current) return;
@@ -1292,10 +1297,11 @@ function MainApp() {
     if (FEEDBACK_FORM_URL) window.open(FEEDBACK_FORM_URL, "_blank", "noopener,noreferrer");
   };
 
-  const previewOutdoorRoute = async (target) => {
-    const startLocation = USE_DEBUG_LOCATION
-      ? USER_LOCATION
-      : snappedLocation || fixedUserLocation || locationToUse;
+  const previewOutdoorRoute = async (target, customStartLocation = null) => {
+    const startLocation = customStartLocation
+      || (USE_DEBUG_LOCATION
+        ? USER_LOCATION
+        : snappedLocation || fixedUserLocation || locationToUse);
     let endNode = target?.routeNode || target?.id;
 
     if (target?.location === "chavara") endNode = "chavara";
