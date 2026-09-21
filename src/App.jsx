@@ -426,7 +426,6 @@ function MainApp() {
     if (params.get('kiosk') === 'true') return false; // Explicit force kiosk mode
     if (params.get('kiosk') === 'false' || params.get('mobile') === 'true' || params.get('qrSession') === 'true') return true; // Explicit force mobile
     if (params.has('dest') || params.has('qr')) return true; // Scanned QR code with destination
-    if (window.innerWidth <= 850 || window.innerHeight <= 550) return true; // Mobile phone viewport
     const isMobileUA = /Mobi|Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
     return isMobileUA;
   };
@@ -622,31 +621,41 @@ function MainApp() {
           }
         } else if (isIndoor) {
           // Chavara indoor
-          const targetFloor = normalizeFloor(paramFloor !== null && paramFloor !== undefined ? paramFloor : (activeDest.floor || "G"));
-          setCurrentBuilding("chavara");
-          setCurrentFloor(targetFloor);
-          setMapMode("INDOOR");
-          const startNodeId = "entrance_G1";
-          const endNodeId = activeDest.indoorNode || activeDest.id;
-          setIndoorStart({ name: "Chavara Entrance", nearestNode: startNodeId, floor: "G" });
-          if (CHAVARA_INDOOR_NODES?.[startNodeId]?.position) {
-            setIndoorUserLocation({ position: CHAVARA_INDOOR_NODES[startNodeId].position, nearestNode: startNodeId, floor: "G" });
-          }
-          if (targetFloor === "G" && CHAVARA_INDOOR_EDGES && CHAVARA_INDOOR_NODES) {
-            routeIndoor(
-              { building: "chavara", startNodeId: normalizeIndoorKey(startNodeId), endNodeId: normalizeIndoorKey(endNodeId) },
-              { startNode: normalizeIndoorKey(startNodeId), endNode: normalizeIndoorKey(endNodeId), edges: CHAVARA_INDOOR_EDGES, nodes: CHAVARA_INDOOR_NODES }
-            ).then(res => {
-              if (res?.path?.length) {
-                setIndoorRouteNodes(res.path);
-                setIndoorRoute(getPathCoordinates(res.path, CHAVARA_INDOOR_NODES));
-              }
-            }).catch(() => {});
-            setNavStep(STEPS.FLOOR_NAVIGATION);
+          const isFromKiosk = paramStart === "stmarys_entrance" || paramStartNode === "g";
+          if (isFromKiosk && NODES?.['g']) {
+            // User scanned from Kiosk at St. Mary's: show outdoor route from St. Mary's entrance to Chavara
+            setMapMode("OUTDOOR");
+            setNavStep(STEPS.OUTDOOR_ROUTE);
+            setKioskViewState('split-outdoor');
+            const startPos = { lat: NODES['g'][0], lng: NODES['g'][1] };
+            previewOutdoorRoute(activeDest, startPos);
           } else {
-            setNavStep(STEPS.FLOOR_CHOICE);
+            const targetFloor = normalizeFloor(paramFloor !== null && paramFloor !== undefined ? paramFloor : (activeDest.floor || "G"));
+            setCurrentBuilding("chavara");
+            setCurrentFloor(targetFloor);
+            setMapMode("INDOOR");
+            const startNodeId = "entrance_G1";
+            const endNodeId = activeDest.indoorNode || activeDest.id;
+            setIndoorStart({ name: "Chavara Entrance", nearestNode: startNodeId, floor: "G" });
+            if (CHAVARA_INDOOR_NODES?.[startNodeId]?.position) {
+              setIndoorUserLocation({ position: CHAVARA_INDOOR_NODES[startNodeId].position, nearestNode: startNodeId, floor: "G" });
+            }
+            if (targetFloor === "G" && CHAVARA_INDOOR_EDGES && CHAVARA_INDOOR_NODES) {
+              routeIndoor(
+                { building: "chavara", startNodeId: normalizeIndoorKey(startNodeId), endNodeId: normalizeIndoorKey(endNodeId) },
+                { startNode: normalizeIndoorKey(startNodeId), endNode: normalizeIndoorKey(endNodeId), edges: CHAVARA_INDOOR_EDGES, nodes: CHAVARA_INDOOR_NODES }
+              ).then(res => {
+                if (res?.path?.length) {
+                  setIndoorRouteNodes(res.path);
+                  setIndoorRoute(getPathCoordinates(res.path, CHAVARA_INDOOR_NODES));
+                }
+              }).catch(() => {});
+              setNavStep(STEPS.FLOOR_NAVIGATION);
+            } else {
+              setNavStep(STEPS.FLOOR_CHOICE);
+            }
+            setKioskViewState('split-indoor');
           }
-          setKioskViewState('split-indoor');
         } else {
           // Outdoor POI
           setMapMode("OUTDOOR");
