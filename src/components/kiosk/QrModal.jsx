@@ -14,7 +14,7 @@ export const QrModal = ({ isOpen, poi, onClose }) => {
   const type = poi?.type || '';
   const name = poi?.name || poi?.room || destId;
 
-  const publicDefaultUrl = import.meta.env.VITE_PUBLIC_URL || import.meta.env.VITE_MOBILE_URL || 'https://campus-routex-jsqa.vercel.app';
+  const publicDefaultUrl = import.meta.env.VITE_PUBLIC_URL || import.meta.env.VITE_MOBILE_URL || 'https://kiosk-gold-seven.vercel.app';
   const localOrigin = typeof window !== 'undefined' ? window.location.origin : 'http://localhost:5174';
   const netMode = typeof window !== 'undefined' ? (localStorage.getItem('kiosk_mobile_net_mode') || 'public') : 'public';
   const customOrigin = typeof window !== 'undefined' ? localStorage.getItem('kiosk_custom_mobile_origin') : '';

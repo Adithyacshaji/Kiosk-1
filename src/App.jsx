@@ -184,7 +184,7 @@ function getIndoorEntranceNode(building, outdoorEntrance, _userLoc = null) {
 
 // ── GPS debug toggle ─────────────────────────────────────────────────────────
 // Set to true while testing away from campus; set it back to false for real GPS.
-const USE_DEBUG_LOCATION = true;
+const USE_DEBUG_LOCATION = false;
 const USER_LOCATION = {
   lat: 10.356260,
   lng: 76.212599,
@@ -420,12 +420,34 @@ function MainApp() {
     return new URLSearchParams(window.location.search);
   }, []);
 
-  const isMobileOrQrSession = typeof window !== 'undefined' && (
-    initialUrlParams.has('dest') ||
-    initialUrlParams.get('kiosk') === 'false' ||
-    window.innerWidth <= 768 ||
-    /Mobi|Android|iPhone|iPad|iPod/i.test(navigator.userAgent)
-  );
+  const [isMobileOrQrSession, setIsMobileOrQrSession] = useState(() => {
+    if (typeof window === 'undefined') return false;
+    return (
+      initialUrlParams.has('dest') ||
+      initialUrlParams.get('kiosk') === 'false' ||
+      window.innerWidth <= 768 ||
+      /Mobi|Android|iPhone|iPad|iPod/i.test(navigator.userAgent)
+    );
+  });
+
+  useEffect(() => {
+    const handleDeviceCheck = () => {
+      if (typeof window === 'undefined') return;
+      const isMobile =
+        initialUrlParams.has('dest') ||
+        initialUrlParams.get('kiosk') === 'false' ||
+        window.innerWidth <= 768 ||
+        /Mobi|Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+      setIsMobileOrQrSession(isMobile);
+    };
+
+    window.addEventListener('resize', handleDeviceCheck, { passive: true });
+    window.addEventListener('orientationchange', handleDeviceCheck, { passive: true });
+    return () => {
+      window.removeEventListener('resize', handleDeviceCheck);
+      window.removeEventListener('orientationchange', handleDeviceCheck);
+    };
+  }, [initialUrlParams]);
 
   const resetInactivityTimer = () => {
     if (idleTimerRef.current) clearTimeout(idleTimerRef.current);

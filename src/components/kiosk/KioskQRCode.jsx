@@ -30,7 +30,7 @@ export function KioskQRCode({ destination }) {
   const name = destination.name || destination.room || destId;
 
   // Live public URL works across ALL mobile networks (4G/5G cellular data & Wi-Fi)
-  const publicDefaultUrl = import.meta.env.VITE_PUBLIC_URL || import.meta.env.VITE_MOBILE_URL || 'https://campus-routex-jsqa.vercel.app';
+  const publicDefaultUrl = import.meta.env.VITE_PUBLIC_URL || import.meta.env.VITE_MOBILE_URL || 'https://kiosk-gold-seven.vercel.app';
   
   // Local network origin fallback (e.g. https://192.168.1.5:5174 or window.location.origin)
   const localOrigin = typeof window !== 'undefined' ? window.location.origin : 'http://localhost:5174';
