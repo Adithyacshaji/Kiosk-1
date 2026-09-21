@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef, useMemo, lazy, Suspense } from "react";
 import { Routes, Route } from "react-router-dom";
-import { Home, Building } from "lucide-react";
+import { Home, Building, Clock, CloudSun, MapPin } from "lucide-react";
 
 const CampusMap = lazy(() => import("./components/map/CampusMap"));
 
@@ -22,6 +22,8 @@ import { FacultyScreen } from "./components/kiosk/FacultyScreen";
 import { QrModal } from "./components/kiosk/QrModal";
 import { InactivityModal } from "./components/kiosk/InactivityModal";
 import { audioService } from "./utils/kiosk/audio";
+import { KioskMapLayout } from "./components/kiosk/KioskMapLayout";
+import { KioskFloatingSearch } from "./components/kiosk/KioskFloatingSearch";
 
 import FloorSelector from "./components/map/FloorSelector";
 
@@ -184,9 +186,14 @@ function getIndoorEntranceNode(building, outdoorEntrance, _userLoc = null) {
 // Set to true while testing away from campus; set it back to false for real GPS.
 const USE_DEBUG_LOCATION = true;
 const USER_LOCATION = {
-  lat:10.356260,
+  lat: 10.356260,
   lng: 76.212599,
 };
+
+// ── Kiosk fixed start node ────────────────────────────────────────────────────
+// The kiosk is physically placed at the St. Mary's Block ground-floor entrance.
+// All outdoor routes originate from this node (no GPS needed for kiosk routing).
+const KIOSK_START_NODE = "g"; // St. Mary's Ground entrance in NODES (graph.js)
 
 // ── DEMO MODE ─────────────────────────────────────────────────────────────────
 // When true: app starts on B1 indoor view (Exam Cell), search shows info card,
@@ -227,6 +234,109 @@ const routeLengthMeters = (path) => path.slice(1).reduce(
   0
 );
 
+function findDestinationByQuery(query, searchItems, locList, bSheetData, roomList) {
+  if (!query) return null;
+  const q = String(query).toLowerCase().trim();
+
+  // 1. Direct match in SEARCH_ITEMS
+  if (searchItems && searchItems.length > 0) {
+    const direct = searchItems.find(item =>
+      (item.id && String(item.id).toLowerCase() === q) ||
+      (item.name && String(item.name).toLowerCase() === q) ||
+      (item.indoorNode && String(item.indoorNode).toLowerCase() === q) ||
+      (item.room && String(item.room).toLowerCase() === q)
+    );
+    if (direct) return direct;
+  }
+
+  // 2. Direct match in locations (outdoor POIs)
+  if (locList && locList.length > 0) {
+    const loc = locList.find(l =>
+      (l.id && String(l.id).toLowerCase() === q) ||
+      (l.name && String(l.name).toLowerCase() === q) ||
+      (l.routeNode && String(l.routeNode).toLowerCase() === q)
+    );
+    if (loc) return loc;
+  }
+
+  // 3. Match in classrooms
+  if (bSheetData?.classrooms) {
+    const cls = bSheetData.classrooms.find(c =>
+      (c.id && String(c.id).toLowerCase() === q) ||
+      (c.name && String(c.name).toLowerCase() === q) ||
+      (c.room && String(c.room).toLowerCase() === q) ||
+      (c.indoorNode && String(c.indoorNode).toLowerCase() === q)
+    );
+    if (cls) return cls;
+  }
+
+  // 4. Match in faculties / departments
+  if (bSheetData?.departments) {
+    for (const dept of bSheetData.departments) {
+      if (dept.name && dept.name.toLowerCase() === q) {
+        return {
+          id: dept.id || dept.name,
+          name: dept.name,
+          type: 'location',
+          routeNode: dept.routeNode || 'chavara',
+          building: dept.building || 'chavara',
+          floor: dept.floor || '2',
+        };
+      }
+      if (dept.faculties) {
+        const fac = dept.faculties.find(f =>
+          (f.id && String(f.id).toLowerCase() === q) ||
+          (f.name && String(f.name).toLowerCase() === q) ||
+          (f.room && String(f.room).toLowerCase() === q)
+        );
+        if (fac) return fac;
+      }
+    }
+  }
+
+  // 5. Match in rooms
+  if (roomList && roomList.length > 0) {
+    const rm = roomList.find(r =>
+      (r.id && String(r.id).toLowerCase() === q) ||
+      (r.name && String(r.name).toLowerCase() === q) ||
+      (r.room_number && String(r.room_number).toLowerCase() === q) ||
+      (r.node_id && String(r.node_id).toLowerCase() === q)
+    );
+    if (rm) {
+      return {
+        id: rm.node_id || rm.id,
+        name: rm.name || `Room ${rm.room_number}`,
+        floor: rm.floor,
+        building: rm.building,
+        indoorNode: rm.node_id || rm.id,
+        room: rm.room_number,
+        type: 'room',
+      };
+    }
+  }
+
+  // 6. Partial / substring fallback in SEARCH_ITEMS
+  if (searchItems && searchItems.length > 0) {
+    const partial = searchItems.find(item =>
+      (item.name && item.name.toLowerCase().includes(q)) ||
+      (item.id && String(item.id).toLowerCase().includes(q))
+    );
+    if (partial) return partial;
+  }
+
+  return null;
+}
+
+function isUserNearStMarysEntrance(userPos, nodes = null) {
+  if (!userPos) return true;
+  const stMarysNode = nodes?.['g'] || nodes?.[KIOSK_START_NODE] || [10.357929, 76.212969];
+  const uLat = userPos.lat !== undefined ? userPos.lat : (Array.isArray(userPos) ? userPos[0] : null);
+  const uLng = userPos.lng !== undefined ? userPos.lng : (Array.isArray(userPos) ? userPos[1] : null);
+  if (uLat === null || uLng === null) return true;
+  const dist = calculateHaversineDistance(uLat, uLng, stMarysNode[0], stMarysNode[1]);
+  return dist <= ST_MARYS_GEOFENCE_METERS;
+}
+
 function MainApp() {
   const {
     loading: dbLoading,
@@ -254,7 +364,7 @@ function MainApp() {
   const [soundEnabled, setSoundEnabled] = useState(true);
   const [currentTime, setCurrentTime] = useState('');
   const [qrModalPoi, setQrModalPoi] = useState(null);
-  
+
   // Inactivity Safeguard (60s idle reset with 10s warning)
   const [isInactivityWarningOpen, setIsInactivityWarningOpen] = useState(false);
   const [remainingWarningSeconds, setRemainingWarningSeconds] = useState(10);
@@ -277,16 +387,53 @@ function MainApp() {
 
   const resetToLanding = () => {
     setDestination(null);
+    setSelectedLocation(null);
+    setIndoorDestination(null);
     setQrModalPoi(null);
     setCurrentFloor("G");
     setCurrentScreen('landing');
     setIsInactivityWarningOpen(false);
+    if (typeof window !== 'undefined') {
+      window.history.replaceState({}, '', window.location.pathname);
+    }
   };
+
+  const resetKiosk = () => {
+    setKioskViewState('fullscreen');
+    setDestination(null);
+    setSelectedLocation(null);
+    setIndoorDestination(null);
+    setRoute([]);
+    setIndoorRoute([]);
+    setIndoorRouteNodes([]);
+    setMapMode('OUTDOOR');
+    setNavStep(STEPS.IDLE);
+    setHasSearched(false);
+    if (typeof window !== 'undefined') {
+      window.history.replaceState({}, '', window.location.pathname);
+    }
+  };
+
+
+  const initialUrlParams = useMemo(() => {
+    if (typeof window === 'undefined') return new URLSearchParams();
+    return new URLSearchParams(window.location.search);
+  }, []);
+
+  const isMobileOrQrSession = typeof window !== 'undefined' && (
+    initialUrlParams.has('dest') ||
+    initialUrlParams.get('kiosk') === 'false' ||
+    window.innerWidth <= 768 ||
+    /Mobi|Android|iPhone|iPad|iPod/i.test(navigator.userAgent)
+  );
 
   const resetInactivityTimer = () => {
     if (idleTimerRef.current) clearTimeout(idleTimerRef.current);
     if (warningIntervalRef.current) clearInterval(warningIntervalRef.current);
     setIsInactivityWarningOpen(false);
+
+    // Never auto-reset to kiosk landing screen if on mobile or in a QR navigation session
+    if (isMobileOrQrSession) return;
 
     if (currentScreen !== 'landing') {
       const timeoutMs = 50000;
@@ -334,31 +481,126 @@ function MainApp() {
   const [showDestInfoCard, setShowDestInfoCard] = useState(false);
   const [destInfoTarget, setDestInfoTarget] = useState(null);
 
+  // ── Kiosk mode state ─────────────────────────────────────────────────────
+  // kioskMode is true only when running on the physical kiosk terminal
+  const kioskMode = currentScreen === 'map' && !isMobileOrQrSession;
+  const [kioskViewState, setKioskViewState] = useState('fullscreen');
+
   const initialUrlChecked = useRef(false);
 
   useEffect(() => {
-    if (!initialUrlChecked.current && !dbLoading && SEARCH_ITEMS && SEARCH_ITEMS.length > 0) {
+    if (!initialUrlChecked.current && !dbLoading && (SEARCH_ITEMS?.length > 0 || locations?.length > 0)) {
       initialUrlChecked.current = true;
-      const params = new URLSearchParams(window.location.search);
+      const params = initialUrlParams;
       const destId = params.get("dest");
+      const paramFloor = params.get("floor");
+      const paramBuilding = params.get("building");
+      const paramName = params.get("name");
+
       if (destId) {
-        const found = SEARCH_ITEMS.find(item => item.id === destId || item.name === destId) ||
-          locations.find(loc => loc.id === destId || loc.name === destId);
-        if (found) {
-          setDestination(found);
-          setSelectedLocation(found);
-          if (isIndoorDestination(found)) {
-            setCurrentBuilding(isChavaraBuilding(found.building) ? "chavara" : "stmarys");
-            setCurrentFloor(found.floor || "G");
-            setMapMode("INDOOR");
-            setNavStep(STEPS.INDOOR_READY);
+        const found = findDestinationByQuery(destId, SEARCH_ITEMS, locations, bottomSheetData, rooms);
+        const activeDest = found || {
+          id: destId,
+          name: paramName || destId,
+          building: paramBuilding || "stmarys",
+          floor: paramFloor || "G",
+          type: params.get("type") || "location",
+        };
+
+        setDestination(activeDest);
+        setSelectedLocation(activeDest);
+        setIndoorDestination(activeDest);
+        setIsAppLoading(false);
+        setCurrentScreen('map');
+
+        const isIndoor = isIndoorDestination(activeDest);
+        const bldg = (paramBuilding || activeDest.building || "").toLowerCase();
+        const isStMarys = !isChavaraBuilding(bldg) && (bldg.includes("stmary") || bldg.includes("mary") || isIndoor || activeDest.routeNode === "st-marys-block");
+        const currentGPS = locationToUse || snappedLocation || fixedUserLocation || location;
+        const nearStMarys = isUserNearStMarysEntrance(currentGPS, NODES);
+
+        if (isStMarys) {
+          if (nearStMarys) {
+            // Already near St. Mary's entrance: NO outdoor path, show indoor floor view & walking path
+            setRoute([]);
+            const targetFloor = normalizeFloor(paramFloor !== null && paramFloor !== undefined ? paramFloor : (activeDest.floor || "G"));
+            setCurrentBuilding("stmarys");
+            setCurrentFloor(targetFloor);
+            if (isIndoor) {
+              setMapMode("INDOOR");
+              const startNodeId = "entrance_G";
+              const endNodeId = activeDest.indoorNode || activeDest.id;
+              setIndoorStart({ name: "St Mary's Entrance", nearestNode: startNodeId, floor: "G" });
+              if (INDOOR_NODES?.[startNodeId]?.position) {
+                setIndoorUserLocation({ position: INDOOR_NODES[startNodeId].position, nearestNode: startNodeId, floor: "G" });
+              }
+              if (targetFloor === "G" && INDOOR_EDGES && INDOOR_NODES) {
+                routeIndoor(
+                  { building: "stmarys", startNodeId: normalizeIndoorKey(startNodeId), endNodeId: normalizeIndoorKey(endNodeId) },
+                  { startNode: normalizeIndoorKey(startNodeId), endNode: normalizeIndoorKey(endNodeId), edges: INDOOR_EDGES, nodes: INDOOR_NODES }
+                ).then(res => {
+                  if (res?.path?.length) {
+                    setIndoorRouteNodes(res.path);
+                    setIndoorRoute(getPathCoordinates(res.path, INDOOR_NODES));
+                  }
+                }).catch(() => {});
+                setNavStep(STEPS.FLOOR_NAVIGATION);
+              } else {
+                setNavStep(STEPS.FLOOR_CHOICE);
+              }
+              setKioskViewState('split-indoor');
+            } else {
+              setMapMode("OUTDOOR");
+              setNavStep(STEPS.OUTDOOR_ROUTE);
+              setKioskViewState('split-outdoor');
+            }
+          } else {
+            // User is far away from St. Mary's: calculate outdoor walking route to St. Mary's entrance
+            setMapMode("OUTDOOR");
+            setNavStep(STEPS.OUTDOOR_ROUTE);
+            setKioskViewState('split-outdoor');
+            previewOutdoorRoute(activeDest, currentGPS);
           }
+        } else if (isIndoor) {
+          // Chavara indoor
+          const targetFloor = normalizeFloor(paramFloor !== null && paramFloor !== undefined ? paramFloor : (activeDest.floor || "G"));
+          setCurrentBuilding("chavara");
+          setCurrentFloor(targetFloor);
+          setMapMode("INDOOR");
+          const startNodeId = "entrance_G1";
+          const endNodeId = activeDest.indoorNode || activeDest.id;
+          setIndoorStart({ name: "Chavara Entrance", nearestNode: startNodeId, floor: "G" });
+          if (CHAVARA_INDOOR_NODES?.[startNodeId]?.position) {
+            setIndoorUserLocation({ position: CHAVARA_INDOOR_NODES[startNodeId].position, nearestNode: startNodeId, floor: "G" });
+          }
+          if (targetFloor === "G" && CHAVARA_INDOOR_EDGES && CHAVARA_INDOOR_NODES) {
+            routeIndoor(
+              { building: "chavara", startNodeId: normalizeIndoorKey(startNodeId), endNodeId: normalizeIndoorKey(endNodeId) },
+              { startNode: normalizeIndoorKey(startNodeId), endNode: normalizeIndoorKey(endNodeId), edges: CHAVARA_INDOOR_EDGES, nodes: CHAVARA_INDOOR_NODES }
+            ).then(res => {
+              if (res?.path?.length) {
+                setIndoorRouteNodes(res.path);
+                setIndoorRoute(getPathCoordinates(res.path, CHAVARA_INDOOR_NODES));
+              }
+            }).catch(() => {});
+            setNavStep(STEPS.FLOOR_NAVIGATION);
+          } else {
+            setNavStep(STEPS.FLOOR_CHOICE);
+          }
+          setKioskViewState('split-indoor');
+        } else {
+          // Outdoor POI
+          setMapMode("OUTDOOR");
+          setNavStep(STEPS.OUTDOOR_ROUTE);
+          setKioskViewState('split-outdoor');
+          previewOutdoorRoute(activeDest, currentGPS);
         }
       }
     }
-  }, [dbLoading, SEARCH_ITEMS, locations]);
+  }, [dbLoading, SEARCH_ITEMS, locations, bottomSheetData, rooms, initialUrlParams]);
 
   useEffect(() => {
+    if (!initialUrlChecked.current) return;
     const params = new URLSearchParams(window.location.search);
     if (mapMode === "INDOOR" && currentFloor) {
       params.set("floor", currentFloor);
@@ -1001,6 +1243,20 @@ function MainApp() {
       destPos = NODES[target.id];
     }
 
+    // Check if target is in St. Mary's block and user is already near St. Mary's entrance
+    const isStMarysTarget = (target?.building && (target.building.toLowerCase().includes("stmary") || target.building.toLowerCase().includes("mary"))) || target?.routeNode === "st-marys-block" || (isIndoorDestination(target) && !isChavaraBuilding(target?.building));
+    const userLoc = startLocation || (USE_DEBUG_LOCATION ? locationToUse : snappedLocation || fixedUserLocation || locationToUse);
+    const nearStMarys = isUserNearStMarysEntrance(userLoc, NODES);
+
+    if (isStMarysTarget && nearStMarys) {
+      // User is already at St. Mary's entrance: no outdoor path needed!
+      setRoute([]);
+      if (destPos) {
+        setMapCenter({ id: `dest-focus-${Date.now()}`, position: destPos });
+      }
+      return;
+    }
+
     // Calculate the route path immediately and set it so the user sees it when selecting the destination
     if (startLocation) {
       const nearestNode = findNearestNode(startLocation, NODES);
@@ -1026,11 +1282,11 @@ function MainApp() {
         }
       }
 
-            const { path: nodePath, coordinates: graphRoute } = await routeOutdoor(
+      const { path: nodePath, coordinates: graphRoute } = await routeOutdoor(
         { startNodeId: nearestNode, endNodeId: end },
         { startNode: nearestNode, endNode: end, edges: EDGES, nodes: NODES }
       );
-            
+
       const userPos = [startLocation.lat, startLocation.lng];
       const fullRoute = graphRoute.length > 0 ? [userPos, ...graphRoute] : graphRoute;
       setRoute(fullRoute);
@@ -1105,11 +1361,11 @@ function MainApp() {
 
     console.log("End node:", end);
 
-        const { path: nodePath, coordinates: graphRoute } = await routeOutdoor(
+    const { path: nodePath, coordinates: graphRoute } = await routeOutdoor(
       { startNodeId: nearestNode, endNodeId: end },
       { startNode: nearestNode, endNode: end, edges: EDGES, nodes: NODES }
     );
-    
+
     console.log("PATH RESULT:", nodePath);
     console.log("graphRoute:", graphRoute);
 
@@ -1245,11 +1501,11 @@ function MainApp() {
       return;
     }
 
-        const { path: indoorPath } = await routeIndoor(
+    const { path: indoorPath } = await routeIndoor(
       { building: targetBuilding, startNodeId: cleanStartNode, endNodeId: cleanEndNode },
       { startNode: cleanStartNode, endNode: cleanEndNode, edges: tempEdges, nodes: tempNodes }
     );
-    
+
     setIndoorRouteNodes(indoorPath);
     setIndoorRoute(getPathCoordinates(indoorPath, tempNodes));
     pushState(STEPS.FLOOR_NAVIGATION);
@@ -1265,7 +1521,7 @@ function MainApp() {
     if (!startNode) return;
 
     pushState(STEPS.GO_TO_FLOOR);
-    
+
     const activeIndoorDestination = indoorDestination || destination;
     const destBuildingNormalized = isChavaraBuilding(activeIndoorDestination?.building || activeIndoorDestination?.routeNode) ? "chavara" : "stmarys";
     const isDifferentBuilding = currentBuilding !== destBuildingNormalized;
@@ -1339,12 +1595,12 @@ function MainApp() {
 
     let path = bestPath;
     if (!bestEndNode) {
-            const result = await routeIndoor(
+      const result = await routeIndoor(
         { building: isChavaraBuilding(currentBuilding) ? "chavara" : "stmarys", startNodeId: normalizeIndoorKey(startNode), endNodeId: normalizeIndoorKey(endNode) },
         { startNode: normalizeIndoorKey(startNode), endNode: normalizeIndoorKey(endNode), edges: ACTIVE_INDOOR_EDGES, nodes: ACTIVE_INDOOR_NODES }
       );
       path = result.path;
-          }
+    }
 
     console.log("PATH:", path);
     setIndoorRouteNodes(path);
@@ -1356,7 +1612,7 @@ function MainApp() {
       const secondNode = path[1];
       const firstIsCorridor = firstNode.startsWith("co_") || firstNode.startsWith("ch_co_") || firstNode.startsWith("c_") || firstNode.startsWith("stairs") || firstNode.startsWith("lift") || firstNode.startsWith("entrance");
       const secondIsCorridor = secondNode.startsWith("co_") || secondNode.startsWith("ch_co_") || secondNode.startsWith("c_");
-      
+
       if (!firstIsCorridor && secondIsCorridor) {
         displayPath = path.slice(1);
       }
@@ -1409,13 +1665,13 @@ function MainApp() {
       });
 
       pushState(STEPS.FLOOR_NAVIGATION);
-      
+
       const exitNode = getExitNode("G", activeIndoorDestination);
-            const { path } = await routeIndoor(
+      const { path } = await routeIndoor(
         { building: isChavaraBuilding(currentBuilding) ? "chavara" : "stmarys", startNodeId: normalizeIndoorKey(startNode), endNodeId: normalizeIndoorKey(exitNode) },
         { startNode: normalizeIndoorKey(startNode), endNode: normalizeIndoorKey(exitNode), edges: ACTIVE_INDOOR_EDGES, nodes: ACTIVE_INDOOR_NODES }
       );
-      
+
       setIndoorRouteNodes(path);
       setIndoorRoute(getPathCoordinates(path, ACTIVE_INDOOR_NODES));
       setMapMode("INDOOR");
@@ -1463,13 +1719,13 @@ function MainApp() {
     });
 
     pushState(STEPS.FLOOR_NAVIGATION);
-    
+
     const endIndoorNode = activeIndoorDestination.indoorNode || activeIndoorDestination.id;
-          const { path: path } = await routeIndoor(
-        { building: isChavaraBuilding(currentBuilding) ? "chavara" : "stmarys", startNodeId: normalizeIndoorKey(startNode), endNodeId: normalizeIndoorKey(endIndoorNode) },
-        { startNode: normalizeIndoorKey(startNode), endNode: normalizeIndoorKey(endIndoorNode), edges: ACTIVE_INDOOR_EDGES, nodes: ACTIVE_INDOOR_NODES }
-      );
-      
+    const { path: path } = await routeIndoor(
+      { building: isChavaraBuilding(currentBuilding) ? "chavara" : "stmarys", startNodeId: normalizeIndoorKey(startNode), endNodeId: normalizeIndoorKey(endIndoorNode) },
+      { startNode: normalizeIndoorKey(startNode), endNode: normalizeIndoorKey(endIndoorNode), edges: ACTIVE_INDOOR_EDGES, nodes: ACTIVE_INDOOR_NODES }
+    );
+
     setIndoorRouteNodes(path);
     setIndoorRoute(getPathCoordinates(path, ACTIVE_INDOOR_NODES));
     setMapMode("INDOOR");
@@ -1501,9 +1757,10 @@ function MainApp() {
    * Switches to the destination's building/floor and places only the red pin.
    * No route is calculated or drawn.
    */
-  const handleViewIndoorDestination = () => {
-    if (!destInfoTarget) return;
-    const loc = destInfoTarget;
+  const handleViewIndoorDestination = (locOverride) => {
+    // Accepts an optional locOverride for kiosk mode (uses destination state directly).
+    const loc = locOverride || destInfoTarget;
+    if (!loc) return;
     const targetBuilding = (loc.building || "").toLowerCase().includes("chavara") ? "chavara" : "stmarys";
     const rawFloor = loc.floor ? String(loc.floor).toUpperCase() : "G";
     const targetFloor = rawFloor.startsWith("B") ? rawFloor : (rawFloor === "G" || rawFloor === "GROUND" ? "G" : rawFloor);
@@ -1523,15 +1780,23 @@ function MainApp() {
     setMapMode("INDOOR");
     setNavStep(STEPS.IDLE);
 
-    // Center the map on the destination node
-    const activeNodes = targetBuilding === "chavara" ? CHAVARA_INDOOR_NODES : INDOOR_NODES;
-    const nodeId = loc.indoorNode || loc.id;
-    const node = activeNodes[nodeId];
-    if (node?.position) {
-      setMapCenter({ id: `demo-dest-${Date.now()}`, position: node.position });
+    // In indoor mode, do not force center onto destination node so the whole floor plan stays centered
+    if (!kioskMode) {
+      const activeNodes = targetBuilding === "chavara" ? CHAVARA_INDOOR_NODES : INDOOR_NODES;
+      const nodeId = loc.indoorNode || loc.id;
+      const node = activeNodes[nodeId];
+      if (node?.position) {
+        setMapCenter({ id: `dest-${Date.now()}`, position: node.position });
+      }
     }
 
-    // Dismiss the info card
+    // Kiosk: switch to indoor+QR view
+    if (kioskMode) {
+      setKioskViewState('split-indoor');
+      return;
+    }
+
+    // Demo mode: dismiss the info card
     setShowDestInfoCard(false);
     setDestInfoTarget(null);
   };
@@ -1649,13 +1914,13 @@ function MainApp() {
         return;
       }
 
-            pushState(STEPS.FLOOR_NAVIGATION);
-      
+      pushState(STEPS.FLOOR_NAVIGATION);
+
       const { path: pathToExit } = await routeIndoor(
         { building: isChavaraBuilding(currentBuilding) ? "chavara" : "stmarys", startNodeId: normalizeIndoorKey(source.id), endNodeId: normalizeIndoorKey(exitNode) },
         { startNode: normalizeIndoorKey(source.id), endNode: normalizeIndoorKey(exitNode), edges: ACTIVE_INDOOR_EDGES, nodes: ACTIVE_INDOOR_NODES }
       );
-      
+
       if (pathToExit.length) {
         setIndoorRouteNodes(pathToExit);
         setIndoorRoute(getPathCoordinates(pathToExit, ACTIVE_INDOOR_NODES));
@@ -1691,11 +1956,11 @@ function MainApp() {
       return;
     }
 
-          const { path: path } = await routeIndoor(
-        { building: isChavaraBuilding(currentBuilding) ? "chavara" : "stmarys", startNodeId: sourceNodeId, endNodeId: targetNodeId },
-        { startNode: sourceNodeId, endNode: targetNodeId, edges: ACTIVE_INDOOR_EDGES, nodes: ACTIVE_INDOOR_NODES }
-      );
-      
+    const { path: path } = await routeIndoor(
+      { building: isChavaraBuilding(currentBuilding) ? "chavara" : "stmarys", startNodeId: sourceNodeId, endNodeId: targetNodeId },
+      { startNode: sourceNodeId, endNode: targetNodeId, edges: ACTIVE_INDOOR_EDGES, nodes: ACTIVE_INDOOR_NODES }
+    );
+
     if (!path.length) {
       alert("Could not find a route between these indoor locations. The map data might be disconnected.");
       return;
@@ -1742,7 +2007,7 @@ function MainApp() {
         { building: isChavaraBuilding(currentBuilding) ? "chavara" : "stmarys", startNodeId: indoorStart.nearestNode, endNodeId: indoorDestination.id },
         { startNode: indoorStart.nearestNode, endNode: indoorDestination.id, edges: ACTIVE_INDOOR_EDGES, nodes: ACTIVE_INDOOR_NODES }
       );
-      
+
       setIndoorRouteNodes(path);
 
       setIndoorRoute(getPathCoordinates(path, ACTIVE_INDOOR_NODES));
@@ -1789,11 +2054,11 @@ function MainApp() {
       return;
     }
 
-          const { path: path } = await routeIndoor(
-        { building: isChavaraBuilding(currentBuilding) ? "chavara" : "stmarys", startNodeId: indoorStart.nearestNode, endNodeId: exitNode },
-        { startNode: indoorStart.nearestNode, endNode: exitNode, edges: ACTIVE_INDOOR_EDGES, nodes: ACTIVE_INDOOR_NODES }
-      );
-      
+    const { path: path } = await routeIndoor(
+      { building: isChavaraBuilding(currentBuilding) ? "chavara" : "stmarys", startNodeId: indoorStart.nearestNode, endNodeId: exitNode },
+      { startNode: indoorStart.nearestNode, endNode: exitNode, edges: ACTIVE_INDOOR_EDGES, nodes: ACTIVE_INDOOR_NODES }
+    );
+
     console.log("Indoor path:", path);
 
     setIndoorRouteNodes(path);
@@ -2048,6 +2313,74 @@ function MainApp() {
   // }, []);
   const handleSelectLocation = async (location) => {
     pushState(navStep);
+
+    // ── KIOSK MODE: override routing behaviour ────────────────────────────────
+    // The kiosk is physically at the St. Mary's entrance so routing rules differ:
+    //   • St. Mary's indoor → no outdoor route (already there)
+    //   • Chavara indoor    → outdoor route from St. Mary's entrance to Chavara
+    //   • Outdoor dest      → outdoor route from St. Mary's entrance to dest
+    // No live GPS, no navigation cards, no YDCard — just destination preview.
+    if (kioskMode) {
+      setRoute([]);
+      setIndoorRoute([]);
+      setIndoorRouteNodes([]);
+      setSelectedLocation(location);
+      setDestination(location);
+      setIndoorDestination(location);
+      setHasSearched(false);
+
+      const isStMarysIndoor = isIndoorDestination(location) && !isChavaraBuilding(location.building);
+      const isChavaraIndoor = isIndoorDestination(location) && isChavaraBuilding(location.building);
+
+      if (isStMarysIndoor) {
+        // Kiosk is at St. Mary's entrance — no outdoor path needed.
+        // Just centre the map on St. Mary's and show the info panel.
+        const stMarysPos = NODES[KIOSK_START_NODE];
+        if (stMarysPos) {
+          setMapCenter({ id: `kiosk-stmarys-${Date.now()}`, position: stMarysPos });
+        }
+        setMapMode('OUTDOOR');
+        setNavStep(STEPS.OUTDOOR_ROUTE);
+        setKioskViewState('split-outdoor');
+        return;
+      }
+
+      // Chavara indoor OR outdoor destination → compute route from kiosk start
+      const startLocation = { lat: NODES[KIOSK_START_NODE][0], lng: NODES[KIOSK_START_NODE][1] };
+      let endNode;
+      if (isChavaraIndoor) {
+        endNode = findBestChavaraEntranceByPath(KIOSK_START_NODE, EDGES, startLocation, NODES).nodeId;
+        setSelectedEntrance(endNode);
+      } else if (location.type === 'faculty' || location.type === 'location') {
+        endNode = location.routeNode || location.id;
+      } else {
+        endNode = location.routeNode || location.id;
+      }
+
+      try {
+        const { coordinates: graphRoute } = await routeOutdoor(
+          { startNodeId: KIOSK_START_NODE, endNodeId: endNode },
+          { startNode: KIOSK_START_NODE, endNode: endNode, edges: EDGES, nodes: NODES }
+        );
+        const kioskPos = [startLocation.lat, startLocation.lng];
+        setRoute(graphRoute.length > 0 ? [kioskPos, ...graphRoute] : graphRoute);
+        // Centre map to show the full route
+        if (graphRoute.length > 0) {
+          const midIdx = Math.floor(graphRoute.length / 2);
+          setMapCenter({ id: `kiosk-route-${Date.now()}`, position: graphRoute[midIdx] });
+        }
+      } catch (e) {
+        console.warn('Kiosk route preview failed:', e);
+        setRoute([]);
+      }
+
+      setMapMode('OUTDOOR');
+      setNavStep(STEPS.OUTDOOR_ROUTE);
+      setKioskViewState('split-outdoor');
+      return;
+    }
+    // ── END KIOSK MODE ────────────────────────────────────────────────────────
+
     if (
       mapMode === "INDOOR" &&
       indoorUserLocation &&
@@ -2208,14 +2541,187 @@ function MainApp() {
   const isLocalIndoorDest = Boolean(activeIndoorDest?.floor) && !isDifferentBldg;
   const displayTargetFloor = isLocalIndoorDest ? normalizeFloor(activeIndoorDest.floor) : "G";
 
-  if (currentScreen !== 'map') {
+  // ── KIOSK MAP LAYOUT ─────────────────────────────────────────────────────
+  // When the map screen is active on a KIOSK device, render the dedicated 32-inch kiosk layout
+  // instead of the bare app-shell. All CampusMap props are passed through.
+  if (currentScreen === 'map' && !isMobileOrQrSession) {
+    return (
+      <div id="kiosk-app" className={`app-root theme-${theme}`}>
+        <LoadingScreen
+          isLoading={isAppLoading || dbLoading}
+          gpsStatus={gpsStatus}
+          onExplore={() => setIsAppLoading(false)}
+        />
+        <KioskMapLayout
+          kioskViewState={kioskViewState}
+          destination={destination}
+          isIndoorDest={isIndoorDestination(destination)}
+          onSearch={handleSelectLocation}
+          onViewIndoor={() => handleViewIndoorDestination(destination)}
+          onReset={resetKiosk}
+          onBackToInfo={() => {
+            setKioskViewState('split-outdoor');
+            setMapMode('OUTDOOR');
+            setNavStep(STEPS.OUTDOOR_ROUTE);
+          }}
+          onGoHome={() => {
+            audioService.playClick();
+            resetKiosk();
+            setCurrentScreen('landing');
+          }}
+          currentTime={currentTime}
+          currentFloor={currentFloor}
+          theme={theme}
+          mapSlot={
+            <>
+              {/* Top Left: Home button */}
+              <button
+                className="kiosk-map-home-btn"
+                title="Return to Welcome Screen"
+                onClick={() => {
+                  audioService.playClick();
+                  resetKiosk();
+                  setCurrentScreen('landing');
+                }}
+                style={{
+                  position: 'absolute', top: 20, left: 20, zIndex: 1500,
+                  background: 'rgba(255, 255, 255, 0.96)', border: '1px solid rgba(0, 0, 0, 0.08)',
+                  borderRadius: '9999px', padding: '0 20px 0 16px', height: 52, display: 'flex',
+                  alignItems: 'center', gap: 10, cursor: 'pointer',
+                  boxShadow: '0 8px 24px rgba(0, 0, 0, 0.10)', backdropFilter: 'blur(16px)',
+                  color: '#0f294a', transition: 'all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1)'
+                }}
+              >
+                <Home size={20} color="#0f294a" strokeWidth={2.4} />
+                <span style={{ fontWeight: 800, fontSize: '15px', letterSpacing: '0.3px', color: '#0f294a' }}>Home</span>
+              </button>
+
+              {/* Top Right: Time Pill */}
+              <div
+                className="kiosk-map-time-pill"
+                style={{
+                  position: 'absolute', top: 20, right: 20, zIndex: 1500,
+                  display: 'flex', alignItems: 'center', gap: '10px',
+                  background: 'rgba(255, 255, 255, 0.96)', border: '1px solid rgba(0, 0, 0, 0.08)',
+                  borderRadius: '9999px', padding: '0 18px', height: 52,
+                  boxShadow: '0 8px 24px rgba(0, 0, 0, 0.10)', backdropFilter: 'blur(16px)',
+                }}
+              >
+                <div style={{ display: 'flex', alignItems: 'center', gap: 6, paddingRight: 8, borderRight: '1px solid #e2e8f0' }}>
+                  <span style={{ width: 8, height: 8, borderRadius: '50%', background: '#16a34a', boxShadow: '0 0 8px #16a34a', animation: 'qrLivePulse 1.8s infinite' }} />
+                  <span style={{ color: '#15803d', fontWeight: 800, fontSize: '11.5px', letterSpacing: '0.06em' }}>LIVE MAP</span>
+                </div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                  <Clock size={18} color="#0f294a" strokeWidth={2.4} />
+                  <span style={{ color: '#0f294a', fontWeight: 800, fontSize: '16px', letterSpacing: '0.5px' }}>{currentTime}</span>
+                </div>
+              </div>
+
+              {/* Bottom Left Floating Map Location Pill */}
+              {destination && (
+                <div
+                  className="kiosk-map-bottom-tag"
+                  style={{
+                    position: 'absolute',
+                    bottom: 20,
+                    left: 20,
+                    zIndex: 1500,
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 12,
+                    background: 'rgba(255, 255, 255, 0.98)',
+                    border: '1px solid rgba(0, 0, 0, 0.08)',
+                    borderRadius: 9999,
+                    padding: '0 20px 0 14px',
+                    height: 50,
+                    boxShadow: '0 12px 32px rgba(0, 0, 0, 0.12)',
+                    backdropFilter: 'blur(16px)',
+                    animation: 'kioskPanelSlideIn 0.3s cubic-bezier(0.16, 1, 0.3, 1)'
+                  }}
+                >
+                  <div style={{ width: 32, height: 32, borderRadius: '50%', background: '#dcfce7', display: 'flex', alignItems: 'center', justifyContent: 'center', border: '1.5px solid #bbf7d0' }}>
+                    <MapPin size={16} color="#15803d" />
+                  </div>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
+                    <span style={{ color: '#64748b', fontSize: 10, fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.06em' }}>Selected Destination</span>
+                    <span style={{ color: '#0f172a', fontWeight: 800, fontSize: 14 }}>
+                      {destination.name || (destination.building ? (destination.building.toLowerCase().includes('chavara') ? "St Chavara Block" : "St Mary's Block") : "Destination")}
+                    </span>
+                  </div>
+                </div>
+              )}
+
+              {/* Standard floating search when no destination is selected */}
+              {!destination && (
+                <KioskFloatingSearch
+                  currentFloor={currentFloor}
+                  mapMode={mapMode}
+                  onSelectLocation={handleSelectLocation}
+                  onSelectCategory={handleSelectCategory}
+                />
+              )}
+
+              <CampusMap
+                selectedLocation={selectedLocation}
+                currentLocation={locationToUse}
+                subscribeToLocation={subscribeToLocation}
+                route={route}
+                indoorRouteNodes={indoorRouteNodes}
+                indoorRouteIndex={indoorRouteIndex}
+                onNextIndoorStep={handleNextIndoorStep}
+                currentFloor={currentFloor}
+                mapMode={mapMode}
+                destination={destination}
+                mapCenter={mapCenter}
+                indoorUserLocation={indoorUserLocation}
+                setIndoorUserLocation={setIndoorUserLocation}
+                indoorStart={indoorStart}
+                setIndoorStart={setIndoorStart}
+                isOutdoorNavigating={false}
+                useDebugLocation={USE_DEBUG_LOCATION}
+                activeFloorImages={ACTIVE_FLOOR_IMAGES}
+                activeIndoorNodes={ACTIVE_INDOOR_NODES}
+                isIndoorNavigating={false}
+                onMyLocationClick={handleMyLocationClick}
+                onSelectLocation={handleSelectLocation}
+                hasBottomCard={false}
+                sheetOpen={false}
+                onEnterBuilding={() => { }}
+              />
+              <FloorSelector
+                currentFloor={currentFloor}
+                setCurrentFloor={changeFloor}
+                mapMode={mapMode}
+                destination={destination}
+                activeFloorImages={ACTIVE_FLOOR_IMAGES}
+              />
+            </>
+          }
+        />
+        <InactivityModal
+          isOpen={isInactivityWarningOpen}
+          remainingSeconds={remainingWarningSeconds}
+          totalWarningSeconds={10}
+          onStay={() => {
+            audioService.playClick();
+            setIsInactivityWarningOpen(false);
+            if (idleTimerRef.current) clearTimeout(idleTimerRef.current);
+            if (warningIntervalRef.current) clearInterval(warningIntervalRef.current);
+          }}
+        />
+      </div>
+    );
+  }
+  // ── END KIOSK MAP LAYOUT ─────────────────────────────────────────────────
+
+  if (currentScreen !== 'map' && !isMobileOrQrSession) {
     return (
       <div id="kiosk-app" className={`app-root theme-${theme}`}>
         {currentScreen === 'landing' && (
           <LandingScreen
             onStart={() => {
               audioService.playClick();
-              setCurrentScreen('instructions');
+              setCurrentScreen('instructions');  // LandingScreen → InstructionDashboard → map
             }}
             currentTime={currentTime}
             theme={theme}
@@ -2340,9 +2846,9 @@ function MainApp() {
 
       {/* ── Map Container Wrapper ────────────────────────────────────────────── */}
       <div className="flex-1 relative overflow-hidden bg-white z-1300">
-        
-        {currentScreen === 'map' && (
-          <button 
+
+        {currentScreen === 'map' && !isMobileOrQrSession && (
+          <button
             className="kiosk-map-home-btn"
             title="Return to Welcome Screen"
             onClick={() => {

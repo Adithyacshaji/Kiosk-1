@@ -1,89 +1,222 @@
+/* ==========================================================================
+   FLOOR SELECTOR — ELEVATOR STYLE MODERN GLASSMORPHIC PILL
+   ========================================================================== */
+
 .floor-picker {
   position: absolute;
-  top: calc(135px + env(safe-area-inset-top, 0px));
-  right: 16px;
+  top: 84px;
+  right: 20px;
   z-index: 2000;
-  margin-top: 0px;
-}
-
-.floor-current {
-  width: 72px;
-  height: 52px;
-  min-height: 48px;
   display: flex;
-  justify-content: space-evenly;
+  flex-direction: column;
+  align-items: flex-end;
+  pointer-events: auto;
+  font-family: 'Plus Jakarta Sans', 'Inter', system-ui, sans-serif;
+  user-select: none;
+}
+
+/* ── Current Active Floor Button ─────────────────────────────────────────── */
+.floor-current {
+  display: flex;
   align-items: center;
-  border: none;
+  gap: 10px;
+  padding: 8px 16px 8px 10px;
+  min-height: 52px;
   border-radius: 16px;
-  background: transparent;
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  box-shadow: 0 4px 16px rgba(0,0,0,.14);
-  font-size: 16px;
-  font-weight: 700;
-  font-family: 'Inter', -apple-system, sans-serif;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  background: rgba(255, 255, 255, 0.96);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12), 0 2px 6px rgba(0, 0, 0, 0.04);
   cursor: pointer;
-  transition: transform .25s, box-shadow .25s;
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  color: #0f172a;
 }
 
-.floor-current:hover{
+.floor-current:hover {
   transform: translateY(-2px);
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.16);
+  border-color: rgba(37, 99, 235, 0.25);
 }
 
-.arrow{
-  transition:.3s;
+.floor-current:active {
+  transform: scale(0.97);
 }
 
-.arrow.rotate{
+.floor-current-icon-wrap {
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  background: #eff6ff;
+  color: #2563eb;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  border: 1px solid #dbeafe;
+}
+
+.floor-current-text {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 1px;
+}
+
+.floor-current-key {
+  font-size: 16px;
+  font-weight: 800;
+  color: #0f172a;
+  line-height: 1.1;
+}
+
+.floor-current-sub {
+  font-size: 11px;
+  font-weight: 600;
+  color: #64748b;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.arrow {
+  margin-left: 4px;
+  color: #64748b;
+  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.arrow.rotate {
   transform: rotate(180deg);
+  color: #2563eb;
 }
 
-.floor-list{
-  margin-top:9px;
-
-  display:flex;
-  flex-direction:column;
-  gap:8px;
-
-  opacity:0;
-  transform:translateY(-10px);
-  pointer-events:none;
-
-  transition:.25s;
+/* ── Expanded Floor Dropdown ──────────────────────────────────────────────── */
+.floor-list {
+  margin-top: 10px;
+  width: 170px;
+  background: rgba(255, 255, 255, 0.98);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-radius: 20px;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.16), 0 4px 12px rgba(0, 0, 0, 0.06);
+  padding: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  opacity: 0;
+  transform: translateY(-10px) scale(0.95);
+  pointer-events: none;
+  transform-origin: top right;
+  transition: opacity 0.22s ease, transform 0.22s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-.floor-picker.expanded .floor-list{
-  opacity:1;
-  transform:translateY(0);
-  pointer-events:auto;
+.floor-picker.expanded .floor-list {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+  pointer-events: auto;
+}
+
+.floor-list-header {
+  padding: 6px 10px 4px;
+  font-size: 10.5px;
+  font-weight: 800;
+  color: #94a3b8;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  border-bottom: 1px solid #f1f5f9;
 }
 
 .floor-item {
-  width: 72px;
-  min-height: 48px; /* accessible touch target */
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 12px;
+  min-height: 46px;
   border: none;
-  border-radius: 14px;
-  background: white;
-  font-weight: 600;
-  font-family: 'Inter', -apple-system, sans-serif;
-  font-size: 14px;
+  border-radius: 12px;
+  background: transparent;
   cursor: pointer;
-  box-shadow: 0 2px 10px rgba(0,0,0,.10);
-  transition: .2s;
+  transition: all 0.15s ease;
+  text-align: left;
+  position: relative;
 }
 
-.floor-item:hover{
-  background:#f3f4f6;
-  transform:translateY(-2px);
+.floor-item:hover {
+  background: #f8fafc;
+  transform: translateX(-2px);
 }
 
-.floor-item.active{
-  background:#2563eb;
-  color:white;
+.floor-item-key-wrap {
+  width: 30px;
+  height: 30px;
+  border-radius: 8px;
+  background: #f1f5f9;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  font-weight: 800;
+  color: #334155;
+  flex-shrink: 0;
+  transition: all 0.15s ease;
 }
 
-.floor-item.destination:not(.active){
-  border:2px solid orange;
-  color:orange;
-  background:#fff8eb;
+.floor-item-label-wrap {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  overflow: hidden;
+}
+
+.floor-item-label {
+  font-size: 13.5px;
+  font-weight: 600;
+  color: #1e293b;
+  white-space: nowrap;
+}
+
+.floor-dest-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  font-size: 10px;
+  font-weight: 700;
+  color: #d97706;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+/* Active State */
+.floor-item.active {
+  background: #2563eb;
+  color: #ffffff;
+  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
+}
+
+.floor-item.active .floor-item-key-wrap {
+  background: rgba(255, 255, 255, 0.22);
+  color: #ffffff;
+}
+
+.floor-item.active .floor-item-label {
+  color: #ffffff;
+  font-weight: 700;
+}
+
+.floor-active-check {
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Destination Target State */
+.floor-item.destination:not(.active) {
+  border: 1.5px solid #f59e0b;
+  background: #fffbeb;
+}
+
+.floor-item.destination:not(.active) .floor-item-key-wrap {
+  background: #fde68a;
+  color: #92400e;
 }

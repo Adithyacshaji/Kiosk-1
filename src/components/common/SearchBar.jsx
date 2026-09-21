@@ -91,13 +91,23 @@ const DEFAULT_SUGGESTIONS = [
  * @param {string}  [props.currentFloor]  – active floor key; used for toilet smart filter
  * @param {boolean} [props.isIndoorMode]  – true when the app is in indoor map mode
  */
-function SearchBar({ onSelect, currentFloor = "G", isIndoorMode = false, clearRef }) {
+function SearchBar({ onSelect, currentFloor = "G", isIndoorMode = false, clearRef, externalQuery }) {
   const { searchItems: SEARCH_ITEMS } = useDatabase();
   const [selectedImage, setSelectedImage] = useState(null);
-  const [query, setQuery] = useState("");
+  const [query, setQuery] = useState(externalQuery || "");
   const deferredQuery = useDeferredValue(query);
   const [showResults, setShowResults] = useState(false);
   const [activeIndex, setActiveIndex] = useState(-1);
+
+  useEffect(() => {
+    if (externalQuery !== undefined && externalQuery !== null) {
+      setQuery(externalQuery);
+      if (externalQuery) {
+        setShowResults(true);
+        setActiveIndex(-1);
+      }
+    }
+  }, [externalQuery]);
 
   // Animated placeholder state
   const placeholders = useMemo(() => [

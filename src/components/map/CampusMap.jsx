@@ -47,16 +47,16 @@ const OUTDOOR_ZOOM = {
 function getIndoorZoomConfig(building) {
   if (building === "chavara") {
     return {
-      min: 21.4,
-      max: 25.0,
-      overview: 20.0,
+      min: 17.5,
+      max: 27.5,
+      overview: 22.8,
     };
   }
-  // St. Mary's indoor zoom (slightly closer to fit its smaller footprint)
+  // St. Mary's indoor zoom (closer to fit its footprint)
   return {
-    min: 21.8,
-    max: 25.5,
-    overview: 21.5,
+    min: 17.5,
+    max: 27.5,
+    overview: 23.2,
   };
 }
 
@@ -551,21 +551,29 @@ function CampusMap({
 
   // "You are here" toast completely disabled per user request
 
+  // Compute initial center for MapContainer
+  const initialMapCenter = useMemo(() => {
+    if (mapMode === "INDOOR" && activeFloorImages[currentFloor]?.bounds) {
+      return L.latLngBounds(activeFloorImages[currentFloor].bounds).getCenter();
+    }
+    return [10.3575, 76.2127];
+  }, [mapMode, activeFloorImages, currentFloor]);
+
   return (
     <MapContainer
-      key={mapMode === "INDOOR" ? "indoor-map" : "outdoor-map"}
-      center={[10.354098, 76.212307]}
-      zoom={OUTDOOR_ZOOM.default}
+      key={mapMode === "INDOOR" ? `indoor-map-${currentFloor}` : "outdoor-map"}
+      center={initialMapCenter}
+      zoom={mapMode === "INDOOR" ? 22.8 : OUTDOOR_ZOOM.default}
       maxBounds={
         mapMode === "OUTDOOR"
           ? (route.length < 2 ? CAMPUS_BOUNDS : null)
           : activeFloorImages[currentFloor]?.bounds
-            ? L.latLngBounds(activeFloorImages[currentFloor].bounds).pad(0.5)
+            ? L.latLngBounds(activeFloorImages[currentFloor].bounds).pad(1.0)
             : null
       }
-      maxBoundsViscosity={1.0}
-      minZoom={OUTDOOR_ZOOM.min}
-      maxZoom={OUTDOOR_ZOOM.max}
+      maxBoundsViscosity={0.4}
+      minZoom={mapMode === "INDOOR" ? 17.5 : OUTDOOR_ZOOM.min}
+      maxZoom={mapMode === "INDOOR" ? 27.5 : OUTDOOR_ZOOM.max}
       zoomControl={false}
       attributionControl={false}
       scrollWheelZoom
@@ -577,7 +585,7 @@ function CampusMap({
       wheelPxPerZoomLevel={60}
       rotate={mapMode === "INDOOR"}
       rotateControl={false}
-      boxZoom={false}
+      boxZoom
       bounceAtZoomLimits={false}
       className={`campus-map ${mapMode === "INDOOR" ? "campus-map--indoor" : ""}`}
     >
@@ -598,11 +606,6 @@ function CampusMap({
         &copy; OpenStreetMap contributors &copy; CARTO
       </div>
 
-      {/* ── Indoor Zoom Control (Bottom Left) ── */}
-      {mapMode === "INDOOR" && (
-        <ZoomControl position="bottomleft" />
-      )}
-
       {/* Map zoom + rotation manager */}
       <MapZoomManager
         mapMode={mapMode}
@@ -612,6 +615,7 @@ function CampusMap({
         indoorUserLocation={indoorUserLocation}
         activeFloorImages={activeFloorImages}
         activeIndoorNodes={activeIndoorNodes}
+        destination={destination}
       />
       <MapEventBridge mapMode={mapMode} />
       <MapRotationListener onChange={setMapBearing} />
@@ -737,14 +741,7 @@ function CampusMap({
             url={activeFloorImages[currentFloor].url}
             bounds={activeFloorImages[currentFloor].bounds}
             opacity={1}
-            interactive
-            eventHandlers={{
-              click: ({ latlng }) => {
-                console.log(
-                  `[${latlng.lat.toFixed(6)}, ${latlng.lng.toFixed(6)}]`
-                );
-              },
-            }}
+            interactive={false}
           />
 
           {/* Room name labels — rotate with the floor plan image */}
@@ -874,7 +871,7 @@ function CampusMap({
       />
 
       {/* Fly-to helpers */}
-      <FlyToLocation location={mapCenter} mapMode={mapMode} activeFloorImages={activeFloorImages} />
+      <FlyToLocation location={mapCenter} mapMode={mapMode} />
     </MapContainer>
   );
 }
@@ -895,24 +892,19 @@ function trimRouteFromLocation(route, location) {
 
 // ─── Helper sub-components ────────────────────────────────────────────────────
 
-function FlyToLocation({ location, mapMode, activeFloorImages }) {
+function FlyToLocation({ location, mapMode }) {
   const map = useMap();
   useEffect(() => {
     if (!location?.position) return;
+    // In indoor mode, keep the entire floor plan centered on screen instead of focusing on a specific node
+    if (mapMode === "INDOOR") return;
     const id = requestAnimationFrame(() => {
       if (mapMode === "OUTDOOR") {
-        // Never zoom out when the user asks for their location.  This makes the
-        // control behave like a native map "my location" FAB.
         map.flyTo(location.position, Math.max(map.getZoom(), OUTDOOR_ZOOM.default), { duration: 0.8 });
-      } else {
-        // Indoor smooth focus zoom
-        const isChav = activeFloorImages === CHAVARA_FLOOR_IMAGES;
-        const zoomCfg = getIndoorZoomConfig(isChav ? "chavara" : "stmarys");
-        map.flyTo(location.position, Math.max(map.getZoom(), zoomCfg.overview + 0.75), { duration: 0.8 });
       }
     });
     return () => cancelAnimationFrame(id);
-  }, [location?.id, location?.position, map, mapMode, activeFloorImages]);
+  }, [location?.id, location?.position, map, mapMode]);
   return null;
 }
 
@@ -924,15 +916,14 @@ function MapZoomManager({
   indoorUserLocation,
   activeFloorImages,
   activeIndoorNodes,
+  destination,
 }) {
   const map = useMap();
-  const prevModeRef = useRef(mapMode);
-  const prevFloorRef = useRef(currentFloor);
-  const prevImagesRef = useRef(activeFloorImages);
   const lastModeRef = useRef(mapMode);
+  const lastFittedKeyRef = useRef("");
 
   const isChav = activeFloorImages === CHAVARA_FLOOR_IMAGES;
-  const zoomCfg = getIndoorZoomConfig(isChav ? "chavara" : "stmarys");
+  const zoomCfg = useMemo(() => getIndoorZoomConfig(isChav ? "chavara" : "stmarys"), [isChav]);
 
   // Update zoom/bounds when mode or floor changes
   useEffect(() => {
@@ -943,6 +934,9 @@ function MapZoomManager({
       map.setMinZoom(OUTDOOR_ZOOM.min);
       map.setMaxZoom(OUTDOOR_ZOOM.max);
       if (map.dragging) map.dragging.enable();
+      if (map.scrollWheelZoom) map.scrollWheelZoom.enable();
+      if (map.touchZoom) map.touchZoom.enable();
+      if (map.doubleClickZoom) map.doubleClickZoom.enable();
       
       // Clear maxBounds during routing to allow map movement and avoid layer shifting
       if (route.length < 2) {
@@ -965,9 +959,13 @@ function MapZoomManager({
       map.setMinZoom(zoomCfg.min);
       map.setMaxZoom(zoomCfg.max);
       if (map.dragging) map.dragging.enable();
+      if (map.scrollWheelZoom) map.scrollWheelZoom.enable();
+      if (map.touchZoom) map.touchZoom.enable();
+      if (map.doubleClickZoom) map.doubleClickZoom.enable();
+
       if (activeFloorImages[currentFloor]) {
-        // Enforce solid boundary constraints around the indoor floor plan
-        map.setMaxBounds(activeFloorImages[currentFloor].bounds);
+        // Solid boundary constraints around the indoor floor plan
+        map.setMaxBounds(L.latLngBounds(activeFloorImages[currentFloor].bounds).pad(1.0));
       } else {
         map.setMaxBounds(null);
       }
@@ -975,33 +973,87 @@ function MapZoomManager({
     requestAnimationFrame(() => map.invalidateSize());
   }, [map, mapMode, currentFloor, activeFloorImages, route, zoomCfg]);
 
-  // When entering indoor mode, changing floor, or switching buildings: fit the full floor image
+  // Keep indoor map upright (north-up) in kiosk mode to prevent distorted off-center offsets
   useEffect(() => {
-    const modeChanged = prevModeRef.current !== mapMode;
-    const floorChanged = prevFloorRef.current !== currentFloor;
-    const imagesChanged = prevImagesRef.current !== activeFloorImages;
-    prevModeRef.current = mapMode;
-    prevFloorRef.current = currentFloor;
-    prevImagesRef.current = activeFloorImages;
+    if (!map.setBearing) return;
+    map.setBearing(0, { animate: false });
+  }, [map, mapMode]);
 
-    if (mapMode !== "INDOOR") return;
+  // Fit indoor floor image cleanly centered in the left screen on mode/floor/destination change ONLY
+  useEffect(() => {
+    if (mapMode !== "INDOOR") {
+      lastFittedKeyRef.current = "";
+      return;
+    }
     if (!activeFloorImages[currentFloor]) return;
 
-    if (modeChanged || imagesChanged || floorChanged) {
-      requestAnimationFrame(() => {
-        map.fitBounds(activeFloorImages[currentFloor].bounds, {
-          padding: [8, 24], // 8px horizontal padding fits mobile screens tightly; 24px vertical padding centers it
-          maxZoom: zoomCfg.overview + 0.5,
-          animate: true,
-          duration: 1.0,
-        });
-      });
+    const destKey = destination?.indoorNode || destination?.id || destination?.routeNode || "";
+    const currentKey = `${mapMode}_${currentFloor}_${destKey}_${isChav ? "chav" : "stmary"}`;
+
+    // DO NOT re-center or override zoom if this floor and destination have already been framed
+    if (lastFittedKeyRef.current === currentKey) {
+      return;
     }
-  }, [map, mapMode, currentFloor, activeFloorImages, zoomCfg]);
+    lastFittedKeyRef.current = currentKey;
+
+    const fitFloorView = () => {
+      map.invalidateSize({ animate: false });
+      if (map.setBearing) {
+        map.setBearing(0, { animate: false });
+      }
+
+      const floorBounds = L.latLngBounds(activeFloorImages[currentFloor].bounds);
+      
+      // Calculate zoom that fits the entire floor image inside the 70% left container with clean margin
+      const fitZoom = map.getBoundsZoom(floorBounds, false, [36, 36]);
+      const overviewZoom = Math.min(fitZoom, zoomCfg?.overview || 23.2);
+
+      // Check if destination is on the current floor
+      const targetNodeId = destination?.indoorNode || destination?.id || destination?.routeNode;
+      const destFloorNorm = normalizeFloor(destination?.floor);
+      const isMatchingFloor = destination && (
+        String(destination.floor).toUpperCase() === String(currentFloor).toUpperCase() ||
+        String(destFloorNorm).toUpperCase() === String(currentFloor).toUpperCase()
+      );
+      const targetNode = isMatchingFloor ? (activeIndoorNodes[targetNodeId] || activeIndoorNodes[destination?.id]) : null;
+
+      let targetCenter = floorBounds.getCenter();
+      if (targetNode?.position) {
+        // Bias center slightly towards destination (35% towards target, 65% floor center)
+        targetCenter = [
+          targetCenter.lat * 0.65 + targetNode.position[0] * 0.35,
+          targetCenter.lng * 0.65 + targetNode.position[1] * 0.35,
+        ];
+      }
+
+      map.setView(targetCenter, overviewZoom, {
+        animate: true,
+        duration: 0.5,
+      });
+    };
+
+    fitFloorView();
+    // Re-run after CSS container transitions (350ms split transition in kiosk.css)
+    const t1 = setTimeout(fitFloorView, 100);
+    const t2 = setTimeout(fitFloorView, 380);
+
+    return () => {
+      clearTimeout(t1);
+      clearTimeout(t2);
+    };
+  }, [map, mapMode, currentFloor, activeFloorImages, destination, activeIndoorNodes, isChav, zoomCfg]);
 
   // Fit outdoor route bounds
+  const lastRouteKeyRef = useRef("");
   useEffect(() => {
-    if (mapMode !== "OUTDOOR" || route.length < 2) return;
+    if (mapMode !== "OUTDOOR" || route.length < 2) {
+      lastRouteKeyRef.current = "";
+      return;
+    }
+    const routeKey = `${route[0]?.join(",")}_${route[route.length - 1]?.join(",")}_${route.length}`;
+    if (lastRouteKeyRef.current === routeKey) return;
+    lastRouteKeyRef.current = routeKey;
+
     map.fitBounds(route, {
       paddingTopLeft: [32, 96],
       paddingBottomRight: [32, 160],
@@ -1011,64 +1063,10 @@ function MapZoomManager({
     });
   }, [map, mapMode, route]);
 
-  // Helper to calculate the bounding box center of all nodes on a floor
-  const getFloorNodesCenter = (floor) => {
-    const floorNodes = Object.values(activeIndoorNodes).filter(
-      (n) => n.floor === floor
-    );
-    if (floorNodes.length === 0) return [10.35789, 76.21293]; // fallback to ST_MARYS_BOUNDS center
-
-    const lats = floorNodes.map((n) => n.position[0]);
-    const lngs = floorNodes.map((n) => n.position[1]);
-
-    return [
-      (Math.min(...lats) + Math.max(...lats)) / 2,
-      (Math.min(...lngs) + Math.max(...lngs)) / 2,
-    ];
-  };
-
-  // Indoor rotation — place the user at the BOTTOM of the screen.
-  //
-  // Rules (based on which side of the floor the user is on):
-  //   User at BOTTOM (south)  → no rotation       (setBearing  0°)
-  //   User at LEFT   (west)   → rotate 90° right   (setBearing 90°, east at top)
-  //   User at TOP    (north)  → rotate 180°         (setBearing 180°)
-  //   User at RIGHT  (east)   → rotate 90° left     (setBearing 270°, west at top)
-  //
-  // We determine the side by computing the bearing from the center of the node grid
-  // to the user and splitting into four equal 90° sectors.
-  useEffect(() => {
-    if (!map.setBearing) return;
-
-    if (mapMode === "INDOOR") {
-      const userPos = indoorUserLocation?.position || (visibleIndoorRoute.length > 0 ? visibleIndoorRoute[0] : null);
-
-      if (!userPos) {
-        map.setBearing(0, { animate: false });
-        return;
-      }
-
-      if (visibleIndoorRoute.length >= 2) {
-        // Path-based rotation: put the direction of the next node EXACTLY at the TOP of the screen (Track-Up mode)
-        const nextNode = visibleIndoorRoute[1];
-        const pathBearing = getBearing(userPos, nextNode);
-        const exactBearing = (360 - pathBearing) % 360;
-
-        // Smooth rotation
-        map.setBearing(exactBearing, { animate: true, duration: 1.5 });
-      } else {
-        map.setBearing(0, { animate: true });
-      }
-    } else {
-      // Outdoor — reset to north-up
-      map.setBearing(0, { animate: false });
-    }
-  }, [map, mapMode, visibleIndoorRoute, indoorUserLocation]);
-
   return null;
 }
 
-/** Keeps Leaflet's canvas sized correctly after a mode/overlay transition. */
+/** Keeps Leaflet's canvas sized correctly after a mode/overlay transition or container resize. */
 function MapEventBridge({ mapMode }) {
   const map = useMap();
   useMapEvents({
@@ -1078,6 +1076,21 @@ function MapEventBridge({ mapMode }) {
   });
   useEffect(() => {
     requestAnimationFrame(() => map.invalidateSize());
+    const container = map.getContainer();
+    if (!container || !window.ResizeObserver) return undefined;
+    let resizeTimer;
+    const ro = new ResizeObserver(() => {
+      map.invalidateSize({ animate: false });
+      clearTimeout(resizeTimer);
+      resizeTimer = setTimeout(() => {
+        map.invalidateSize({ animate: false });
+      }, 380);
+    });
+    ro.observe(container);
+    return () => {
+      ro.disconnect();
+      clearTimeout(resizeTimer);
+    };
   }, [map, mapMode]);
   return null;
 }
@@ -1334,7 +1347,28 @@ import { Building } from "lucide-react"; // Make sure Building is imported
 function CustomMapControls({ mapMode, currentLocation, onMyLocationClick, hasBottomCard, sheetOpen, onEnterBuilding }) {
   const map = useMap();
 
-  if (mapMode === "INDOOR") return null;
+  if (mapMode === "INDOOR") {
+    return (
+      <div 
+        className="absolute right-6 bottom-8 z-1400 pointer-events-none transition-all duration-300 flex flex-col items-center gap-4"
+      >
+        <div className="pointer-events-auto flex flex-col bg-white/95 backdrop-blur-md rounded-[20px] shadow-[0_4px_20px_rgba(0,0,0,0.15)] border border-gray-100 overflow-hidden">
+          <button
+            onClick={(e) => { e.preventDefault(); map.zoomIn(0.5); }}
+            className="w-12 h-11 flex items-center justify-center cursor-pointer hover:bg-gray-50 active:bg-gray-100 transition-colors text-gray-800 border-b border-gray-100 text-[24px] font-normal"
+            title="Zoom In"
+            aria-label="Zoom In"
+          >+</button>
+          <button
+            onClick={(e) => { e.preventDefault(); map.zoomOut(0.5); }}
+            className="w-12 h-11 flex items-center justify-center cursor-pointer hover:bg-gray-50 active:bg-gray-100 transition-colors text-gray-800 text-[28px] font-normal pb-1"
+            title="Zoom Out"
+            aria-label="Zoom Out"
+          >−</button>
+        </div>
+      </div>
+    );
+  }
 
   // Compute base bottom offset in pixels (40px clears the copyright text at bottom: 5px)
   const baseBottom = sheetOpen ? 340 : (hasBottomCard ? 195 : 40);

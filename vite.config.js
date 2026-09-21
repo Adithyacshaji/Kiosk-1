@@ -9,4 +9,9 @@ export default defineConfig({
     mkcert(),
     tailwindcss()
   ],
+  server: {
+    host: true,
+    port: 5173,
+  },
 });
+

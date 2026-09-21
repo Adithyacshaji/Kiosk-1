@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import "./LoadingScreen.css";
 
 export default function LoadingScreen({ isLoading, gpsStatus, onExplore }) {
-  const [shouldRender, setShouldRender] = useState(true);
+  const [shouldRender, setShouldRender] = useState(isLoading);
   const [isFadingOut, setIsFadingOut] = useState(false);
   const [showSkip, setShowSkip] = useState(false);
   const [tapCount, setTapCount] = useState(0);
@@ -33,12 +33,10 @@ export default function LoadingScreen({ isLoading, gpsStatus, onExplore }) {
   }, []);
 
   useEffect(() => {
-    if (!isLoading) {
-      setShouldRender(false);
-    }
+    setShouldRender(isLoading);
   }, [isLoading]);
 
-  if (!shouldRender) return null;
+  if (!shouldRender || !isLoading) return null;
 
   const getStatusText = () => {
     switch (gpsStatus) {
