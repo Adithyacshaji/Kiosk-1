@@ -355,7 +355,7 @@ function SearchField({ id, label, value, onChange, onSelect, results, isReadOnly
             return (
             <button
               key={`${item.id}-${idx}`}
-              className={`w-full text-left px-5 py-3 flex items-center gap-4 transition-colors ${idx === activeIndex ? "bg-gray-100/80" : "hover:bg-gray-50"}`}
+              className={`w-full text-left px-5 py-3 flex items-center gap-4 transition-colors ${idx === activeIndex ? "bg-gray-100" : "hover:bg-gray-50"}`}
               type="button"
               onMouseDown={() => onSelect(item)}
               onMouseEnter={() => setActiveIndex(idx)}

@@ -213,7 +213,7 @@ function BottomSheet({
           <button
             key={item.id}
             onClick={() => onSelectCategory(item.id)}
-            className="flex flex-col items-center justify-center bg-gray-50/50 border border-gray-100 rounded-[28px] p-4 gap-4 hover:bg-white hover:shadow-md hover:border-gray-200 transition-all text-center group cursor-pointer"
+            className="flex flex-col items-center justify-center bg-gray-50 border border-gray-100 rounded-[28px] p-4 gap-4 hover:bg-white hover:shadow-md hover:border-gray-200 transition-all text-center group cursor-pointer"
           >
             <div className={`w-10 h-10 ${item.bg} rounded-full flex items-center justify-center mb-1 group-hover:scale-110 transition-transform`}>
               <item.icon size={30} className={item.color} />

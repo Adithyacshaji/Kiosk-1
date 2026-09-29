@@ -57,8 +57,8 @@ function DestinationInfoCard({ destination, onViewIndoor, onClose }) {
           inset: 0,
           background: "rgba(15,23,42,0.4)",
           zIndex: 2100,
-          backdropFilter: "blur(3px)",
-          WebkitBackdropFilter: "blur(3px)",
+          
+          
           animation: "fadeInBackdrop 0.2s ease",
         }}
       />

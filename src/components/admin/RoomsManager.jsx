@@ -162,7 +162,7 @@ export default function RoomsManager() {
         <div className="overflow-x-auto">
           <table className="w-full text-left border-collapse">
             <thead>
-              <tr className="bg-gray-50/50 border-b border-gray-100 text-sm text-gray-500">
+              <tr className="bg-gray-50 border-b border-gray-100 text-sm text-gray-500">
                 <th className="px-6 py-4 font-medium">Room Name</th>
                 <th className="px-6 py-4 font-medium">Room ID</th>
                 <th className="px-6 py-4 font-medium">Building</th>
@@ -227,9 +227,9 @@ export default function RoomsManager() {
       </div>
 
       {isFormOpen && (
-        <div className="fixed inset-0 bg-black/40 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+        <div className="fixed inset-0 bg-black  z-50 flex items-center justify-center p-4">
           <div className="bg-white rounded-2xl w-full max-w-lg shadow-xl overflow-hidden animate-scale-in">
-            <div className="flex items-center justify-between p-6 border-b border-gray-100 bg-gray-50/50">
+            <div className="flex items-center justify-between p-6 border-b border-gray-100 bg-gray-50">
               <h3 className="text-lg font-bold text-gray-900">
                 {editingId ? "Edit Room" : "Add Room"}
               </h3>

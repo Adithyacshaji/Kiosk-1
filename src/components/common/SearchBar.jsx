@@ -517,7 +517,7 @@ function SearchBar({ onSelect, currentFloor = "G", isIndoorMode = false, clearRe
       </div>
 
       {showResults && (
-        <div className="absolute top-18 left-4 right-4 bg-white/95 backdrop-blur-xl rounded-[32px] shadow-md border border-gray-100 overflow-hidden z-2000" ref={resultsRef}>
+        <div className="absolute top-18 left-4 right-4 bg-white  rounded-[32px] shadow-md border border-gray-100 overflow-hidden z-2000" ref={resultsRef}>
           {results.length > 0 ? (
             <div className="py-2 max-h-[60vh] overflow-y-auto custom-scrollbar">
               {results.map((location, index) => {
@@ -527,7 +527,7 @@ function SearchBar({ onSelect, currentFloor = "G", isIndoorMode = false, clearRe
 
                 return (
                   <button
-                    className={`w-full text-left px-5 py-3 flex items-center gap-4 transition-colors ${index === activeIndex ? "bg-gray-100/80" : "hover:bg-gray-50"}`}
+                    className={`w-full text-left px-5 py-3 flex items-center gap-4 transition-colors ${index === activeIndex ? "bg-gray-100" : "hover:bg-gray-50"}`}
                     key={`${location.id}-${index}`}
                     onClick={() => handleSelect(location)}
                     onMouseEnter={() => setActiveIndex(index)}

@@ -2728,7 +2728,7 @@ function MainApp() {
                   background: 'rgba(255, 255, 255, 0.96)', border: '1px solid rgba(0, 0, 0, 0.08)',
                   borderRadius: '9999px', padding: '0 20px 0 16px', height: 52, display: 'flex',
                   alignItems: 'center', gap: 10, cursor: 'pointer',
-                  boxShadow: '0 8px 24px rgba(0, 0, 0, 0.10)', backdropFilter: 'blur(16px)',
+                  boxShadow: '0 8px 24px rgba(0, 0, 0, 0.10)', 
                   color: '#1A1A1A', transition: 'all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1)'
                 }}
               >
@@ -2744,7 +2744,7 @@ function MainApp() {
                   display: 'flex', alignItems: 'center', gap: '10px',
                   background: 'rgba(255, 255, 255, 0.96)', border: '1px solid rgba(0, 0, 0, 0.08)',
                   borderRadius: '9999px', padding: '0 18px', height: 52,
-                  boxShadow: '0 8px 24px rgba(0, 0, 0, 0.10)', backdropFilter: 'blur(16px)',
+                  boxShadow: '0 8px 24px rgba(0, 0, 0, 0.10)', 
                 }}
               >
                 <div style={{ display: 'flex', alignItems: 'center', gap: 6, paddingRight: 8, borderRight: '1px solid #e2e8f0' }}>
@@ -2775,7 +2775,7 @@ function MainApp() {
                     padding: '0 20px 0 14px',
                     height: 50,
                     boxShadow: '0 12px 32px rgba(0, 0, 0, 0.12)',
-                    backdropFilter: 'blur(16px)',
+                    
                     animation: 'kioskPanelSlideIn 0.3s cubic-bezier(0.16, 1, 0.3, 1)'
                   }}
                 >
@@ -3315,8 +3315,8 @@ function MainApp() {
               border: "none",
               cursor: "pointer",
               background: "rgba(255,255,255,0.97)",
-              backdropFilter: "blur(12px)",
-              WebkitBackdropFilter: "blur(12px)",
+              
+              
               boxShadow: "0 4px 20px rgba(0,0,0,0.18), 0 1px 4px rgba(0,0,0,0.08)",
               display: "flex",
               flexDirection: "column",
@@ -3521,8 +3521,8 @@ function MainApp() {
               right: 16,
               zIndex: 1600,
               background: 'rgba(255, 255, 255, 0.98)',
-              backdropFilter: 'blur(16px)',
-              WebkitBackdropFilter: 'blur(16px)',
+              
+              
               borderRadius: 20,
               padding: '20px 20px 18px',
               boxShadow: '0 12px 36px rgba(0, 0, 0, 0.18), 0 2px 8px rgba(0, 0, 0, 0.08)',

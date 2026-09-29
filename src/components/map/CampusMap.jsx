@@ -1352,7 +1352,7 @@ function CustomMapControls({ mapMode, currentLocation, onMyLocationClick, hasBot
       <div 
         className="absolute right-6 bottom-8 z-1400 pointer-events-none transition-all duration-300 flex flex-col items-center gap-4"
       >
-        <div className="pointer-events-auto flex flex-col bg-white/95 backdrop-blur-md rounded-[20px] shadow-[0_8px_24px_rgba(0,0,0,0.10)] border border-gray-100 overflow-hidden">
+        <div className="pointer-events-auto flex flex-col bg-white  rounded-[20px] shadow-[0_8px_24px_rgba(0,0,0,0.10)] border border-gray-100 overflow-hidden">
           <button
             onClick={(e) => { e.preventDefault(); map.zoomIn(0.5); }}
             className="w-12 h-11 flex items-center justify-center cursor-pointer hover:bg-gray-50 active:bg-gray-100 transition-colors text-gray-800 border-b border-gray-100 text-[24px] font-normal"
@@ -1399,13 +1399,13 @@ function CustomMapControls({ mapMode, currentLocation, onMyLocationClick, hasBot
               doRecenter();
             }
           }}
-          className="pointer-events-auto bg-white/95 backdrop-blur-md w-11 h-11 rounded-full shadow-[0_8px_24px_rgba(0,0,0,0.10)] border border-gray-100 flex items-center justify-center cursor-pointer hover:bg-gray-50 transition-colors text-gray-700"
+          className="pointer-events-auto bg-white  w-11 h-11 rounded-full shadow-[0_8px_24px_rgba(0,0,0,0.10)] border border-gray-100 flex items-center justify-center cursor-pointer hover:bg-gray-50 transition-colors text-gray-700"
           title="My Location"
         >
           <div className="w-4.5 h-4.5 rounded-full border-2 border-gray-700 relative flex items-center justify-center"><div className="w-1.5 h-1.5 bg-gray-700 rounded-full"></div></div>
         </button>
 
-        <div className="pointer-events-auto flex flex-col bg-white/95 backdrop-blur-md rounded-[20px] shadow-[0_8px_24px_rgba(0,0,0,0.10)] border border-gray-100 overflow-hidden">
+        <div className="pointer-events-auto flex flex-col bg-white  rounded-[20px] shadow-[0_8px_24px_rgba(0,0,0,0.10)] border border-gray-100 overflow-hidden">
           <button
             onClick={(e) => { e.preventDefault(); map.zoomIn(); }}
             className="w-11 h-10.5 flex items-center justify-center cursor-pointer hover:bg-gray-50 transition-colors text-gray-700 border-b border-gray-100 text-[22px] font-light"
@@ -1431,8 +1431,8 @@ function CustomMapControls({ mapMode, currentLocation, onMyLocationClick, hasBot
             border: "none",
             cursor: "pointer",
             background: "rgba(255,255,255,0.97)",
-            backdropFilter: "blur(12px)",
-            WebkitBackdropFilter: "blur(12px)",
+            
+            
             boxShadow: "0 8px 24px rgba(0,0,0,0.10)",
             display: "flex",
             flexDirection: "column",

@@ -77,6 +77,13 @@ export function KioskMapLayout({
           </div>
         )}
       </div>
+
+      {/* Screen Indicators */}
+      <div className="landing-indicators" style={{ position: 'absolute', bottom: isSplit ? '2rem' : '3rem', left: isSplit ? '31%' : '50%', transform: 'translateX(-50%)', zIndex: 1000, pointerEvents: 'auto' }}>
+        <div className="indicator" onClick={onGoHome} style={{ cursor: 'pointer', background: 'rgba(26,26,26,0.35)' }}></div>
+        <div className="indicator" onClick={onBackToInfo || onGoHome} style={{ cursor: 'pointer', background: 'rgba(26,26,26,0.35)' }}></div>
+        <div className="indicator active"></div>
+      </div>
     </div>
   );
 }

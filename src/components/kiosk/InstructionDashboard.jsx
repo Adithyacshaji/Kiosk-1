@@ -1,25 +1,26 @@
 import React, { useState } from 'react';
-import { 
-  Clock, 
-  MapPin, 
-  ArrowRight, 
-  User, 
-  Info, 
+import {
+  Clock,
+  MapPin,
+  ArrowRight,
+  User,
+  Info,
   Map as MapIcon,
   SunMedium,
   Volume2,
   VolumeX,
   Compass,
-  Sparkles
+  Sparkles,
+  Monitor
 } from 'lucide-react';
 import { MapGuideFlashcard } from './MapGuideFlashcard';
 import { TRANSLATIONS } from '../../data/kiosk/translations';
 import collegeBg from '../../assets/kiosk/college.png';
 import logo from '../../assets/kiosk/logo.png';
 
-export const InstructionDashboard = ({ 
-  onViewMap, 
-  onGoHome, 
+export const InstructionDashboard = ({
+  onViewMap,
+  onGoHome,
   onSelectService,
   onOpenClassrooms,
   onOpenFaculty,
@@ -47,39 +48,40 @@ export const InstructionDashboard = ({
   };
 
   return (
-    <section 
-      id="screen-instructions" 
-      className="screen active glass-dashboard-screen" 
-      role="region" 
+    <section
+      id="screen-instructions"
+      className="screen active glass-dashboard-screen"
+      role="region"
       aria-label="Campus Compass Services"
       style={{ backgroundColor: '#F8F9FA' }}
     >
       <div className="glass-main-wrapper">
         {/* Top Navigation */}
         <header className="glass-top-nav">
-          <div className="glass-brand" onClick={onGoHome} style={{ cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '1rem' }}>
-            <img src={logo} alt="Logo" style={{ height: '48px' }} />
-            <div style={{ display: 'flex', flexDirection: 'column', textAlign: 'left' }}>
+          <div className="glass-brand" onClick={onGoHome} style={{ cursor: 'pointer' }}>
+            <img src={logo} alt="Logo" className="glass-brand-logo-img" />
+            <div className="glass-brand-text">
               <span className="glass-brand-name">Campus Compass</span>
-              <span style={{ fontSize: '0.7rem', color: '#6B7280', fontWeight: 700, letterSpacing: '0.12em', marginTop: '2px' }}>SCAN • SEARCH • NAVIGATE</span>
+              <span className="glass-brand-subtitle">SCAN • SEARCH • NAVIGATE</span>
             </div>
           </div>
 
           <div className="glass-nav-right">
             <div className="glass-time-menu-pill">
               <span className="glass-time">{currentTime}</span>
-              <div className="glass-menu-divider"></div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '0.45rem' }}>
-                <SunMedium size={18} color="#1A1A1A" />
-                <span style={{ fontSize: '0.9rem', fontWeight: 600 }}>{t.weather || '24°C'}</span>
+              <div className="glass-menu-divider glass-time-divider"></div>
+              <div className="glass-pill-weather">
+                <SunMedium size={16} color="#1A1A1A" />
+                <span className="glass-weather-text">{t.weather || '24°C'}</span>
               </div>
               <div className="glass-menu-divider"></div>
-              <button 
-                onClick={onToggleSound} 
+              <button
+                onClick={onToggleSound}
                 title={soundEnabled ? "Mute Sound" : "Enable Sound"}
+                className="glass-audio-btn"
                 style={{ background: 'transparent', border: 'none', color: '#1A1A1A', cursor: 'pointer', display: 'flex', alignItems: 'center', padding: 0 }}
               >
-                {soundEnabled ? <Volume2 size={20} color="#1A1A1A" /> : <VolumeX size={20} color="#6B7280" />}
+                {soundEnabled ? <Volume2 size={18} color="#1A1A1A" /> : <VolumeX size={18} color="#6B7280" />}
               </button>
             </div>
           </div>
@@ -93,7 +95,7 @@ export const InstructionDashboard = ({
           </h1>
 
           <div className="glass-cta-row">
-            <button 
+            <button
               className="btn-glass-explore"
               onClick={() => onViewMap()}
             >
@@ -110,14 +112,7 @@ export const InstructionDashboard = ({
           <div className="glass-card" onClick={() => handleCardClick('classrooms')}>
             <div className="glass-card-content">
               <div className="glass-card-icon-wrap" style={{ background: '#F0F0F0', color: '#1A1A1A', borderRadius: '50%' }}>
-                <svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="#1A1A1A" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
-                  <rect x="2" y="3" width="20" height="14" rx="2" />
-                  <line x1="8" y1="21" x2="16" y2="21" />
-                  <line x1="12" y1="17" x2="12" y2="21" />
-                  <circle cx="7" cy="9" r="1.5" />
-                  <circle cx="12" cy="9" r="1.5" />
-                  <circle cx="17" cy="9" r="1.5" />
-                </svg>
+                <Monitor size={28} color="#1A1A1A" />
               </div>
               <div className="glass-card-text-group">
                 <h3 className="glass-card-title">Classrooms</h3>
@@ -133,7 +128,7 @@ export const InstructionDashboard = ({
           <div className="glass-card" onClick={() => handleCardClick('faculty')}>
             <div className="glass-card-content">
               <div className="glass-card-icon-wrap" style={{ background: '#F0F0F0', color: '#1A1A1A', borderRadius: '50%' }}>
-                <User size={28} strokeWidth={2.2} color="#1A1A1A" />
+                <User size={28} color="#1A1A1A" />
               </div>
               <div className="glass-card-text-group">
                 <h3 className="glass-card-title">Faculties</h3>
@@ -149,7 +144,7 @@ export const InstructionDashboard = ({
           <div className="glass-card" onClick={() => handleCardClick('outdoor')}>
             <div className="glass-card-content">
               <div className="glass-card-icon-wrap" style={{ background: '#F0F0F0', color: '#1A1A1A', borderRadius: '50%' }}>
-                <MapPin size={28} strokeWidth={2.2} color="#1A1A1A" />
+                <MapPin size={28} color="#1A1A1A" />
               </div>
               <div className="glass-card-text-group">
                 <h3 className="glass-card-title">Outdoor Navigation</h3>
@@ -163,7 +158,7 @@ export const InstructionDashboard = ({
         </div>
 
         {/* Quick Tip Banner */}
-        <div 
+        <div
           className="glass-quick-tip-banner"
           onClick={() => setIsInstructionFlashcardOpen(true)}
           role="button"
@@ -174,13 +169,20 @@ export const InstructionDashboard = ({
           </div>
           <div className="glass-tip-vertical-divider"></div>
           <div className="glass-tip-text-content">
-            <h4 className="glass-tip-title">Interactive Quick Guide</h4>
+            <h4 className="glass-tip-title">Quick Guide</h4>
             <p className="glass-tip-desc">Select any destination card or use the live search bar on the map screen for turn-by-turn routes.</p>
           </div>
         </div>
+
+        {/* Screen Indicators */}
+        <div className="landing-indicators" style={{ alignSelf: 'center', marginTop: '1rem', paddingBottom: '0.5rem' }}>
+          <div className="indicator" onClick={onGoHome} style={{ cursor: 'pointer' }}></div>
+          <div className="indicator active"></div>
+          <div className="indicator" onClick={onViewMap} style={{ cursor: 'pointer' }}></div>
+        </div>
       </div>
 
-      <MapGuideFlashcard 
+      <MapGuideFlashcard
         isOpen={isInstructionFlashcardOpen}
         onClose={() => setIsInstructionFlashcardOpen(false)}
         onGoToMap={() => {

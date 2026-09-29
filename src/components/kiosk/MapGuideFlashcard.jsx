@@ -1,21 +1,21 @@
 import React from 'react';
-import { 
-  ArrowLeft, 
-  Search, 
-  MapPin, 
-  Navigation, 
-  Compass, 
+import {
+  ArrowLeft,
+  Search,
+  MapPin,
+  Navigation,
+  Compass,
   Lightbulb,
   X,
   ChevronRight
 } from 'lucide-react';
 import { TRANSLATIONS } from '../../data/kiosk/translations';
 
-export const MapGuideFlashcard = ({ 
-  isOpen, 
-  onClose, 
+export const MapGuideFlashcard = ({
+  isOpen,
+  onClose,
   onGoToMap,
-  language = 'en' 
+  language = 'en'
 }) => {
   if (!isOpen) return null;
 
@@ -31,12 +31,9 @@ export const MapGuideFlashcard = ({
   return (
     <div className="modal-backdrop open" onClick={onClose} role="dialog" aria-modal="true">
       <div className="campus-instruction-flashcard" onClick={(e) => e.stopPropagation()}>
-        {/* Top Bar with Back/Close */}
+        {/* Top Bar with Badge & Single Close Button */}
         <div className="flashcard-top-nav">
-          <button className="btn-flashcard-back" onClick={onClose}>
-            <ArrowLeft size={18} />
-            <span>Back</span>
-          </button>
+          <span className="flashcard-badge">✨ Quick Guide</span>
           <button className="btn-flashcard-close" onClick={onClose} aria-label="Close">
             <X size={18} />
           </button>
@@ -56,18 +53,15 @@ export const MapGuideFlashcard = ({
             const badge = stepBadges[idx];
             return (
               <div key={idx} className="campus-step-card">
-                <div 
-                  className="step-num-circle" 
-                  style={{ backgroundColor: badge.bg, color: badge.text }}
-                >
-                  {badge.num}
-                </div>
-                <div className="step-icon-circle">
-                  {badge.icon}
+                <div className="step-badge-wrap">
+                  <div className="step-icon-circle">
+                    {badge.icon}
+                  </div>
+                  <span className="step-num-badge">{badge.num}</span>
                 </div>
                 <div className="step-text-content">
-                  <h4>{step.title}</h4>
-                  <p>{step.desc}</p>
+                  <h4 className="step-card-title">{step.title}</h4>
+                  <p className="step-card-desc">{step.desc}</p>
                 </div>
               </div>
             );
@@ -77,7 +71,7 @@ export const MapGuideFlashcard = ({
         {/* Tip Box */}
         <div className="flashcard-tip-box">
           <div className="tip-icon-wrapper">
-            <Lightbulb size={22} color="#1A1A1A" />
+            <Lightbulb size={20} color="#1A1A1A" />
           </div>
           <div className="tip-text">
             <strong>{t.tipTitle}:</strong> {t.tipDesc}
@@ -86,13 +80,12 @@ export const MapGuideFlashcard = ({
 
         {/* Bottom Actions */}
         <div className="flashcard-actions-row">
-          <button className="btn-flashcard-home" onClick={onClose}>
-            <ArrowLeft size={18} />
-            <span>{t.backToHome}</span>
+          <button className="btn-flashcard-got-it" onClick={onClose}>
+            <span>Got It</span>
           </button>
           {onGoToMap && (
             <button className="btn-flashcard-view-map" onClick={() => { onClose(); onGoToMap(); }}>
-              <span>{t.viewMap}</span>
+              <span>{t.viewMap || "Explore Map"}</span>
               <ChevronRight size={18} />
             </button>
           )}

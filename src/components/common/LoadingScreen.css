@@ -10,15 +10,11 @@
   align-items: center;
   justify-content: center;
   background: rgba(15, 23, 42, 0.82);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
   transition: background 0.9s ease, backdrop-filter 0.9s ease, -webkit-backdrop-filter 0.9s ease;
 }
 
 .minimal-loading-overlay--fade {
   background: rgba(15, 23, 42, 0);
-  backdrop-filter: blur(0px);
-  -webkit-backdrop-filter: blur(0px);
   pointer-events: none;
 }
 
