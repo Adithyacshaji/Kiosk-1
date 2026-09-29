@@ -355,7 +355,7 @@ function SearchField({ id, label, value, onChange, onSelect, results, isReadOnly
             return (
             <button
               key={`${item.id}-${idx}`}
-              className={`w-full text-left px-5 py-3 flex items-center gap-4 transition-colors ${idx === activeIndex ? "bg-blue-50/80" : "hover:bg-gray-50"}`}
+              className={`w-full text-left px-5 py-3 flex items-center gap-4 transition-colors ${idx === activeIndex ? "bg-gray-100/80" : "hover:bg-gray-50"}`}
               type="button"
               onMouseDown={() => onSelect(item)}
               onMouseEnter={() => setActiveIndex(idx)}
@@ -649,7 +649,7 @@ export default function YDCard({
             </strong> of <strong>{(dest.building || "").toLowerCase().includes("chavara") ? "St Chavara Block" : "St Mary's Block"}</strong>.
           </p>
           <button
-            className="w-full h-11.5 bg-primary hover:bg-primary-hover disabled:bg-gray-300 disabled:text-gray-500 text-white font-semibold rounded-full transition-all shadow-[0_4px_12px_rgb(37,99,235,0.2)] flex items-center justify-center cursor-pointer disabled:cursor-not-allowed text-[15px]"
+            className="w-full h-11.5 bg-[#1A1A1A] hover:bg-black disabled:bg-gray-300 disabled:text-gray-500 text-white font-semibold rounded-full transition-all shadow-sm flex items-center justify-center cursor-pointer disabled:cursor-not-allowed text-[15px]"
             type="button"
             disabled={!source || !dest}
             onClick={handleIndoorRoute}

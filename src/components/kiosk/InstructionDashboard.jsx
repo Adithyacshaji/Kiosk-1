@@ -52,16 +52,16 @@ export const InstructionDashboard = ({
       className="screen active glass-dashboard-screen" 
       role="region" 
       aria-label="Campus Compass Services"
-      style={{ backgroundImage: `linear-gradient(rgba(11, 17, 32, 0.55), rgba(11, 17, 32, 0.7)), url(${collegeBg})` }}
+      style={{ backgroundColor: '#F8F9FA' }}
     >
       <div className="glass-main-wrapper">
         {/* Top Navigation */}
         <header className="glass-top-nav">
           <div className="glass-brand" onClick={onGoHome} style={{ cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '1rem' }}>
-            <img src={logo} alt="Logo" style={{ height: '48px', filter: 'drop-shadow(0 4px 12px rgba(0,0,0,0.3))' }} />
+            <img src={logo} alt="Logo" style={{ height: '48px' }} />
             <div style={{ display: 'flex', flexDirection: 'column', textAlign: 'left' }}>
               <span className="glass-brand-name">Campus Compass</span>
-              <span style={{ fontSize: '0.7rem', color: '#90bbac', fontWeight: 700, letterSpacing: '0.12em', marginTop: '2px' }}>SCAN • SEARCH • NAVIGATE</span>
+              <span style={{ fontSize: '0.7rem', color: '#6B7280', fontWeight: 700, letterSpacing: '0.12em', marginTop: '2px' }}>SCAN • SEARCH • NAVIGATE</span>
             </div>
           </div>
 
@@ -70,16 +70,16 @@ export const InstructionDashboard = ({
               <span className="glass-time">{currentTime}</span>
               <div className="glass-menu-divider"></div>
               <div style={{ display: 'flex', alignItems: 'center', gap: '0.45rem' }}>
-                <SunMedium size={18} color="#90bbac" />
+                <SunMedium size={18} color="#1A1A1A" />
                 <span style={{ fontSize: '0.9rem', fontWeight: 600 }}>{t.weather || '24°C'}</span>
               </div>
               <div className="glass-menu-divider"></div>
               <button 
                 onClick={onToggleSound} 
                 title={soundEnabled ? "Mute Sound" : "Enable Sound"}
-                style={{ background: 'transparent', border: 'none', color: 'white', cursor: 'pointer', display: 'flex', alignItems: 'center', padding: 0 }}
+                style={{ background: 'transparent', border: 'none', color: '#1A1A1A', cursor: 'pointer', display: 'flex', alignItems: 'center', padding: 0 }}
               >
-                {soundEnabled ? <Volume2 size={20} color="#90bbac" /> : <VolumeX size={20} color="#e2e8f0" />}
+                {soundEnabled ? <Volume2 size={20} color="#1A1A1A" /> : <VolumeX size={20} color="#6B7280" />}
               </button>
             </div>
           </div>
@@ -109,8 +109,8 @@ export const InstructionDashboard = ({
           {/* Card 1: Classroom */}
           <div className="glass-card" onClick={() => handleCardClick('classrooms')}>
             <div className="glass-card-content">
-              <div className="glass-card-icon-wrap" style={{ background: 'linear-gradient(135deg, #749c8e 0%, #4a7467 100%)' }}>
-                <svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+              <div className="glass-card-icon-wrap" style={{ background: '#F0F0F0', color: '#1A1A1A', borderRadius: '50%' }}>
+                <svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="#1A1A1A" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
                   <rect x="2" y="3" width="20" height="14" rx="2" />
                   <line x1="8" y1="21" x2="16" y2="21" />
                   <line x1="12" y1="17" x2="12" y2="21" />
@@ -125,15 +125,15 @@ export const InstructionDashboard = ({
               </div>
             </div>
             <div className="glass-card-arrow">
-              <ArrowRight size={22} color="#ffffff" />
+              <ArrowRight size={22} color="#1A1A1A" />
             </div>
           </div>
 
           {/* Card 2: Faculties */}
           <div className="glass-card" onClick={() => handleCardClick('faculty')}>
             <div className="glass-card-content">
-              <div className="glass-card-icon-wrap" style={{ background: 'linear-gradient(135deg, #5b8ba3 0%, #3a6379 100%)' }}>
-                <User size={28} strokeWidth={2.2} />
+              <div className="glass-card-icon-wrap" style={{ background: '#F0F0F0', color: '#1A1A1A', borderRadius: '50%' }}>
+                <User size={28} strokeWidth={2.2} color="#1A1A1A" />
               </div>
               <div className="glass-card-text-group">
                 <h3 className="glass-card-title">Faculties</h3>
@@ -141,15 +141,15 @@ export const InstructionDashboard = ({
               </div>
             </div>
             <div className="glass-card-arrow">
-              <ArrowRight size={22} color="#ffffff" />
+              <ArrowRight size={22} color="#1A1A1A" />
             </div>
           </div>
 
           {/* Card 3: Outdoor Navigation */}
           <div className="glass-card" onClick={() => handleCardClick('outdoor')}>
             <div className="glass-card-content">
-              <div className="glass-card-icon-wrap" style={{ background: 'linear-gradient(135deg, #b87d4b 0%, #8c5b30 100%)' }}>
-                <MapPin size={28} strokeWidth={2.2} />
+              <div className="glass-card-icon-wrap" style={{ background: '#F0F0F0', color: '#1A1A1A', borderRadius: '50%' }}>
+                <MapPin size={28} strokeWidth={2.2} color="#1A1A1A" />
               </div>
               <div className="glass-card-text-group">
                 <h3 className="glass-card-title">Outdoor Navigation</h3>
@@ -157,7 +157,7 @@ export const InstructionDashboard = ({
               </div>
             </div>
             <div className="glass-card-arrow">
-              <ArrowRight size={22} color="#ffffff" />
+              <ArrowRight size={22} color="#1A1A1A" />
             </div>
           </div>
         </div>
@@ -170,7 +170,7 @@ export const InstructionDashboard = ({
           tabIndex={0}
         >
           <div className="glass-tip-icon-badge">
-            <Info size={24} color="#90bbac" />
+            <Info size={24} color="#1A1A1A" />
           </div>
           <div className="glass-tip-vertical-divider"></div>
           <div className="glass-tip-text-content">

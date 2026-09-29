@@ -1,5 +1,5 @@
 import React from 'react';
-import { SunMedium, Clock } from 'lucide-react';
+import { SunMedium, Clock, Compass } from 'lucide-react';
 import { ThemeToggle } from './ThemeToggle';
 import { TRANSLATIONS } from '../../data/kiosk/translations';
 import logoImg from '../../assets/kiosk/logo.png';
@@ -16,33 +16,26 @@ export const LandingScreen = ({
 }) => {
   const t = TRANSLATIONS[language] || TRANSLATIONS.en;
 
-  const handleScreenTouch = () => {
-    onStart();
-  };
-
   return (
     <section 
       id="screen-landing" 
       className={`screen active minimal-landing theme-${theme}`}
-      onClick={handleScreenTouch}
       role="region" 
       aria-label="Welcome Landing Page"
       style={{ 
-        backgroundImage: `linear-gradient(rgba(11, 17, 32, 0.75), rgba(11, 17, 32, 0.85)), url(${collegeBg})`,
-        backgroundSize: 'cover',
-        backgroundPosition: 'center'
+        backgroundColor: '#F8F9FA'
       }}
     >
       <div className="glass-main-wrapper" style={{ justifyContent: 'space-between', height: '100%' }}>
         {/* Top Status Bar with Time, Weather & Light/Dark Switch */}
         <header className="landing-minimal-header" onClick={(e) => e.stopPropagation()}>
           <div className="landing-header-left">
-            <div className="landing-weather-pill" style={{ boxShadow: '0 0 15px rgba(255,255,255,0.15)', border: '1px solid rgba(255,255,255,0.25)' }}>
-              <SunMedium size={18} className="pill-icon-weather" />
+            <div className="landing-weather-pill" style={{ background: '#1A1A1A', border: 'none', color: '#ffffff' }}>
+              <SunMedium size={18} className="pill-icon-weather" color="#ffffff" />
               <span>{t.weather || '24°C'}</span>
             </div>
-            <div className="landing-time-pill" style={{ boxShadow: '0 0 15px rgba(255,255,255,0.15)', border: '1px solid rgba(255,255,255,0.25)' }}>
-              <Clock size={18} className="pill-icon-time" />
+            <div className="landing-time-pill" style={{ background: '#1A1A1A', border: 'none', color: '#ffffff' }}>
+              <Clock size={18} className="pill-icon-time" color="#ffffff" />
               <span className="time-clock">{currentTime}</span>
             </div>
           </div>
@@ -66,9 +59,43 @@ export const LandingScreen = ({
               className="landing-center-logo" 
             />
           </div>
-          <p className="landing-pulsing-text">
-            Tap anywhere to explore campus
-          </p>
+          <button 
+            onClick={onStart}
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '14px',
+              background: '#1A1A1A',
+              color: '#ffffff',
+              border: 'none',
+              borderRadius: '9999px',
+              padding: '20px 48px',
+              fontSize: '1.25rem',
+              fontWeight: 800,
+              cursor: 'pointer',
+              boxShadow: '0 12px 32px rgba(0,0,0,0.15)',
+              transition: 'all 0.2s cubic-bezier(0.16, 1, 0.3, 1)',
+              marginTop: '1.5rem',
+              letterSpacing: '0.02em'
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.transform = 'translateY(-4px) scale(1.02)';
+              e.currentTarget.style.boxShadow = '0 16px 40px rgba(0,0,0,0.2)';
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.transform = 'translateY(0) scale(1)';
+              e.currentTarget.style.boxShadow = '0 12px 32px rgba(0,0,0,0.15)';
+            }}
+            onMouseDown={(e) => {
+              e.currentTarget.style.transform = 'translateY(2px) scale(0.98)';
+            }}
+            onMouseUp={(e) => {
+              e.currentTarget.style.transform = 'translateY(-4px) scale(1.02)';
+            }}
+          >
+            <Compass size={28} strokeWidth={2.5} />
+            <span>Explore Campus</span>
+          </button>
         </main>
 
         {/* Footer */}

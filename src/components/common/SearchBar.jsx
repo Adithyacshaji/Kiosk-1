@@ -481,7 +481,7 @@ function SearchBar({ onSelect, currentFloor = "G", isIndoorMode = false, clearRe
 
   return (
     <div className="w-full mx-auto relative px-4 pointer-events-auto" ref={containerRef}>
-      <div className="flex items-center gap-2 h-12.5 rounded-[30px] bg-white shadow-[0_8px_30px_rgb(0,0,0,0.1)] border border-gray-100 pl-5 pr-2 transition-all duration-300 focus-within:shadow-[0_8px_40px_rgb(37,99,235,0.15)] focus-within:ring-2 focus-within:ring-primary/20">
+      <div className="flex items-center gap-2 h-12.5 rounded-full bg-white shadow-[0_8px_24px_rgba(0,0,0,0.10)] border border-gray-100 pl-5 pr-2 transition-all duration-300 focus-within:shadow-[0_12px_32px_rgba(0,0,0,0.15)] focus-within:ring-2 focus-within:ring-gray-200">
         <Search className="text-gray-400 shrink-0" size={22} />
         <input
           ref={inputRef}
@@ -517,7 +517,7 @@ function SearchBar({ onSelect, currentFloor = "G", isIndoorMode = false, clearRe
       </div>
 
       {showResults && (
-        <div className="absolute top-18 left-4 right-4 bg-white/95 backdrop-blur-xl rounded-3xl shadow-[0_12px_40px_rgb(0,0,0,0.15)] border border-gray-100 overflow-hidden z-2000" ref={resultsRef}>
+        <div className="absolute top-18 left-4 right-4 bg-white/95 backdrop-blur-xl rounded-[32px] shadow-md border border-gray-100 overflow-hidden z-2000" ref={resultsRef}>
           {results.length > 0 ? (
             <div className="py-2 max-h-[60vh] overflow-y-auto custom-scrollbar">
               {results.map((location, index) => {
@@ -527,7 +527,7 @@ function SearchBar({ onSelect, currentFloor = "G", isIndoorMode = false, clearRe
 
                 return (
                   <button
-                    className={`w-full text-left px-5 py-3 flex items-center gap-4 transition-colors ${index === activeIndex ? "bg-blue-50/80" : "hover:bg-gray-50"}`}
+                    className={`w-full text-left px-5 py-3 flex items-center gap-4 transition-colors ${index === activeIndex ? "bg-gray-100/80" : "hover:bg-gray-50"}`}
                     key={`${location.id}-${index}`}
                     onClick={() => handleSelect(location)}
                     onMouseEnter={() => setActiveIndex(index)}

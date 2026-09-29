@@ -180,10 +180,10 @@ export const ClassroomsScreen = ({
                     fontWeight: 700,
                     cursor: 'pointer',
                     transition: 'all 0.15s ease',
-                    background: selectedYear === chip.id ? 'rgba(144, 187, 172, 0.45)' : 'rgba(255, 255, 255, 0.14)',
-                    color: '#ffffff',
+                    background: selectedYear === chip.id ? '#ffffff' : 'rgba(255, 255, 255, 0.14)',
+                    color: selectedYear === chip.id ? '#1A1A1A' : '#ffffff',
                     border: selectedYear === chip.id ? '1.5px solid #ffffff' : '1px solid rgba(255, 255, 255, 0.3)',
-                    boxShadow: selectedYear === chip.id ? '0 0 14px rgba(144, 187, 172, 0.35)' : 'none'
+                    boxShadow: selectedYear === chip.id ? '0 0 14px rgba(255, 255, 255, 0.35)' : 'none'
                   }}
                 >
                   {chip.label}
@@ -205,10 +205,10 @@ export const ClassroomsScreen = ({
                     fontWeight: 700,
                     cursor: 'pointer',
                     transition: 'all 0.15s ease',
-                    background: selectedSemester === sem ? 'rgba(93, 133, 155, 0.55)' : 'rgba(255, 255, 255, 0.10)',
-                    color: '#ffffff',
+                    background: selectedSemester === sem ? '#ffffff' : 'rgba(255, 255, 255, 0.10)',
+                    color: selectedSemester === sem ? '#1A1A1A' : '#ffffff',
                     border: selectedSemester === sem ? '1.5px solid #ffffff' : '1px solid rgba(255, 255, 255, 0.22)',
-                    boxShadow: selectedSemester === sem ? '0 0 10px rgba(93, 133, 155, 0.35)' : 'none'
+                    boxShadow: selectedSemester === sem ? '0 0 10px rgba(255, 255, 255, 0.35)' : 'none'
                   }}
                 >
                   {sem === 'All' ? 'All' : sem}
@@ -264,7 +264,7 @@ export const ClassroomsScreen = ({
                 <p style={{ fontSize: '1.1rem', fontWeight: 600, color: '#ffffff' }}>No classrooms found matching this filter.</p>
                 <button 
                   onClick={() => { setSelectedYear('1'); setSelectedSemester('S1'); }}
-                  style={{ marginTop: '0.8rem', padding: '0.5rem 1.2rem', borderRadius: '30px', background: 'rgba(144,187,172,0.4)', color: '#fff', border: '1px solid #fff', cursor: 'pointer', fontWeight: 700 }}
+                  style={{ marginTop: '0.8rem', padding: '0.5rem 1.2rem', borderRadius: '30px', background: '#1A1A1A', color: '#fff', border: '1px solid #fff', cursor: 'pointer', fontWeight: 700 }}
                 >
                   Reset Filters
                 </button>
@@ -276,7 +276,7 @@ export const ClassroomsScreen = ({
         {/* Directory Footer */}
         <footer className="campus-bottom-footer">
           <div className="footer-left-info">
-            <MapPin size={16} color="#90bbac" />
+            <MapPin size={16} color="#ffffff" />
             <span>Christ College of Engineering (Autonomous) | Classroom Directory</span>
           </div>
           <div className="footer-right-motto">

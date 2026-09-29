@@ -2729,11 +2729,11 @@ function MainApp() {
                   borderRadius: '9999px', padding: '0 20px 0 16px', height: 52, display: 'flex',
                   alignItems: 'center', gap: 10, cursor: 'pointer',
                   boxShadow: '0 8px 24px rgba(0, 0, 0, 0.10)', backdropFilter: 'blur(16px)',
-                  color: '#0f294a', transition: 'all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1)'
+                  color: '#1A1A1A', transition: 'all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1)'
                 }}
               >
-                <Home size={20} color="#0f294a" strokeWidth={2.4} />
-                <span style={{ fontWeight: 800, fontSize: '15px', letterSpacing: '0.3px', color: '#0f294a' }}>Home</span>
+                <Home size={20} color="#1A1A1A" strokeWidth={2.4} />
+                <span style={{ fontWeight: 800, fontSize: '15px', letterSpacing: '0.3px', color: '#1A1A1A' }}>Home</span>
               </button>
 
               {/* Top Right: Time Pill */}
@@ -2752,8 +2752,8 @@ function MainApp() {
                   <span style={{ color: '#15803d', fontWeight: 800, fontSize: '11.5px', letterSpacing: '0.06em' }}>LIVE MAP</span>
                 </div>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-                  <Clock size={18} color="#0f294a" strokeWidth={2.4} />
-                  <span style={{ color: '#0f294a', fontWeight: 800, fontSize: '16px', letterSpacing: '0.5px' }}>{currentTime}</span>
+                  <Clock size={18} color="#1A1A1A" strokeWidth={2.4} />
+                  <span style={{ color: '#1A1A1A', fontWeight: 800, fontSize: '16px', letterSpacing: '0.5px' }}>{currentTime}</span>
                 </div>
               </div>
 
@@ -3227,7 +3227,7 @@ function MainApp() {
 
         <Suspense fallback={
           <div className="absolute inset-0 flex flex-col items-center justify-center bg-gray-50 text-gray-500 font-semibold z-1300">
-            <div className="w-10 h-10 border-4 border-blue-500 border-t-transparent rounded-full animate-spin mb-4"></div>
+            <div className="w-10 h-10 border-4 border-[#1A1A1A] border-t-transparent rounded-full animate-spin mb-4"></div>
             Loading Map View...
           </div>
         }>

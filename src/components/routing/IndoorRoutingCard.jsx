@@ -48,8 +48,8 @@ function RouteField({ label, value, onChange, onSelect, options, showHint = fals
 
   return (
     <label className="relative flex flex-col">
-      <div className={`flex items-center gap-2 h-10 px-3 rounded-[12px] border bg-gray-50 transition-all ${focused ? "border-primary bg-white shadow-[0_4px_12px_rgb(37,99,235,0.1)] ring-2 ring-primary/20" : "border-gray-200"}`}>
-        <MapPin size={16} className={`shrink-0 ${value ? "text-primary" : "text-gray-400"}`} aria-hidden="true" />
+      <div className={`flex items-center gap-2 h-10 px-3 rounded-full border bg-gray-50 transition-all ${focused ? "border-black bg-white shadow-sm ring-2 ring-gray-200" : "border-gray-200"}`}>
+        <MapPin size={16} className={`shrink-0 ${value ? "text-black" : "text-gray-400"}`} aria-hidden="true" />
         <input
           className="flex-1 bg-transparent border-none outline-none text-[14px] text-gray-900 font-medium placeholder-gray-400 min-w-0"
           value={value}
@@ -71,7 +71,7 @@ function RouteField({ label, value, onChange, onSelect, options, showHint = fals
         )}
       </div>
       {showHint && !focused && !value && (
-        <div className="absolute top-[44px] left-2 flex items-center gap-2 px-3 py-1.5 bg-blue-50 text-primary rounded-full text-[12px] font-semibold animate-[slideUp_0.3s_ease-out] z-10 border border-blue-100 shadow-sm" aria-live="polite">
+        <div className="absolute top-[44px] left-2 flex items-center gap-2 px-3 py-1.5 bg-gray-100 text-[#1A1A1A] rounded-full text-[12px] font-semibold animate-[slideUp_0.3s_ease-out] z-10 border border-gray-200 shadow-sm" aria-live="polite">
           <span>📍</span>
           <span>{showHint}</span>
         </div>
@@ -147,7 +147,7 @@ export default function IndoorRoutingCard({ onRoute, onOutdoorNavigation, initia
 
   return (
     <section className="absolute top-0 left-0 right-0 z-2000 pointer-events-none p-3" aria-label="Indoor route planner">
-      <div className="relative bg-white/95 backdrop-blur-xl rounded-[20px] shadow-[0_12px_40px_rgb(0,0,0,0.15)] border border-gray-100 p-3 pointer-events-auto max-w-[520px] mx-auto animate-[slideUp_0.4s_cubic-bezier(0.16,1,0.3,1)]">
+      <div className="relative bg-white/95 backdrop-blur-xl rounded-[32px] shadow-md border border-gray-100 p-3 pointer-events-auto max-w-[520px] mx-auto animate-[slideUp_0.4s_cubic-bezier(0.16,1,0.3,1)]">
         <div className="flex gap-3 items-center">
           <div className="relative flex-1 flex flex-col gap-2">
             <RouteField
@@ -176,7 +176,7 @@ export default function IndoorRoutingCard({ onRoute, onOutdoorNavigation, initia
 
           <div className="flex shrink-0">
             <button
-              className="w-12 h-12 bg-primary hover:bg-primary-hover disabled:bg-gray-300 disabled:text-gray-500 disabled:shadow-none text-white rounded-full transition-all shadow-[0_4px_12px_rgb(37,99,235,0.2)] flex items-center justify-center cursor-pointer"
+              className="w-12 h-12 bg-[#1A1A1A] hover:bg-black disabled:bg-gray-300 disabled:text-gray-500 disabled:shadow-none text-white rounded-full transition-all shadow-sm flex items-center justify-center cursor-pointer"
               type="button"
               onClick={() => source && destination && onRoute(source, destination)}
               disabled={!source || !destination}

@@ -23,7 +23,7 @@
   background: rgba(255, 255, 255, 0.97);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
-  border-radius: 20px;
+  border-radius: 32px;
   box-shadow:
     0 8px 32px rgba(0, 0, 0, 0.12),
     0 2px 8px rgba(0, 0, 0, 0.06);
@@ -72,8 +72,8 @@
 }
 
 .yd-dot--origin {
-  background: #3b82f6;
-  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
+  background: #1A1A1A;
+  box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.12);
 }
 
 .yd-dot--dest {
@@ -106,8 +106,8 @@
   display: flex;
   align-items: center;
   gap: 8px;
-  height: 34px;
-  border-radius: 10px;
+  height: 40px;
+  border-radius: 9999px;
   border: 1.5px solid #e5e7eb;
   background: #f9fafb;
   padding: 0 10px;
@@ -115,9 +115,9 @@
 }
 
 .yd-field-inner--focused {
-  border-color: #3b82f6;
+  border-color: #1A1A1A;
   background: #fff;
-  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.12);
+  box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.08);
 }
 
 .yd-field-inner--readonly {
@@ -134,7 +134,7 @@
 }
 
 .yd-field-inner--focused .yd-field-icon {
-  color: #3b82f6;
+  color: #1A1A1A;
 }
 
 .yd-field-input {
@@ -217,15 +217,15 @@
 
 .yd-dropdown-item:hover,
 .yd-dropdown-item--active {
-  background: #eff6ff;
+  background: #F4F5F6;
 }
 
 .yd-dropdown-icon {
   width: 32px;
   height: 32px;
   border-radius: 50%;
-  background: #dbeafe;
-  color: #2563eb;
+  background: #EBEBEB;
+  color: #1A1A1A;
   display: flex;
   align-items: center;
   justify-content: center;

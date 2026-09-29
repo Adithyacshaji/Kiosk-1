@@ -22,10 +22,10 @@ export const MapGuideFlashcard = ({
   const t = TRANSLATIONS[language] || TRANSLATIONS.en;
 
   const stepBadges = [
-    { num: "1", bg: "#0B4A8B", text: "#FFFFFF", icon: <Search size={20} color="#0B4A8B" /> },
-    { num: "2", bg: "#3B9EEA", text: "#FFFFFF", icon: <MapPin size={20} color="#3B9EEA" /> },
-    { num: "3", bg: "#8DC63F", text: "#0B4A8B", icon: <Navigation size={20} color="#0B4A8B" /> },
-    { num: "4", bg: "#8FA8C2", text: "#0B4A8B", icon: <Compass size={20} color="#0B4A8B" /> }
+    { num: "1", bg: "#1A1A1A", text: "#FFFFFF", icon: <Search size={20} color="#1A1A1A" /> },
+    { num: "2", bg: "#1A1A1A", text: "#FFFFFF", icon: <MapPin size={20} color="#1A1A1A" /> },
+    { num: "3", bg: "#1A1A1A", text: "#FFFFFF", icon: <Navigation size={20} color="#1A1A1A" /> },
+    { num: "4", bg: "#1A1A1A", text: "#FFFFFF", icon: <Compass size={20} color="#1A1A1A" /> }
   ];
 
   return (
@@ -77,7 +77,7 @@ export const MapGuideFlashcard = ({
         {/* Tip Box */}
         <div className="flashcard-tip-box">
           <div className="tip-icon-wrapper">
-            <Lightbulb size={22} color="var(--c-azure)" />
+            <Lightbulb size={22} color="#1A1A1A" />
           </div>
           <div className="tip-text">
             <strong>{t.tipTitle}:</strong> {t.tipDesc}
