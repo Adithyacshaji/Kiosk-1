@@ -633,7 +633,8 @@ export const KIOSK_CONFIG = {
       tags: ["canteen", "food", "tea", "coffee", "lunch", "snacks", "outdoor"],
       estimatedWalkSeconds: 50,
       wheelchairAccessible: true,
-      building: "canteen"
+      building: "canteen",
+      routeNode: "canteen"
     },
     {
       id: "poi-out-christ-cafe",
@@ -648,7 +649,8 @@ export const KIOSK_CONFIG = {
       tags: ["cafe", "coffee", "snacks", "outdoor"],
       estimatedWalkSeconds: 40,
       wheelchairAccessible: true,
-      building: "christ cafe"
+      building: "christ cafe",
+      routeNode: "cafe"
     },
     {
       id: "poi-out-cake-farm",
@@ -663,7 +665,8 @@ export const KIOSK_CONFIG = {
       tags: ["bakery", "cake", "pastry", "outdoor"],
       estimatedWalkSeconds: 45,
       wheelchairAccessible: true,
-      building: "cake farm"
+      building: "cake farm",
+      routeNode: "canteen"
     },
     {
       id: "poi-out-st-marys",
@@ -678,7 +681,8 @@ export const KIOSK_CONFIG = {
       tags: ["block", "academic", "marys", "outdoor"],
       estimatedWalkSeconds: 60,
       wheelchairAccessible: true,
-      building: "stmarys"
+      building: "stmarys",
+      routeNode: "g"
     },
     {
       id: "poi-out-st-chavara",
@@ -693,7 +697,8 @@ export const KIOSK_CONFIG = {
       tags: ["block", "admin", "chavara", "outdoor"],
       estimatedWalkSeconds: 30,
       wheelchairAccessible: true,
-      building: "chavara"
+      building: "chavara",
+      routeNode: "chavara"
     }
   ]
 };

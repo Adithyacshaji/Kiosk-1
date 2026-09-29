@@ -39,7 +39,7 @@ export function KioskMapLayout({
   theme = 'light',
   mapSlot,
 }) {
-  const isSplit = kioskViewState === 'split-outdoor' || kioskViewState === 'split-indoor';
+  const isSplit = Boolean(destination) && (kioskViewState === 'split-outdoor' || kioskViewState === 'split-indoor');
 
   return (
     <div className={`kiosk-map-root theme-${theme}`}>
@@ -60,8 +60,8 @@ export function KioskMapLayout({
           </div>
         </div>
 
-        {/* RIGHT — Side Panel (visible only in split states) */}
-        {isSplit && (
+        {/* RIGHT — Side Panel (visible only when destination selected) */}
+        {isSplit && destination && (
           <div className="kiosk-panel-col">
             <KioskSidePanel
               viewState={kioskViewState}
@@ -76,7 +76,6 @@ export function KioskMapLayout({
             />
           </div>
         )}
-
       </div>
     </div>
   );

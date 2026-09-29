@@ -1,4 +1,5 @@
 import { Building2, Map, X, MapPin, Layers } from "lucide-react";
+import { getFacultyPhoto } from "../../utils/facultyPhotos";
 
 /**
  * DestinationInfoCard
@@ -16,14 +17,15 @@ import { Building2, Map, X, MapPin, Layers } from "lucide-react";
 function DestinationInfoCard({ destination, onViewIndoor, onClose }) {
   if (!destination) return null;
 
+  const isOutdoor = destination.category === "outdoor" || destination.type === "location" || (!destination.floor && !destination.indoorNode && !destination.room);
   const buildingRaw = (destination.building || "").toLowerCase();
   const isChavara = buildingRaw.includes("chavara");
-  const buildingName = isChavara ? "St Chavara Block" : "St Mary's Block";
-  const accentColor = isChavara ? "#7c3aed" : "#2563eb";
-  const accentBg = isChavara ? "#ede9fe" : "#dbeafe";
+  const buildingName = isOutdoor ? null : (isChavara ? "St Chavara Block" : "St Mary's Block");
+  const accentColor = isOutdoor ? "#16a34a" : (isChavara ? "#7c3aed" : "#2563eb");
+  const accentBg = isOutdoor ? "#dcfce7" : (isChavara ? "#ede9fe" : "#dbeafe");
 
   // Floor label
-  const rawFloor = destination.floor ? String(destination.floor).toUpperCase() : null;
+  const rawFloor = !isOutdoor && destination.floor ? String(destination.floor).toUpperCase() : null;
   let floorLabel = null;
   if (rawFloor) {
     if (rawFloor === "G" || rawFloor === "GROUND") floorLabel = "Ground Floor";
@@ -41,7 +43,7 @@ function DestinationInfoCard({ destination, onViewIndoor, onClose }) {
   }
 
   // Room number / node ID
-  const roomId = destination.indoorNode || destination.id || null;
+  const roomId = isOutdoor ? null : (destination.indoorNode || destination.room || null);
   const isRoom = destination.type === "room";
   const isFaculty = destination.type === "faculty";
 
@@ -126,41 +128,60 @@ function DestinationInfoCard({ destination, onViewIndoor, onClose }) {
           </button>
 
           {/* ── Destination heading ── */}
-          <div style={{ display: "flex", alignItems: "flex-start", gap: 14, marginBottom: 18 }}>
-            <div
-              style={{
-                width: 52,
-                height: 52,
-                borderRadius: 16,
-                background: accentBg,
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                flexShrink: 0,
-                boxShadow: `0 4px 12px ${accentColor}22`,
-              }}
-            >
-              <Building2 size={26} color={accentColor} strokeWidth={2} />
-            </div>
-            <div style={{ paddingTop: 2 }}>
-              <div
-                style={{
-                  fontSize: 18,
-                  fontWeight: 800,
-                  color: "#0f172a",
-                  lineHeight: 1.25,
-                  letterSpacing: "-0.01em",
-                }}
-              >
-                {destination.name}
-              </div>
-              {isFaculty && destination.designation && (
-                <div style={{ fontSize: 13, color: "#64748b", marginTop: 3 }}>
-                  {destination.designation}
+          {(() => {
+            const photoPath = isFaculty ? (destination.image_url || destination.photo || getFacultyPhoto(destination.name, destination.department || buildingName)) : null;
+
+            return (
+              <div style={{ display: "flex", alignItems: "flex-start", gap: 14, marginBottom: 18 }}>
+                <div
+                  style={{
+                    width: 52,
+                    height: 52,
+                    borderRadius: 16,
+                    background: photoPath ? "transparent" : accentBg,
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    flexShrink: 0,
+                    boxShadow: `0 4px 12px ${accentColor}22`,
+                    overflow: "hidden"
+                  }}
+                >
+                  {photoPath ? (
+                    <img 
+                      src={photoPath} 
+                      alt={destination.name}
+                      style={{ width: "100%", height: "100%", objectFit: "cover" }}
+                      onError={(e) => {
+                        e.target.style.display = "none";
+                        const svg = e.target.parentElement.querySelector("svg");
+                        if (svg) svg.style.display = "block";
+                      }}
+                    />
+                  ) : null}
+                  <Building2 size={26} color={accentColor} strokeWidth={2} style={{ display: photoPath ? "none" : "block" }} />
                 </div>
-              )}
-            </div>
-          </div>
+                <div style={{ paddingTop: 2 }}>
+                  <div
+                    style={{
+                      fontSize: 18,
+                      fontWeight: 800,
+                      color: "#0f172a",
+                      lineHeight: 1.25,
+                      letterSpacing: "-0.01em",
+                    }}
+                  >
+                    {destination.name}
+                  </div>
+                  {isFaculty && destination.designation && (
+                    <div style={{ fontSize: 13, color: "#64748b", marginTop: 3 }}>
+                      {destination.designation}
+                    </div>
+                  )}
+                </div>
+              </div>
+            );
+          })()}
 
           {/* ── Info pills ── */}
           <div
@@ -176,30 +197,32 @@ function DestinationInfoCard({ destination, onViewIndoor, onClose }) {
             }}
           >
             {/* Building row */}
-            <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-              <div
-                style={{
-                  width: 32,
-                  height: 32,
-                  borderRadius: 10,
-                  background: accentBg,
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  flexShrink: 0,
-                }}
-              >
-                <Building2 size={16} color={accentColor} strokeWidth={2} />
-              </div>
-              <div>
-                <div style={{ fontSize: 10.5, color: "#94a3b8", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.07em" }}>
-                  Building
+            {buildingName && (
+              <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+                <div
+                  style={{
+                    width: 32,
+                    height: 32,
+                    borderRadius: 10,
+                    background: accentBg,
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    flexShrink: 0,
+                  }}
+                >
+                  <Building2 size={16} color={accentColor} strokeWidth={2} />
                 </div>
-                <div style={{ fontSize: 14, fontWeight: 600, color: "#1e293b" }}>
-                  {buildingName}
+                <div>
+                  <div style={{ fontSize: 10.5, color: "#94a3b8", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.07em" }}>
+                    Building
+                  </div>
+                  <div style={{ fontSize: 14, fontWeight: 600, color: "#1e293b" }}>
+                    {buildingName}
+                  </div>
                 </div>
               </div>
-            </div>
+            )}
 
             {/* Floor row */}
             {floorLabel && (
@@ -266,39 +289,41 @@ function DestinationInfoCard({ destination, onViewIndoor, onClose }) {
 
           {/* ── Action buttons ── */}
           <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
-            <button
-              id="view-indoor-btn"
-              onClick={onViewIndoor}
-              style={{
-                width: "100%",
-                padding: "15px 0",
-                borderRadius: 16,
-                border: "none",
-                background: `linear-gradient(135deg, ${accentColor}, ${isChavara ? "#a78bfa" : "#3b82f6"})`,
-                color: "#fff",
-                fontSize: 15,
-                fontWeight: 700,
-                cursor: "pointer",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                gap: 9,
-                boxShadow: `0 4px 16px ${accentColor}44`,
-                transition: "transform 0.15s, box-shadow 0.15s",
-                letterSpacing: "0.01em",
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.transform = "scale(1.02)";
-                e.currentTarget.style.boxShadow = `0 8px 24px ${accentColor}55`;
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.transform = "scale(1)";
-                e.currentTarget.style.boxShadow = `0 4px 16px ${accentColor}44`;
-              }}
-            >
-              <Map size={18} />
-              View Indoor Location
-            </button>
+            {!isOutdoor && (
+              <button
+                id="view-indoor-btn"
+                onClick={onViewIndoor}
+                style={{
+                  width: "100%",
+                  padding: "15px 0",
+                  borderRadius: 16,
+                  border: "none",
+                  background: `linear-gradient(135deg, ${accentColor}, ${isChavara ? "#a78bfa" : "#3b82f6"})`,
+                  color: "#fff",
+                  fontSize: 15,
+                  fontWeight: 700,
+                  cursor: "pointer",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  gap: 9,
+                  boxShadow: `0 4px 16px ${accentColor}44`,
+                  transition: "transform 0.15s, box-shadow 0.15s",
+                  letterSpacing: "0.01em",
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.transform = "scale(1.02)";
+                  e.currentTarget.style.boxShadow = `0 8px 24px ${accentColor}55`;
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.transform = "scale(1)";
+                  e.currentTarget.style.boxShadow = `0 4px 16px ${accentColor}44`;
+                }}
+              >
+                <Map size={18} />
+                View Indoor Location
+              </button>
+            )}
 
             <button
               onClick={onClose}

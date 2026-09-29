@@ -12,6 +12,7 @@ export const PoiDrawer = ({
   if (!poi) return null;
 
   const category = KIOSK_CONFIG.categories.find(c => c.id === poi.category);
+  const isOutdoor = poi?.category === 'outdoor' || poi?.type === 'location' || (!poi?.floor && !poi?.indoorNode);
 
   return (
     <div className={`poi-detail-drawer ${isOpen ? 'open' : ''}`}>
@@ -34,10 +35,12 @@ export const PoiDrawer = ({
       </div>
 
       <div className="poi-meta-row">
-        <div className="poi-meta-item">
-          <Layers size={14} color="var(--accent-cyan)" />
-          <span>Level {poi.floor}</span>
-        </div>
+        {!isOutdoor && poi?.floor !== undefined && poi?.floor !== 0 && (
+          <div className="poi-meta-item">
+            <Layers size={14} color="var(--accent-cyan)" />
+            <span>Level {poi.floor}</span>
+          </div>
+        )}
         <div className="poi-meta-item">
           <Clock size={14} color="var(--accent-amber)" />
           <span>{poi.hours || 'Open Today'}</span>

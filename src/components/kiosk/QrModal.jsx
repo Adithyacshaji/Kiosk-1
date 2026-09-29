@@ -33,9 +33,17 @@ export const QrModal = ({ isOpen, poi, onClose }) => {
   queryParams.set('startNode', 'g');
   if (destId) queryParams.set('dest', destId);
   if (name) queryParams.set('name', name);
-  if (building) queryParams.set('building', building);
-  if (floor !== '') queryParams.set('floor', String(floor));
-  if (type) queryParams.set('type', type);
+  
+  const isOutdoor = poi?.category === 'outdoor' || poi?.type === 'location' || (!poi?.floor && !poi?.indoorNode && !poi?.room);
+  
+  if (!isOutdoor) {
+    if (building) queryParams.set('building', building);
+    if (floor !== '') queryParams.set('floor', String(floor));
+    if (type) queryParams.set('type', type);
+  } else {
+    queryParams.set('category', 'outdoor');
+  }
+  
   queryParams.set('mobile', 'true');
   queryParams.set('qrSession', 'true');
 

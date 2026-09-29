@@ -6,7 +6,16 @@ import {
   SunMedium, 
   MapPin, 
   Navigation,
-  TreePine
+  TreePine,
+  Coffee,
+  BookOpen,
+  Dumbbell,
+  Bus,
+  Building2,
+  Utensils,
+  Landmark,
+  ParkingCircle,
+  ChevronRight
 } from 'lucide-react';
 import { ThemeToggle } from './ThemeToggle';
 import { TRANSLATIONS } from '../../data/kiosk/translations';
@@ -28,11 +37,25 @@ export const OutdoorScreen = ({
   const t = TRANSLATIONS[language] || TRANSLATIONS.en;
   const outdoorPois = KIOSK_CONFIG.pois.filter(poi => poi.category === 'outdoor');
 
+  const getPoiIcon = (poi) => {
+    const name = (poi.name || '').toLowerCase();
+    const cat = (poi.subcategory || poi.type || '').toLowerCase();
+    if (name.includes('canteen') || name.includes('cafeteria') || cat.includes('food')) return { icon: <Utensils size={26} />, color: 'linear-gradient(135deg, #e07c54 0%, #b85c32 100%)' };
+    if (name.includes('library') || cat.includes('library')) return { icon: <BookOpen size={26} />, color: 'linear-gradient(135deg, #5d859b 0%, #3a6379 100%)' };
+    if (name.includes('gym') || name.includes('sport') || cat.includes('sport')) return { icon: <Dumbbell size={26} />, color: 'linear-gradient(135deg, #819a84 0%, #4a7467 100%)' };
+    if (name.includes('bus') || name.includes('transport')) return { icon: <Bus size={26} />, color: 'linear-gradient(135deg, #8b7db5 0%, #5c4e8a 100%)' };
+    if (name.includes('park') || name.includes('garden') || cat.includes('park')) return { icon: <TreePine size={26} />, color: 'linear-gradient(135deg, #598b85 0%, #3a6b65 100%)' };
+    if (name.includes('coffee') || name.includes('cafe')) return { icon: <Coffee size={26} />, color: 'linear-gradient(135deg, #c2956e 0%, #8b6040 100%)' };
+    if (name.includes('parking')) return { icon: <ParkingCircle size={26} />, color: 'linear-gradient(135deg, #6b8cad 0%, #3a5d7e 100%)' };
+    if (name.includes('block') || name.includes('building') || name.includes('hall')) return { icon: <Building2 size={26} />, color: 'linear-gradient(135deg, #749c8e 0%, #4a7467 100%)' };
+    return { icon: <Landmark size={26} />, color: 'linear-gradient(135deg, #b87d4b 0%, #8c5b30 100%)' };
+  };
+
   return (
     <section 
       id="screen-outdoor" 
       className={`screen active directory-screen glass-dashboard-screen theme-${theme}`} 
-      style={{ backgroundImage: `url(${collegeBg})`, color: 'white' }}
+      style={{ backgroundImage: `linear-gradient(rgba(10, 16, 28, 0.6), rgba(10, 16, 28, 0.72)), url(${collegeBg})`, color: 'white' }}
       role="region" 
       aria-label="Outdoor Directory"
     >
@@ -83,33 +106,31 @@ export const OutdoorScreen = ({
             </p>
           </div>
 
-          <div className="faculty-grid">
-            {outdoorPois.map((poi, idx) => (
-              <div key={idx} className="faculty-card" onClick={() => onSelectOutdoor(poi)}>
-                <div className="fac-card-left">
-                  <div className="fac-avatar" style={{ background: 'rgba(150, 124, 110, 0.15)', color: '#967C6E' }}>
-                    <MapPin size={28} />
+          <div className="outdoor-poi-grid">
+            {outdoorPois.map((poi, idx) => {
+              const { icon, color } = getPoiIcon(poi);
+              return (
+                <div key={idx} className="outdoor-poi-card" onClick={() => onSelectOutdoor(poi)}>
+                  <div className="outdoor-poi-icon" style={{ background: color }}>
+                    {icon}
                   </div>
-                  <div className="fac-info">
-                    <h3 className="fac-name">{poi.name}</h3>
-                    <p className="fac-role">{poi.description}</p>
-                    
-                    <div className="fac-meta-group">
-                      <div className="fac-meta-item">
-                        <Clock size={14} className="meta-icon" />
-                        <span>{poi.hours || 'Always Open'}</span>
-                      </div>
+                  <div className="outdoor-poi-info">
+                    <h3 className="outdoor-poi-name">{poi.name}</h3>
+                    {poi.description && <p className="outdoor-poi-desc">{poi.description}</p>}
+                    <div className="outdoor-poi-hours">
+                      <Clock size={12} />
+                      <span>{poi.hours || 'Always Open'}</span>
                     </div>
                   </div>
+                  <div className="outdoor-poi-navigate">
+                    <button className="btn-poi-navigate">
+                      <Navigation size={16} />
+                      <span>Go</span>
+                    </button>
+                  </div>
                 </div>
-                <div className="fac-card-right">
-                  <button className="btn-fac-navigate" onClick={(e) => { e.stopPropagation(); onSelectOutdoor(poi); }}>
-                    <Navigation size={18} />
-                    <span>Navigate</span>
-                  </button>
-                </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         </main>
 

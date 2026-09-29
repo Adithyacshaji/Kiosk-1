@@ -559,13 +559,16 @@ function MainApp() {
 
         const isIndoor = isIndoorDestination(activeDest);
         const bldg = (paramBuilding || activeDest.building || "").toLowerCase();
-        const isStMarys = !isChavaraBuilding(bldg) && (bldg.includes("stmary") || bldg.includes("mary") || isIndoor || activeDest.routeNode === "st-marys-block");
+        const isStMarys = isIndoor && !isChavaraBuilding(bldg);
         const currentGPS = isFromKiosk
           ? (NODES?.['g'] ? { lat: NODES['g'][0], lng: NODES['g'][1] } : USER_LOCATION)
           : (locationToUse || snappedLocation || fixedUserLocation || location);
         const nearStMarys = isFromKiosk || isUserNearStMarysEntrance(currentGPS, NODES);
 
-        if (isStMarys) {
+        if (!isIndoor) {
+          // Outdoor destination: delegate to handleSelectLocation to mirror exact navigation behaviour
+          handleSelectLocation(activeDest);
+        } else if (isStMarys) {
           if (nearStMarys) {
             // Already near St. Mary's entrance or scanned from Kiosk: NO outdoor path, show indoor floor view & walking path
             setRoute([]);
@@ -573,52 +576,46 @@ function MainApp() {
             setCurrentBuilding("stmarys");
             // If destination is on a different floor, start user on Ground Floor entrance where they are standing
             setCurrentFloor("G");
-            if (isIndoor) {
-              setMapMode("INDOOR");
-              const startNodeId = "entrance_G";
-              const endNodeId = activeDest.indoorNode || activeDest.id;
-              setIndoorStart({ name: "St Mary's Entrance", nearestNode: startNodeId, floor: "G" });
-              if (INDOOR_NODES?.[startNodeId]?.position) {
-                setIndoorUserLocation({ position: INDOOR_NODES[startNodeId].position, nearestNode: startNodeId, floor: "G" });
-              }
-              // Show St. Mary's Entrance Onboarding Guidance Card (Step 1)
-              setShowStMarysEntranceCard(true);
-
-              if (targetFloor === "G") {
-                if (INDOOR_EDGES && INDOOR_NODES) {
-                  routeIndoor(
-                    { building: "stmarys", startNodeId: normalizeIndoorKey(startNodeId), endNodeId: normalizeIndoorKey(endNodeId) },
-                    { startNode: normalizeIndoorKey(startNodeId), endNode: normalizeIndoorKey(endNodeId), edges: INDOOR_EDGES, nodes: INDOOR_NODES }
-                  ).then(res => {
-                    if (res?.path?.length) {
-                      setIndoorRouteNodes(res.path);
-                      setIndoorRoute(getPathCoordinates(res.path, INDOOR_NODES));
-                    }
-                  }).catch(() => {});
-                }
-                setNavStep(STEPS.FLOOR_NAVIGATION);
-              } else {
-                // Multi-floor destination: route from entrance_G to stairs on Ground Floor
-                const stairNodeId = getStairNode("G", targetFloor);
-                if (INDOOR_EDGES && INDOOR_NODES) {
-                  routeIndoor(
-                    { building: "stmarys", startNodeId: normalizeIndoorKey(startNodeId), endNodeId: normalizeIndoorKey(stairNodeId) },
-                    { startNode: normalizeIndoorKey(startNodeId), endNode: normalizeIndoorKey(stairNodeId), edges: INDOOR_EDGES, nodes: INDOOR_NODES }
-                  ).then(res => {
-                    if (res?.path?.length) {
-                      setIndoorRouteNodes(res.path);
-                      setIndoorRoute(getPathCoordinates(res.path, INDOOR_NODES));
-                    }
-                  }).catch(() => {});
-                }
-                setNavStep(STEPS.FLOOR_CHOICE);
-              }
-              setKioskViewState('split-indoor');
-            } else {
-              setMapMode("OUTDOOR");
-              setNavStep(STEPS.OUTDOOR_ROUTE);
-              setKioskViewState('split-outdoor');
+            setMapMode("INDOOR");
+            const startNodeId = "entrance_G";
+            const endNodeId = activeDest.indoorNode || activeDest.id;
+            setIndoorStart({ name: "St Mary's Entrance", nearestNode: startNodeId, floor: "G" });
+            if (INDOOR_NODES?.[startNodeId]?.position) {
+              setIndoorUserLocation({ position: INDOOR_NODES[startNodeId].position, nearestNode: startNodeId, floor: "G" });
             }
+            // Show St. Mary's Entrance Onboarding Guidance Card (Step 1)
+            setShowStMarysEntranceCard(true);
+
+            if (targetFloor === "G") {
+              if (INDOOR_EDGES && INDOOR_NODES) {
+                routeIndoor(
+                  { building: "stmarys", startNodeId: normalizeIndoorKey(startNodeId), endNodeId: normalizeIndoorKey(endNodeId) },
+                  { startNode: normalizeIndoorKey(startNodeId), endNode: normalizeIndoorKey(endNodeId), edges: INDOOR_EDGES, nodes: INDOOR_NODES }
+                ).then(res => {
+                  if (res?.path?.length) {
+                    setIndoorRouteNodes(res.path);
+                    setIndoorRoute(getPathCoordinates(res.path, INDOOR_NODES));
+                  }
+                }).catch(() => {});
+              }
+              setNavStep(STEPS.FLOOR_NAVIGATION);
+            } else {
+              // Multi-floor destination: route from entrance_G to stairs on Ground Floor
+              const stairNodeId = getStairNode("G", targetFloor);
+              if (INDOOR_EDGES && INDOOR_NODES) {
+                routeIndoor(
+                  { building: "stmarys", startNodeId: normalizeIndoorKey(startNodeId), endNodeId: normalizeIndoorKey(stairNodeId) },
+                  { startNode: normalizeIndoorKey(startNodeId), endNode: normalizeIndoorKey(stairNodeId), edges: INDOOR_EDGES, nodes: INDOOR_NODES }
+                ).then(res => {
+                  if (res?.path?.length) {
+                    setIndoorRouteNodes(res.path);
+                    setIndoorRoute(getPathCoordinates(res.path, INDOOR_NODES));
+                  }
+                }).catch(() => {});
+              }
+              setNavStep(STEPS.FLOOR_CHOICE);
+            }
+            setKioskViewState('split-indoor');
           } else {
             // User is far away from St. Mary's: calculate outdoor walking route to St. Mary's entrance
             setMapMode("OUTDOOR");
@@ -662,12 +659,6 @@ function MainApp() {
             }
             setKioskViewState('split-indoor');
           }
-        } else {
-          // Outdoor POI
-          setMapMode("OUTDOOR");
-          setNavStep(STEPS.OUTDOOR_ROUTE);
-          setKioskViewState('split-outdoor');
-          previewOutdoorRoute(activeDest, currentGPS);
         }
       }
     }
@@ -1299,10 +1290,11 @@ function MainApp() {
   };
 
   const previewOutdoorRoute = async (target, customStartLocation = null) => {
+    const isOutdoorSearch = !isIndoorDestination(target);
+    const defaultKioskLoc = NODES?.['g'] ? { lat: NODES['g'][0], lng: NODES['g'][1] } : USER_LOCATION;
     const startLocation = customStartLocation
-      || (USE_DEBUG_LOCATION
-        ? USER_LOCATION
-        : snappedLocation || fixedUserLocation || locationToUse);
+      || (USE_DEBUG_LOCATION ? USER_LOCATION : snappedLocation || fixedUserLocation || locationToUse || defaultKioskLoc);
+
     let endNode = target?.routeNode || target?.id;
 
     if (target?.location === "chavara") endNode = "chavara";
@@ -1339,7 +1331,7 @@ function MainApp() {
     }
 
     // Check if target is in St. Mary's block and user is already near St. Mary's entrance
-    const isStMarysTarget = (target?.building && (target.building.toLowerCase().includes("stmary") || target.building.toLowerCase().includes("mary"))) || target?.routeNode === "st-marys-block" || (isIndoorDestination(target) && !isChavaraBuilding(target?.building));
+    const isStMarysTarget = isIndoorDestination(target) && ((target?.building && (target.building.toLowerCase().includes("stmary") || target.building.toLowerCase().includes("mary"))) || target?.routeNode === "st-marys-block" || !isChavaraBuilding(target?.building));
     const userLoc = startLocation || (USE_DEBUG_LOCATION ? locationToUse : snappedLocation || fixedUserLocation || locationToUse);
     const nearStMarys = isUserNearStMarysEntrance(userLoc, NODES);
 
@@ -1358,7 +1350,7 @@ function MainApp() {
       let end;
 
       if (target?.type === "faculty" || target?.type === "location") {
-        end = target.routeNode;
+        end = target.routeNode || target.id;
       } else if (target?.type === "room") {
         const isChavRoom = isChavaraBuilding(target.building) || target.routeNode === "chavara";
         end = isChavRoom
@@ -1374,6 +1366,20 @@ function MainApp() {
           end = findBestChavaraEntranceByPath(nearestNode, EDGES, startLocation, NODES).nodeId;
         } else {
           end = findNearestBuildingEntrance(startLocation, target.building || target.routeNode, NODES, nearestNode, EDGES).nodeId;
+        }
+      }
+
+      if (!end || !NODES[end]) {
+        const targetPos = target?.position
+          ? { lat: target.position[0], lng: target.position[1] }
+          : (target?.lat && target?.lng ? { lat: target.lat, lng: target.lng } : null);
+
+        if (targetPos) {
+          end = findNearestNode(targetPos, NODES);
+        } else if (target?.building && NODES[target.building]) {
+          end = target.building;
+        } else {
+          end = 'canteen';
         }
       }
 
@@ -1398,27 +1404,30 @@ function MainApp() {
     outdoorArrivalRef.current = { reached: false, consecutiveFixes: 0 };
 
     const activeDestination = targetDestination || destination;
+    const isOutdoorSearch = !isIndoorDestination(activeDestination);
 
     console.log("START CLICKED");
-    const routeStartLocation = startLocation || (USE_DEBUG_LOCATION
-      ? locationToUse
-      : snappedLocation || fixedUserLocation || locationToUse);
-    if (!startNode && !routeStartLocation) {
+    const routeStartLocation = isOutdoorSearch
+      ? { lat: 10.357903, lng: 76.212941 }
+      : (startLocation || (USE_DEBUG_LOCATION
+        ? locationToUse
+        : snappedLocation || fixedUserLocation || locationToUse));
+
+    if (!startNode && !routeStartLocation && !isOutdoorSearch) {
       alert("Location unavailable. Please enable GPS.");
       return;
     }
 
-    if (!startNode && !isInsideCampus(routeStartLocation)) {
+    if (!isOutdoorSearch && !startNode && !isInsideCampus(routeStartLocation)) {
       setRoute([]);
       setIsOutdoorNavigating(true);
       pushState(STEPS.OUTDOOR_NAVIGATING);
       return;
     }
 
-    const nearestNode =
-      startNode ||
-      outdoorStartNode ||
-      findNearestNode(routeStartLocation, NODES);
+    const nearestNode = isOutdoorSearch
+      ? "g"
+      : (startNode || outdoorStartNode || findNearestNode(routeStartLocation, NODES));
 
     let end;
 
@@ -2417,7 +2426,7 @@ function MainApp() {
     //   • Chavara indoor    → outdoor route from St. Mary's entrance to Chavara
     //   • Outdoor dest      → outdoor route from St. Mary's entrance to dest
     // No live GPS, no navigation cards, no YDCard — just destination preview.
-    if (kioskMode) {
+    if (!isMobileOrQrSession) {
       setRoute([]);
       setIndoorRoute([]);
       setIndoorRouteNodes([]);
@@ -2452,6 +2461,20 @@ function MainApp() {
         endNode = location.routeNode || location.id;
       } else {
         endNode = location.routeNode || location.id;
+      }
+
+      if (!NODES[endNode]) {
+        const targetPos = location.position
+          ? { lat: location.position[0], lng: location.position[1] }
+          : (location.lat && location.lng ? { lat: location.lat, lng: location.lng } : null);
+
+        if (targetPos) {
+          endNode = findNearestNode(targetPos, NODES);
+        } else if (location.building && NODES[location.building]) {
+          endNode = location.building;
+        } else {
+          endNode = 'canteen';
+        }
       }
 
       try {
@@ -2563,6 +2586,23 @@ function MainApp() {
       return;
     }
     // ── END OUTSIDE CAMPUS ──────────────────────────────────────────────────
+
+    const isOutdoorSearch = !isIndoorDestination(location);
+
+    if (isOutdoorSearch) {
+      setMapMode("OUTDOOR");
+      setIndoorDestination(null);
+      setCurrentFloor("G");
+      setSelectedLocation(location);
+      setDestination(location);
+      setOutdoorTarget(location.routeNode || location.id);
+
+      const outdoorStart = locationToUse || snappedLocation || fixedUserLocation || (NODES?.['g'] ? { lat: NODES['g'][0], lng: NODES['g'][1] } : USER_LOCATION);
+      await previewOutdoorRoute(location, outdoorStart);
+      setShowNavigationCard(true);
+      setNavStep(STEPS.OUTDOOR_ROUTE);
+      return;
+    }
 
     setSelectedLocation(location);
     setDestination(location);
@@ -2878,13 +2918,22 @@ function MainApp() {
             onGoHome={() => setCurrentScreen('landing')}
             onSelectClassroom={(cls) => {
               audioService.playClick();
-              setDestination(cls);
-              if (isIndoorDestination(cls)) {
-                setCurrentBuilding(isChavaraBuilding(cls.building) ? "chavara" : "stmarys");
-                setCurrentFloor(cls.floor || "G");
-                setMapMode("INDOOR");
-                setNavStep(STEPS.INDOOR_READY);
+              const bldg = cls.building || (isChavaraBuilding(cls.buildingName || cls.building) ? "chavara" : "stmarys");
+              const targetItem = {
+                ...cls,
+                id: cls.indoorNode || cls.id || cls.room || cls.name,
+                name: cls.displayTitle || cls.name || `Room ${cls.room || ''}`,
+                title: cls.displayTitle || cls.name,
+                type: 'room',
+                building: bldg,
+                floor: cls.floor || 'G',
+                indoorNode: cls.indoorNode || cls.id || cls.room,
+                routeNode: cls.routeNode || (isChavaraBuilding(bldg) ? 'chavara' : 'g')
+              };
+              if (!isMobileOrQrSession) {
+                setKioskViewState('split-outdoor');
               }
+              handleSelectLocation(targetItem);
               setCurrentScreen('map');
             }}
             currentTime={currentTime}
@@ -2902,13 +2951,24 @@ function MainApp() {
             onGoHome={() => setCurrentScreen('landing')}
             onSelectFaculty={(fac) => {
               audioService.playClick();
-              setDestination(fac);
-              if (isIndoorDestination(fac)) {
-                setCurrentBuilding(isChavaraBuilding(fac.building) ? "chavara" : "stmarys");
-                setCurrentFloor(fac.floor || "G");
-                setMapMode("INDOOR");
-                setNavStep(STEPS.INDOOR_READY);
+              const bldg = fac.building || (fac.room?.startsWith('CH') || fac.room?.startsWith('S') || fac.room?.startsWith('2') ? 'chavara' : 'stmarys');
+              const targetItem = {
+                ...fac,
+                id: fac.indoorNode || fac.id || fac.room || fac.name,
+                name: fac.name,
+                title: fac.name,
+                designation: fac.designation,
+                type: 'faculty',
+                building: bldg,
+                floor: fac.floor || 'G',
+                room: fac.room,
+                indoorNode: fac.indoorNode || fac.id || fac.room,
+                routeNode: fac.routeNode || (isChavaraBuilding(bldg) ? 'chavara' : 'g')
+              };
+              if (!isMobileOrQrSession) {
+                setKioskViewState('split-outdoor');
               }
+              handleSelectLocation(targetItem);
               setCurrentScreen('map');
             }}
             currentTime={currentTime}
@@ -2925,16 +2985,22 @@ function MainApp() {
             onGoHome={() => setCurrentScreen('landing')}
             onSelectOutdoor={(poi) => {
               audioService.playClick();
-              setDestination(poi);
-              if (isIndoorDestination(poi)) {
-                setCurrentBuilding(isChavaraBuilding(poi.building) ? "chavara" : "stmarys");
-                setCurrentFloor(poi.floor || "G");
-                setMapMode("INDOOR");
-                setNavStep(STEPS.INDOOR_READY);
-              } else {
-                setMapMode("OUTDOOR");
-                setNavStep(STEPS.OUTDOOR_ROUTE);
+              const bldg = poi.building || (isChavaraBuilding(poi.building) ? 'chavara' : (poi.id === 'poi-out-canteen' || poi.id === 'canteen' ? 'canteen' : 'stmarys'));
+              const targetItem = {
+                ...poi,
+                id: poi.routeNode || poi.id || poi.name,
+                name: poi.name,
+                title: poi.name,
+                type: 'location',
+                building: bldg,
+                floor: poi.floor !== undefined && poi.floor !== 0 ? poi.floor : undefined,
+                routeNode: poi.routeNode || (poi.id === 'poi-out-canteen' ? 'canteen' : (poi.id === 'poi-out-christ-cafe' ? 'cafe' : (poi.id === 'poi-out-st-chavara' ? 'chavara' : 'g'))),
+                indoorNode: poi.indoorNode
+              };
+              if (!isMobileOrQrSession) {
+                setKioskViewState('split-outdoor');
               }
+              handleSelectLocation(targetItem);
               setCurrentScreen('map');
             }}
             currentTime={currentTime}
@@ -3918,6 +3984,9 @@ function isIndoorDestination(destination) {
 
   // Pure outdoor landmark / building markers on the outdoor map
   if (
+    destination.category === "outdoor" ||
+    destination.type === "outdoor" ||
+    (destination.id && String(destination.id).startsWith("poi-out-")) ||
     destination.id === "chavara" ||
     destination.id === "st-marys-block" ||
     destination.id === "entrance" ||

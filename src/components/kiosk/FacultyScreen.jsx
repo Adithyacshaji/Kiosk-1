@@ -20,6 +20,7 @@ import {
 import { ThemeToggle } from './ThemeToggle';
 import { KIOSK_CONFIG } from '../../data/kiosk/kioskData';
 import { TRANSLATIONS } from '../../data/kiosk/translations';
+import { getFacultyPhoto } from '../../utils/facultyPhotos';
 import logoImg from '../../assets/kiosk/logo.png';
 
 import collegeBg from '../../assets/kiosk/college.png';
@@ -63,7 +64,7 @@ export const FacultyScreen = ({
     <section 
       id="screen-faculty" 
       className={`screen active directory-screen glass-dashboard-screen theme-${theme}`} 
-      style={{ backgroundImage: `url(${collegeBg})`, color: 'white' }}
+      style={{ backgroundImage: `linear-gradient(rgba(10, 16, 28, 0.6), rgba(10, 16, 28, 0.72)), url(${collegeBg})`, color: 'white' }}
       role="region" 
       aria-label="Faculty Directory"
     >
@@ -176,36 +177,52 @@ export const FacultyScreen = ({
             </div>
 
             <div className="faculty-grid">
-              {(selectedDepartment.faculties || []).map((fac, idx) => (
-                <div key={idx} className="faculty-card" onClick={() => onSelectFaculty(fac)}>
-                  <div className="fac-card-left">
-                    <div className="fac-avatar">
-                      <User size={28} />
-                    </div>
-                    <div className="fac-info">
-                      <h3 className="fac-name">{fac.name}</h3>
-                      <p className="fac-role">{fac.designation || 'Faculty'}</p>
-                      
-                      <div className="fac-meta-group">
-                        <div className="fac-meta-item">
-                          <MapPin size={14} className="meta-icon" />
-                          <span>{fac.room ? `Room ${fac.room}` : 'Cabin Location N/A'}</span>
-                        </div>
-                        <div className="fac-meta-item">
-                          <Layers size={14} className="meta-icon" />
-                          <span>{fac.floor === 'G' || fac.floor === '0' || fac.floor === 0 ? 'Ground Floor' : `Floor ${fac.floor || 1}`}</span>
+              {(selectedDepartment.faculties || []).map((fac, idx) => {
+                const photoPath = fac.image_url || fac.photo || getFacultyPhoto(fac.name, selectedDepartment?.code || selectedDepartment?.name);
+
+                return (
+                  <div key={idx} className="faculty-card" onClick={() => onSelectFaculty(fac)}>
+                    <div className="fac-card-left">
+                      <div className="fac-avatar">
+                        {photoPath ? (
+                          <img 
+                            src={photoPath} 
+                            alt={fac.name} 
+                            className="fac-avatar-img"
+                            onError={(e) => {
+                              e.target.style.display = 'none';
+                              const svg = e.target.parentElement.querySelector('svg');
+                              if (svg) svg.style.display = 'block';
+                            }}
+                          />
+                        ) : null}
+                        <User size={28} style={{ display: photoPath ? 'none' : 'block' }} />
+                      </div>
+                      <div className="fac-info">
+                        <h3 className="fac-name">{fac.name}</h3>
+                        <p className="fac-role">{fac.designation || 'Faculty'}</p>
+                        
+                        <div className="fac-meta-group">
+                          <div className="fac-meta-item">
+                            <MapPin size={14} className="meta-icon" />
+                            <span>{fac.room ? `Room ${fac.room}` : 'Cabin Location N/A'}</span>
+                          </div>
+                          <div className="fac-meta-item">
+                            <Layers size={14} className="meta-icon" />
+                            <span>{fac.floor === 'G' || fac.floor === '0' || fac.floor === 0 ? 'Ground Floor' : `Floor ${fac.floor || 1}`}</span>
+                          </div>
                         </div>
                       </div>
                     </div>
+                    <div className="fac-card-right">
+                      <button className="btn-fac-navigate" onClick={(e) => { e.stopPropagation(); onSelectFaculty(fac); }}>
+                        <Navigation size={18} />
+                        <span>Navigate</span>
+                      </button>
+                    </div>
                   </div>
-                  <div className="fac-card-right">
-                    <button className="btn-fac-navigate" onClick={(e) => { e.stopPropagation(); onSelectFaculty(fac); }}>
-                      <Navigation size={18} />
-                      <span>Navigate</span>
-                    </button>
-                  </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
           </>
         )}

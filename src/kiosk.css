@@ -223,6 +223,20 @@
   cursor: pointer;
   height: 100vh;
   width: 100vw;
+  position: relative;
+  background-color: #0b1120;
+  overflow: hidden;
+}
+
+#kiosk-app .landing-page-bg-img {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  object-fit: contain;
+  z-index: 0;
+  pointer-events: none;
 }
 
 #kiosk-app .landing-minimal-header {
@@ -264,50 +278,81 @@
 #kiosk-app .landing-minimal-center {
   flex: 1;
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
   width: 100%;
   margin: auto 0;
+  gap: 2.2rem;
+  z-index: 5;
 }
 
-#kiosk-app .landing-logo-scale-box {
+#kiosk-app .landing-logo-container {
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: transform var(--transition-smooth), opacity 0.35s ease;
-  transform: scale(1);
-  opacity: 1;
+  position: relative;
 }
 
-#kiosk-app .landing-logo-scale-box.zoom-out-anim {
-  transform: scale(0.7);
-  opacity: 0;
+#kiosk-app .landing-logo-container::after {
+  content: '';
+  position: absolute;
+  width: 320px;
+  height: 320px;
+  background: radial-gradient(circle, rgba(144, 187, 172, 0.22) 0%, rgba(144, 187, 172, 0) 70%);
+  border-radius: 50%;
+  z-index: -1;
+  animation: logoGlowPulse 4s infinite ease-in-out;
 }
 
-#kiosk-app .screen-exit-zoom {
-  opacity: 0 !important;
-  transition: opacity 0.4s ease !important;
+#kiosk-app .landing-center-logo {
+  max-width: 340px;
+  width: 75vw;
+  height: auto;
+  object-fit: contain;
+  filter: drop-shadow(0 12px 28px rgba(0, 0, 0, 0.45));
+  transition: transform 0.3s ease;
+}
+
+#kiosk-app .landing-pulsing-text {
+  font-size: 1.6rem;
+  font-weight: 700;
+  color: #ffffff;
+  letter-spacing: 0.05em;
+  text-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
+  margin: 0;
+  padding: 0;
+  animation: textPulse 2.4s infinite ease-in-out;
+}
+
+@keyframes textPulse {
+  0%, 100% {
+    opacity: 1;
+    transform: scale(1);
+    text-shadow: 0 0 12px rgba(255, 255, 255, 0.4), 0 4px 16px rgba(0, 0, 0, 0.4);
+  }
+  50% {
+    opacity: 0.4;
+    transform: scale(1.05);
+    text-shadow: 0 0 24px rgba(255, 255, 255, 0.8), 0 4px 20px rgba(0, 0, 0, 0.6);
+  }
+}
+
+@keyframes logoGlowPulse {
+  0%, 100% {
+    transform: scale(0.92);
+    opacity: 0.35;
+  }
+  50% {
+    transform: scale(1.18);
+    opacity: 0.65;
+  }
 }
 
 #kiosk-app .landing-minimal-footer {
   width: 100%;
   text-align: center;
-  padding: 1.5rem 0;
-}
-
-#kiosk-app .touch-hint-text {
-  font-size: 1.15rem;
-  font-weight: 700;
-  color: #ffffff;
-  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
-  letter-spacing: 0.08em;
-  opacity: 0.95;
-  animation: pulseGlow 2.5s infinite ease-in-out;
-}
-
-@keyframes pulseGlow {
-  0%, 100% { opacity: 0.8; transform: scale(1); }
-  50% { opacity: 1; transform: scale(1.02); }
+  padding: 1rem 0;
 }
 
 /* ==========================================================================
@@ -456,7 +501,7 @@
   display: flex;
   flex-direction: row;
   justify-content: space-between;
-  align-items: flex-end;
+  align-items: center;
   min-height: 160px;
   cursor: pointer;
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
@@ -474,6 +519,7 @@
   display: flex;
   flex-direction: column;
   align-items: flex-start;
+  text-align: left;
   gap: 1.1rem;
 }
 
@@ -486,11 +532,14 @@
   justify-content: center;
   color: #ffffff;
   box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+  flex-shrink: 0;
 }
 
 #kiosk-app .glass-card-text-group {
   display: flex;
   flex-direction: column;
+  align-items: flex-start;
+  text-align: left;
   gap: 0.35rem;
 }
 
@@ -500,13 +549,16 @@
   margin: 0;
   color: #ffffff;
   text-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+  line-height: 1.25;
+  text-align: left;
 }
 
 #kiosk-app .glass-card-desc {
   font-size: 0.95rem;
   color: rgba(255, 255, 255, 0.85);
   margin: 0;
-  line-height: 1.35;
+  line-height: 1.4;
+  text-align: left;
 }
 
 #kiosk-app .glass-card-arrow {
@@ -520,6 +572,7 @@
   justify-content: center;
   color: #ffffff;
   backdrop-filter: blur(10px);
+  flex-shrink: 0;
   transition: transform var(--transition-fast), background var(--transition-fast);
 }
 
@@ -1185,6 +1238,16 @@
   justify-content: center;
   color: #ffffff;
   flex-shrink: 0;
+  overflow: hidden;
+}
+
+#kiosk-app .fac-avatar-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  border-radius: 50%;
+  display: block;
 }
 
 #kiosk-app .fac-info {
@@ -1811,6 +1874,15 @@
   justify-content: center;
   flex-shrink: 0;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+  overflow: hidden;
+}
+
+.kiosk-panel-dest-icon-wrap img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  border-radius: 50%;
 }
 
 .kiosk-panel-dest-title-box {
@@ -2994,4 +3066,686 @@
 
 .kiosk-vkb-backspace:active {
   background: #fca5a5;
+}
+
+/* ==========================================================================
+   ENHANCED CLASSROOM ITEM CARDS
+   ========================================================================== */
+#kiosk-app .classrooms-cards-grid {
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+}
+
+#kiosk-app .cls-item-card-enhanced {
+  padding: 1.2rem 1.4rem !important;
+  display: flex !important;
+  flex-direction: row !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  min-height: unset !important;
+  gap: 1rem;
+  background: rgba(255, 255, 255, 0.14) !important;
+  backdrop-filter: blur(20px) !important;
+  -webkit-backdrop-filter: blur(20px) !important;
+  border: 1.5px solid rgba(255, 255, 255, 0.3) !important;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.12) !important;
+  transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), background 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease !important;
+}
+
+#kiosk-app .cls-item-card-enhanced:hover {
+  transform: translateY(-4px) scale(1.01) !important;
+  background: rgba(255, 255, 255, 0.24) !important;
+  border-color: rgba(255, 255, 255, 0.65) !important;
+  box-shadow: 0 12px 36px rgba(0, 0, 0, 0.25), 0 0 20px rgba(144, 187, 172, 0.2) !important;
+}
+
+#kiosk-app .cls-item-left {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  flex: 1;
+  min-width: 0;
+}
+
+#kiosk-app .cls-item-icon-badge {
+  width: 46px;
+  height: 46px;
+  border-radius: 14px;
+  background: linear-gradient(135deg, rgba(116, 156, 142, 0.55) 0%, rgba(74, 116, 103, 0.55) 100%);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.18);
+}
+
+#kiosk-app .cls-item-text {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  min-width: 0;
+}
+
+#kiosk-app .cls-item-title {
+  font-size: 1.1rem;
+  font-weight: 800;
+  color: #ffffff;
+  margin: 0;
+  line-height: 1.2;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  text-shadow: 0 1px 6px rgba(0, 0, 0, 0.2);
+}
+
+#kiosk-app .cls-item-meta {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.82rem;
+  color: rgba(255, 255, 255, 0.78);
+  font-weight: 600;
+}
+
+#kiosk-app .cls-meta-dot {
+  color: rgba(255, 255, 255, 0.45);
+}
+
+#kiosk-app .cls-room-tag {
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: #90bbac;
+  letter-spacing: 0.03em;
+}
+
+#kiosk-app .cls-nav-btn {
+  flex-shrink: 0;
+  padding: 0.55rem 1.1rem !important;
+  font-size: 0.85rem !important;
+  border-radius: 12px !important;
+  gap: 0.4rem;
+}
+
+/* ==========================================================================
+   OUTDOOR POI GRID CARDS
+   ========================================================================== */
+#kiosk-app .outdoor-poi-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 1.4rem;
+  width: 100%;
+}
+
+#kiosk-app .outdoor-poi-card {
+  background: rgba(255, 255, 255, 0.14);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1.5px solid rgba(255, 255, 255, 0.3);
+  border-radius: var(--radius-xl);
+  padding: 1.4rem 1.4rem;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.13);
+  cursor: pointer;
+  transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), background 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+#kiosk-app .outdoor-poi-card:hover {
+  transform: translateY(-4px) scale(1.01);
+  background: rgba(255, 255, 255, 0.24);
+  border-color: rgba(255, 255, 255, 0.65);
+  box-shadow: 0 14px 40px rgba(0, 0, 0, 0.25), 0 0 18px rgba(144, 187, 172, 0.2);
+}
+
+#kiosk-app .outdoor-poi-icon {
+  width: 54px;
+  height: 54px;
+  border-radius: 16px;
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.25);
+}
+
+#kiosk-app .outdoor-poi-info {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+#kiosk-app .outdoor-poi-name {
+  font-size: 1.1rem;
+  font-weight: 800;
+  color: #ffffff;
+  margin: 0;
+  line-height: 1.2;
+  text-shadow: 0 1px 6px rgba(0, 0, 0, 0.2);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+#kiosk-app .outdoor-poi-desc {
+  font-size: 0.82rem;
+  color: rgba(255, 255, 255, 0.75);
+  margin: 0;
+  font-weight: 500;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+#kiosk-app .outdoor-poi-hours {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: #90bbac;
+  margin-top: 0.1rem;
+}
+
+#kiosk-app .outdoor-poi-navigate {
+  flex-shrink: 0;
+}
+
+#kiosk-app .btn-poi-navigate {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.6rem 1.2rem;
+  border-radius: 12px;
+  background: rgba(144, 187, 172, 0.42);
+  color: #ffffff;
+  border: 1.5px solid rgba(255, 255, 255, 0.55);
+  font-size: 0.88rem;
+  font-weight: 800;
+  cursor: pointer;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.15);
+  transition: all 0.15s ease;
+  white-space: nowrap;
+}
+
+#kiosk-app .btn-poi-navigate:hover {
+  background: rgba(144, 187, 172, 0.65);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(144, 187, 172, 0.4);
+}
+
+#kiosk-app .outdoor-poi-card:hover .btn-poi-navigate {
+  background: rgba(144, 187, 172, 0.6);
+}
+
+/* ==========================================================================
+   GLOBAL SCREEN ENTRY ANIMATIONS
+   ========================================================================== */
+@keyframes slideUpFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+#kiosk-app .directory-main-content > * {
+  animation: slideUpFadeIn 0.4s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+#kiosk-app .directory-main-content > *:nth-child(1) { animation-delay: 0.05s; }
+#kiosk-app .directory-main-content > *:nth-child(2) { animation-delay: 0.12s; }
+#kiosk-app .directory-main-content > *:nth-child(3) { animation-delay: 0.18s; }
+
+#kiosk-app .cls-item-card-enhanced,
+#kiosk-app .outdoor-poi-card,
+#kiosk-app .department-item-card,
+#kiosk-app .faculty-card {
+  animation: slideUpFadeIn 0.35s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+/* Staggered card animations */
+#kiosk-app .cls-item-card-enhanced:nth-child(1),
+#kiosk-app .outdoor-poi-card:nth-child(1),
+#kiosk-app .department-item-card:nth-child(1),
+#kiosk-app .faculty-card:nth-child(1) { animation-delay: 0.08s; }
+
+#kiosk-app .cls-item-card-enhanced:nth-child(2),
+#kiosk-app .outdoor-poi-card:nth-child(2),
+#kiosk-app .department-item-card:nth-child(2),
+#kiosk-app .faculty-card:nth-child(2) { animation-delay: 0.13s; }
+
+#kiosk-app .cls-item-card-enhanced:nth-child(3),
+#kiosk-app .outdoor-poi-card:nth-child(3),
+#kiosk-app .department-item-card:nth-child(3),
+#kiosk-app .faculty-card:nth-child(3) { animation-delay: 0.18s; }
+
+#kiosk-app .cls-item-card-enhanced:nth-child(4),
+#kiosk-app .outdoor-poi-card:nth-child(4),
+#kiosk-app .department-item-card:nth-child(4),
+#kiosk-app .faculty-card:nth-child(4) { animation-delay: 0.23s; }
+
+#kiosk-app .cls-item-card-enhanced:nth-child(5),
+#kiosk-app .outdoor-poi-card:nth-child(5),
+#kiosk-app .department-item-card:nth-child(5),
+#kiosk-app .faculty-card:nth-child(5) { animation-delay: 0.28s; }
+
+#kiosk-app .cls-item-card-enhanced:nth-child(6),
+#kiosk-app .outdoor-poi-card:nth-child(6),
+#kiosk-app .department-item-card:nth-child(6),
+#kiosk-app .faculty-card:nth-child(6) { animation-delay: 0.33s; }
+
+/* ==========================================================================
+   INSTRUCTION DASHBOARD — ENHANCED CARDS WITH ACTIVE PRESS STATE
+   ========================================================================== */
+#kiosk-app .glass-card:active {
+  transform: translateY(-2px) scale(0.98);
+  background: rgba(255, 255, 255, 0.32);
+  border-color: rgba(255, 255, 255, 0.8);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2), 0 0 20px rgba(144, 187, 172, 0.35);
+}
+
+/* Glow sweep on glass cards */
+#kiosk-app .glass-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.12) 0%, transparent 55%, rgba(255, 255, 255, 0.04) 100%);
+  pointer-events: none;
+}
+
+#kiosk-app .glass-card {
+  position: relative;
+  overflow: hidden;
+}
+
+/* Department card enhanced press */
+#kiosk-app .department-item-card:active {
+  transform: translateY(-2px) scale(0.98);
+}
+
+/* Faculty card press */
+#kiosk-app .faculty-card:active {
+  transform: translateY(-1px) scale(0.99);
+}
+
+/* ==========================================================================
+   LANDING SCREEN — AMBIENT GLOW RING
+   ========================================================================== */
+@keyframes ringPulse {
+  0%, 100% { transform: scale(0.95); opacity: 0.18; }
+  50% { transform: scale(1.12); opacity: 0.38; }
+}
+
+#kiosk-app .landing-logo-container::before {
+  content: '';
+  position: absolute;
+  width: 460px;
+  height: 460px;
+  background: radial-gradient(circle, rgba(144, 187, 172, 0.14) 0%, rgba(144, 187, 172, 0) 70%);
+  border-radius: 50%;
+  z-index: -2;
+  animation: ringPulse 5s infinite ease-in-out;
+}
+
+/* ==========================================================================
+   DIRECTORY TOP-BAR — GLASS BACKDROP ENHANCEMENT
+   ========================================================================== */
+#kiosk-app .directory-top-bar {
+  background: rgba(8, 14, 24, 0.35);
+  backdrop-filter: blur(22px);
+  -webkit-backdrop-filter: blur(22px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.18);
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.2);
+}
+
+/* ==========================================================================
+   GLASS DASHBOARD — ENHANCED BACKGROUND OVERLAY SHIMMER
+   ========================================================================== */
+#kiosk-app .glass-dashboard-screen::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: 
+    radial-gradient(ellipse 70% 50% at 15% 20%, rgba(144, 187, 172, 0.07) 0%, transparent 60%),
+    radial-gradient(ellipse 60% 45% at 85% 75%, rgba(93, 133, 155, 0.07) 0%, transparent 60%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+#kiosk-app .glass-main-wrapper {
+  position: relative;
+  z-index: 2;
+}
+
+/* ==========================================================================
+   INSTRUCTION DASHBOARD — CARDS GRID ENTRY ANIMATION
+   ========================================================================== */
+@keyframes cardFloatIn {
+  from {
+    opacity: 0;
+    transform: translateY(28px) scale(0.97);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+#kiosk-app .glass-card {
+  animation: cardFloatIn 0.5s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+#kiosk-app .glass-card:nth-child(1) { animation-delay: 0.1s; }
+#kiosk-app .glass-card:nth-child(2) { animation-delay: 0.2s; }
+#kiosk-app .glass-card:nth-child(3) { animation-delay: 0.3s; }
+
+/* Hero title entry */
+@keyframes heroFadeUp {
+  from { opacity: 0; transform: translateY(16px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+#kiosk-app .glass-serif-title {
+  animation: heroFadeUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) 0.05s both;
+}
+
+#kiosk-app .glass-cta-row {
+  animation: heroFadeUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) 0.15s both;
+}
+
+#kiosk-app .glass-quick-tip-banner {
+  animation: heroFadeUp 0.5s cubic-bezier(0.16, 1, 0.3, 1) 0.35s both;
+}
+
+/* ==========================================================================
+   IMPROVED BACKGROUND OVERLAY FOR DIRECTORY SCREENS  
+   ========================================================================== */
+#kiosk-app .directory-screen.glass-dashboard-screen {
+  background-size: cover !important;
+  background-position: center !important;
+}
+
+#kiosk-app .directory-glass-wrapper {
+  position: relative;
+}
+
+#kiosk-app .directory-glass-wrapper::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(160deg, rgba(8, 14, 26, 0.72) 0%, rgba(8, 14, 26, 0.62) 50%, rgba(8, 14, 26, 0.75) 100%);
+  z-index: -1;
+}
+
+/* ==========================================================================
+   MAP GUIDE FLASHCARD MODAL (HOW TO USE CAMPUS COMPASS)
+   ========================================================================== */
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(6, 10, 18, 0.75);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+  padding: 1.5rem;
+}
+
+.modal-backdrop.open {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.campus-instruction-flashcard {
+  background: linear-gradient(145deg, rgba(18, 28, 45, 0.95), rgba(10, 17, 30, 0.96));
+  border: 1.5px solid rgba(144, 187, 172, 0.45);
+  border-radius: 28px;
+  padding: 2.2rem 2.6rem;
+  max-width: 680px;
+  width: 92%;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: 0 28px 70px rgba(0, 0, 0, 0.65), 0 0 35px rgba(144, 187, 172, 0.25);
+  display: flex;
+  flex-direction: column;
+  gap: 1.35rem;
+  animation: flashcardPop 0.38s cubic-bezier(0.16, 1, 0.3, 1);
+  color: #ffffff;
+  position: relative;
+}
+
+@keyframes flashcardPop {
+  0% { transform: scale(0.92) translateY(24px); opacity: 0; }
+  100% { transform: scale(1) translateY(0); opacity: 1; }
+}
+
+.flashcard-top-nav {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+}
+
+.btn-flashcard-back {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55rem;
+  background: rgba(255, 255, 255, 0.12);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  border-radius: 30px;
+  padding: 0.45rem 1rem;
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: #ffffff;
+  cursor: pointer;
+  transition: all 0.25s ease;
+}
+
+.btn-flashcard-back:hover {
+  background: rgba(255, 255, 255, 0.22);
+  transform: translateX(-2px);
+}
+
+.btn-flashcard-close {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.14);
+  border: 1px solid rgba(255, 255, 255, 0.28);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #ffffff;
+  cursor: pointer;
+  transition: all 0.25s ease;
+}
+
+.btn-flashcard-close:hover {
+  background: rgba(239, 68, 68, 0.3);
+  border-color: rgba(239, 68, 68, 0.5);
+  transform: scale(1.08);
+}
+
+.flashcard-heading {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+
+.flashcard-heading h2 {
+  font-size: 1.85rem;
+  font-weight: 800;
+  color: #ffffff;
+  letter-spacing: -0.02em;
+  margin: 0;
+  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+}
+
+.highlight-brand {
+  color: #90bbac;
+  text-shadow: 0 0 16px rgba(144, 187, 172, 0.5);
+}
+
+.flashcard-heading p {
+  font-size: 1rem;
+  color: rgba(255, 255, 255, 0.78);
+  margin: 0;
+}
+
+.flashcard-steps-container {
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+}
+
+.campus-step-card {
+  display: flex;
+  align-items: center;
+  gap: 1.1rem;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1.2px solid rgba(255, 255, 255, 0.18);
+  border-radius: 18px;
+  padding: 1rem 1.25rem;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+  backdrop-filter: blur(10px);
+  transition: all 0.25s ease;
+}
+
+.campus-step-card:hover {
+  background: rgba(255, 255, 255, 0.14);
+  border-color: rgba(144, 187, 172, 0.5);
+  transform: translateX(4px);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25);
+}
+
+.step-num-circle {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 800;
+  font-size: 1.1rem;
+  flex-shrink: 0;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+}
+
+.step-icon-circle {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.15);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.step-text-content {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+.step-text-content h4 {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #ffffff;
+  margin: 0;
+}
+
+.step-text-content p {
+  font-size: 0.9rem;
+  color: rgba(255, 255, 255, 0.82);
+  margin: 0;
+  line-height: 1.4;
+}
+
+.flashcard-tip-box {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  background: linear-gradient(135deg, rgba(144, 187, 172, 0.18) 0%, rgba(59, 158, 234, 0.12) 100%);
+  border: 1.5px solid rgba(144, 187, 172, 0.45);
+  border-radius: 18px;
+  padding: 1rem 1.3rem;
+}
+
+.tip-icon-wrapper {
+  color: #90bbac;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.tip-text {
+  font-size: 0.92rem;
+  color: #ffffff;
+  line-height: 1.4;
+}
+
+.tip-text strong {
+  color: #90bbac;
+}
+
+.flashcard-actions-row {
+  display: flex;
+  gap: 1.2rem;
+  justify-content: space-between;
+  margin-top: 0.4rem;
+}
+
+.btn-flashcard-home,
+.btn-flashcard-view-map {
+  flex: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.65rem;
+  padding: 1rem 1.6rem;
+  border-radius: 50px;
+  font-size: 1rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.25s ease;
+}
+
+.btn-flashcard-home {
+  background: rgba(255, 255, 255, 0.14);
+  border: 1.5px solid rgba(255, 255, 255, 0.35);
+  color: #ffffff;
+}
+
+.btn-flashcard-home:hover {
+  background: rgba(255, 255, 255, 0.24);
+  transform: translateY(-2px);
+}
+
+.btn-flashcard-view-map {
+  background: linear-gradient(135deg, #749c8e 0%, #4a7467 100%);
+  border: 1.5px solid rgba(255, 255, 255, 0.45);
+  color: #ffffff;
+  box-shadow: 0 6px 20px rgba(74, 116, 103, 0.4);
+}
+
+.btn-flashcard-view-map:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(74, 116, 103, 0.6);
+  background: linear-gradient(135deg, #82ab9d 0%, #568274 100%);
 }

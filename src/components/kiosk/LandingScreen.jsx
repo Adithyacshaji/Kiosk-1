@@ -1,8 +1,9 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { SunMedium, Clock } from 'lucide-react';
 import { ThemeToggle } from './ThemeToggle';
 import { TRANSLATIONS } from '../../data/kiosk/translations';
-import landingBg from '../../assets/kiosk/landing-bg.jpg';
+import logoImg from '../../assets/kiosk/logo.png';
+import collegeBg from '../../assets/kiosk/college.png';
 
 export const LandingScreen = ({ 
   onStart, 
@@ -13,41 +14,34 @@ export const LandingScreen = ({
   onToggleSound,
   language = 'en'
 }) => {
-  const [isZoomingOut, setIsZoomingOut] = useState(false);
   const t = TRANSLATIONS[language] || TRANSLATIONS.en;
 
   const handleScreenTouch = () => {
-    if (isZoomingOut) return;
-    setIsZoomingOut(true);
-    setTimeout(() => {
-      onStart();
-    }, 400);
+    onStart();
   };
 
   return (
     <section 
       id="screen-landing" 
-      className={`screen active minimal-landing theme-${theme} ${isZoomingOut ? 'screen-exit-zoom' : ''}`}
+      className={`screen active minimal-landing theme-${theme}`}
       onClick={handleScreenTouch}
-      style={{ 
-        backgroundImage: `url(${landingBg})`, 
-        backgroundSize: 'cover', 
-        backgroundPosition: 'center',
-        backgroundRepeat: 'no-repeat',
-        color: 'white' 
-      }}
       role="region" 
       aria-label="Welcome Landing Page"
+      style={{ 
+        backgroundImage: `linear-gradient(rgba(11, 17, 32, 0.75), rgba(11, 17, 32, 0.85)), url(${collegeBg})`,
+        backgroundSize: 'cover',
+        backgroundPosition: 'center'
+      }}
     >
-      <div className="glass-main-wrapper" style={{ justifyContent: 'space-between' }}>
+      <div className="glass-main-wrapper" style={{ justifyContent: 'space-between', height: '100%' }}>
         {/* Top Status Bar with Time, Weather & Light/Dark Switch */}
         <header className="landing-minimal-header" onClick={(e) => e.stopPropagation()}>
           <div className="landing-header-left">
-            <div className="landing-weather-pill" style={{ boxShadow: '0 0 15px rgba(255,255,255,0.6)', border: '1px solid rgba(255,255,255,0.4)' }}>
+            <div className="landing-weather-pill" style={{ boxShadow: '0 0 15px rgba(255,255,255,0.15)', border: '1px solid rgba(255,255,255,0.25)' }}>
               <SunMedium size={18} className="pill-icon-weather" />
               <span>{t.weather || '24°C'}</span>
             </div>
-            <div className="landing-time-pill" style={{ boxShadow: '0 0 15px rgba(255,255,255,0.6)', border: '1px solid rgba(255,255,255,0.4)' }}>
+            <div className="landing-time-pill" style={{ boxShadow: '0 0 15px rgba(255,255,255,0.15)', border: '1px solid rgba(255,255,255,0.25)' }}>
               <Clock size={18} className="pill-icon-time" />
               <span className="time-clock">{currentTime}</span>
             </div>
@@ -63,12 +57,21 @@ export const LandingScreen = ({
           </div>
         </header>
 
-        {/* The center content is now baked into the background image directly */}
-        <main className="landing-minimal-center" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', marginTop: '-3vh' }}>
-          {/* Empty main to preserve layout spacing if needed, or just let background handle it */}
+        {/* Center Content: Centered Logo + Pulsing Text */}
+        <main className="landing-minimal-center">
+          <div className="landing-logo-container">
+            <img 
+              src={logoImg} 
+              alt="Campus Compass Logo" 
+              className="landing-center-logo" 
+            />
+          </div>
+          <p className="landing-pulsing-text">
+            Tap anywhere to explore campus
+          </p>
         </main>
 
-        {/* Subtle Bottom Instruction */}
+        {/* Footer */}
         <footer className="landing-minimal-footer">
         </footer>
       </div>

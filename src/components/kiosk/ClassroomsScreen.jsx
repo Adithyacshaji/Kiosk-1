@@ -116,7 +116,7 @@ export const ClassroomsScreen = ({
     <section 
       id="screen-classrooms" 
       className={`screen active directory-screen glass-dashboard-screen theme-${theme}`} 
-      style={{ backgroundImage: `url(${collegeBg})`, color: 'white' }}
+      style={{ backgroundImage: `linear-gradient(rgba(10, 16, 28, 0.6), rgba(10, 16, 28, 0.72)), url(${collegeBg})`, color: 'white' }}
       role="region" 
       aria-label="Classrooms Directory"
     >
@@ -229,43 +229,33 @@ export const ClassroomsScreen = ({
             {filteredClassrooms.map((cls) => (
               <div 
                 key={cls.id || cls.name} 
-                className="classroom-item-card"
+                className="classroom-item-card cls-item-card-enhanced"
                 onClick={() => onSelectClassroom(cls)}
-                style={{
-                  padding: '1.3rem 1.6rem',
-                  display: 'flex',
-                  flexDirection: 'row',
-                  alignItems: 'center',
-                  justifyContent: 'space-between',
-                  borderRadius: '20px',
-                  minHeight: 'auto',
-                  cursor: 'pointer',
-                  backgroundColor: 'white',
-                  color: 'black'
-                }}
               >
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '0.25rem' }}>
-                  <h3 style={{ fontSize: '1.35rem', fontWeight: 800, color: 'black', margin: 0, lineHeight: 1.2 }}>
-                    {cls.displayTitle}
-                  </h3>
-                  <span style={{ fontSize: '0.85rem', color: 'rgba(0, 0, 0, 0.7)', fontWeight: 600 }}>
-                    {cls.buildingName} • Room {cls.roomId} ({cls.floorName})
-                  </span>
+                <div className="cls-item-left">
+                  <div className="cls-item-icon-badge">
+                    <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                      <rect x="2" y="3" width="20" height="14" rx="2" />
+                      <line x1="8" y1="21" x2="16" y2="21" />
+                      <line x1="12" y1="17" x2="12" y2="21" />
+                    </svg>
+                  </div>
+                  <div className="cls-item-text">
+                    <h3 className="cls-item-title">{cls.displayTitle}</h3>
+                    <div className="cls-item-meta">
+                      <MapPin size={13} className="meta-icon" />
+                      <span>{cls.buildingName}</span>
+                      <span className="cls-meta-dot">·</span>
+                      <span>{cls.floorName}</span>
+                    </div>
+                    <span className="cls-room-tag">Room {cls.roomId}</span>
+                  </div>
                 </div>
                 
-                <div 
-                  className="glass-card-arrow" 
-                  style={{ 
-                    width: '42px', 
-                    height: '42px', 
-                    flexShrink: 0,
-                    background: 'rgba(0, 0, 0, 0.05)',
-                    border: '1px solid rgba(0, 0, 0, 0.1)',
-                    color: 'black'
-                  }}
-                >
-                  <Navigation size={18} color="black" />
-                </div>
+                <button className="btn-navigate-room cls-nav-btn">
+                  <Navigation size={16} />
+                  <span>Navigate</span>
+                </button>
               </div>
             ))}
 
