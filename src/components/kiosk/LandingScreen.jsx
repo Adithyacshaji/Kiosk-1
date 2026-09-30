@@ -3,7 +3,6 @@ import { ThemeToggle } from './ThemeToggle';
 import { StatusPills } from './StatusPills';
 import { TRANSLATIONS } from '../../data/kiosk/translations';
 import logoImg from '../../assets/kiosk/logo.png';
-import landingBg from '../../assets/kiosk/landing-bg.jpg';
 
 export const LandingScreen = ({ 
   onStart, 
@@ -23,20 +22,27 @@ export const LandingScreen = ({
       role="region" 
       aria-label="Welcome Landing Page"
     >
-      {/* ── DESKTOP VIEW: full-screen bg image, click anywhere to start ── */}
+
+      {/* ── DESKTOP VIEW: full-screen component-based design ── */}
       <div
-        className="landing-desktop-fullbg"
+        className="landing-desktop-scene"
         onClick={onStart}
         role="button"
         aria-label="Tap anywhere to start"
         tabIndex={0}
         onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') onStart(); }}
-        style={{ backgroundImage: `url(${landingBg})` }}
       >
-        {/* Top-right: weather, time, sound only */}
+        {/* Subtle grid pattern overlay */}
+        <div className="landing-desktop-grid" aria-hidden="true" />
+
+        {/* Radial glow blobs */}
+        <div className="landing-desktop-glow landing-desktop-glow--1" aria-hidden="true" />
+        <div className="landing-desktop-glow landing-desktop-glow--2" aria-hidden="true" />
+
+        {/* Top-right: weather, time, sound — stop propagation so they don't trigger onStart */}
         <div className="landing-desktop-topbar" onClick={(e) => e.stopPropagation()}>
           <div className="landing-desktop-pills">
-            <StatusPills weather={t.weather || '24°C'} currentTime={currentTime} darkVariant={false} />
+            <StatusPills weather={t.weather || '24°C'} currentTime={currentTime} darkVariant={true} />
           </div>
           <ThemeToggle
             theme={theme}
@@ -45,10 +51,33 @@ export const LandingScreen = ({
             onToggleSound={onToggleSound}
           />
         </div>
+
+        {/* Center content */}
+        <div className="landing-desktop-center">
+          {/* Logo illustration without background box */}
+          <div className="landing-desktop-logo-wrapper">
+            <img
+              src={logoImg}
+              alt="Campus Compass Logo"
+              className="landing-desktop-logo"
+              draggable={false}
+            />
+          </div>
+
+          {/* CTA pill */}
+          <div className="landing-cta-pill">
+            <span className="landing-cta-text">TOUCH ANYWHERE TO VIEW MAP</span>
+          </div>
+
+          {/* Subtitle */}
+          <p className="landing-desktop-subtitle">Explore Campus &bull; Find Your Way</p>
+        </div>
       </div>
 
       {/* ── MOBILE VIEW: existing UI unchanged ── */}
-      <div className="landing-onboarding-wrapper landing-mobile-only">
+      <div className="landing-onboarding-wrapper landing-mobile-only"
+        style={{ backgroundColor: '#F8F9FA' }}
+      >
         
         {/* Top Status & Controls */}
         <header className="landing-top-bar" onClick={(e) => e.stopPropagation()}>
