@@ -35,10 +35,6 @@ export const LandingScreen = ({
         {/* Subtle grid pattern overlay */}
         <div className="landing-desktop-grid" aria-hidden="true" />
 
-        {/* Radial glow blobs */}
-        <div className="landing-desktop-glow landing-desktop-glow--1" aria-hidden="true" />
-        <div className="landing-desktop-glow landing-desktop-glow--2" aria-hidden="true" />
-
         {/* Top-right: weather, time, sound — stop propagation so they don't trigger onStart */}
         <div className="landing-desktop-topbar" onClick={(e) => e.stopPropagation()}>
           <div className="landing-desktop-pills">
