@@ -83,7 +83,7 @@
 }
 
 #kiosk-app.theme-light {
-  background-image: linear-gradient(rgba(248, 249, 250, 0.8), rgba(248, 249, 250, 0.8)), url('./assets/kiosk/college.png');
+  background-image: linear-gradient(rgba(248, 249, 250, 0.9), rgba(248, 249, 250, 0.9)), url('./assets/kiosk/college.png');
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
