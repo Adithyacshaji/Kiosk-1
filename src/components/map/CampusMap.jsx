@@ -840,17 +840,20 @@ function CampusMap({
               String(destination.floor).toUpperCase() === String(currentFloor).toUpperCase() ||
               String(destFloorNorm).toUpperCase() === String(currentFloor).toUpperCase();
             const targetNode = activeIndoorNodes[targetNodeId] || activeIndoorNodes[destination.id];
+            
+            const hasLat = typeof destination.lat === 'number' && typeof destination.lng === 'number';
+            const position = targetNode?.position ? targetNode.position : (hasLat ? [destination.lat, destination.lng] : null);
 
-            if (isMatchingFloor && targetNode?.position) {
+            if (isMatchingFloor && position) {
               return (
                 <Marker
                   key={`indoor-dest-${targetNodeId}-${currentFloor}`}
-                  position={targetNode.position}
+                  position={position}
                   icon={indoorDestinationIcon}
                   zIndexOffset={900}
                 >
                   <Popup>
-                    <strong>{destination.name}</strong>
+                    <strong>{destination.name || destination.className || destination.roomNumber}</strong>
                   </Popup>
                 </Marker>
               );
@@ -1016,13 +1019,15 @@ function MapZoomManager({
         String(destFloorNorm).toUpperCase() === String(currentFloor).toUpperCase()
       );
       const targetNode = isMatchingFloor ? (activeIndoorNodes[targetNodeId] || activeIndoorNodes[destination?.id]) : null;
+      const hasLat = typeof destination?.lat === 'number' && typeof destination?.lng === 'number';
+      const destPos = targetNode?.position ? targetNode.position : (hasLat && isMatchingFloor ? [destination.lat, destination.lng] : null);
 
       let targetCenter = floorBounds.getCenter();
-      if (targetNode?.position) {
+      if (destPos) {
         // Bias center slightly towards destination (35% towards target, 65% floor center)
         targetCenter = [
-          targetCenter.lat * 0.65 + targetNode.position[0] * 0.35,
-          targetCenter.lng * 0.65 + targetNode.position[1] * 0.35,
+          targetCenter.lat * 0.65 + destPos[0] * 0.35,
+          targetCenter.lng * 0.65 + destPos[1] * 0.35,
         ];
       }
 

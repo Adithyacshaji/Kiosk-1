@@ -1866,8 +1866,8 @@ function MainApp() {
     const loc = locOverride || destInfoTarget;
     if (!loc) return;
     const targetBuilding = (loc.building || "").toLowerCase().includes("chavara") ? "chavara" : "stmarys";
-    const rawFloor = loc.floor ? String(loc.floor).toUpperCase() : "G";
-    const targetFloor = rawFloor.startsWith("B") ? rawFloor : (rawFloor === "G" || rawFloor === "GROUND" ? "G" : rawFloor);
+    const rawFloor = loc.floor !== undefined ? String(loc.floor).toUpperCase() : "G";
+    const targetFloor = rawFloor.startsWith("B") ? rawFloor : (rawFloor === "G" || rawFloor === "0" || rawFloor === "GROUND" ? "G" : rawFloor);
 
     // Set destination for the red pin marker in CampusMap
     setDestination(loc);
@@ -2779,8 +2779,8 @@ function MainApp() {
                     animation: 'kioskPanelSlideIn 0.3s cubic-bezier(0.16, 1, 0.3, 1)'
                   }}
                 >
-                  <div style={{ width: 32, height: 32, borderRadius: '50%', background: '#dcfce7', display: 'flex', alignItems: 'center', justifyContent: 'center', border: '1.5px solid #bbf7d0' }}>
-                    <MapPin size={16} color="#15803d" />
+                  <div style={{ width: 32, height: 32, borderRadius: '50%', background: '#F3F4F6', display: 'flex', alignItems: 'center', justifyContent: 'center', border: '1.5px solid #E5E7EB' }}>
+                    <MapPin size={16} color="#1A1A1A" />
                   </div>
                   <div style={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
                     <span style={{ color: '#64748b', fontSize: 10, fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.06em' }}>Selected Destination</span>
@@ -4017,11 +4017,11 @@ function isIndoorDestination(destination) {
     destination.routeNode === "chavara";
 
   if (isStMarys || isChavara) {
-    return Boolean(destination.floor || destination.indoorNode || destination.room);
+    return Boolean(destination.floor !== undefined || destination.indoorNode || destination.room);
   }
 
-  const f = destination.floor ? destination.floor.toString().toUpperCase() : "";
-  return f.startsWith("B2") || f.startsWith("B1") || f.startsWith("G") || /^[1-6]/.test(f);
+  const f = destination.floor !== undefined ? destination.floor.toString().toUpperCase() : "";
+  return f.startsWith("B2") || f.startsWith("B1") || f.startsWith("G") || f === "0" || /^[1-6]/.test(f);
 }
 
 function getStairNodeForBuilding(currentFloor, destinationFloor, building) {

@@ -53,7 +53,7 @@ export const InstructionDashboard = ({
       className="screen active glass-dashboard-screen"
       role="region"
       aria-label="Campus Compass Services"
-      style={{ backgroundColor: '#F8F9FA' }}
+      style={{ backgroundColor: 'transparent' }}
     >
       <div className="glass-main-wrapper">
         {/* Top Navigation */}

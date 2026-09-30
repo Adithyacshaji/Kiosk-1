@@ -82,6 +82,17 @@
   --shadow-glow: none;
 }
 
+#kiosk-app.theme-light {
+  background-image: linear-gradient(rgba(248, 249, 250, 0.5), rgba(248, 249, 250, 0.5)), url('./assets/kiosk/college.png');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+#screen-map {
+  background: var(--bg-page);
+}
+
 /* Dark Theme Mode (Deep Ambient Frosted Obsidian Glass) */
 #kiosk-app.theme-dark {
   --bg-page: transparent;
@@ -2143,8 +2154,13 @@
   align-items: center;
   justify-content: space-between;
   gap: 14px;
-  padding-bottom: 2px;
+  padding-bottom: 8px;
+  padding-top: 8px;
   padding-left: 6px;
+  position: sticky;
+  top: 0;
+  background: var(--bg-card, #FFFFFF);
+  z-index: 10;
 }
 
 .kiosk-panel-dest-header-block {
@@ -2178,6 +2194,7 @@
 .kiosk-panel-dest-title-box {
   display: flex;
   flex-direction: column;
+  justify-content: center;
   gap: 2px;
   overflow: hidden;
   flex: 1;
@@ -2242,18 +2259,18 @@
 }
 
 .kiosk-info-row-card.kiosk-card-building {
-  background: #f8faff;
-  border: 1.5px solid #dbeafe;
+  background: #F9FAFB;
+  border: 1.5px solid #E5E7EB;
 }
 
 .kiosk-info-row-card.kiosk-card-floor {
-  background: #f4fbf6;
-  border: 1.5px solid #dcfce7;
+  background: #F9FAFB;
+  border: 1.5px solid #E5E7EB;
 }
 
 .kiosk-info-row-card.kiosk-card-room {
-  background: #fefbf3;
-  border: 1.5px solid #fde68a;
+  background: #F9FAFB;
+  border: 1.5px solid #E5E7EB;
 }
 
 .kiosk-info-row-card:hover {
@@ -2395,7 +2412,7 @@
   transform: translateX(3px);
 }
 
-/* Secondary New Search Button — Clean White / Blue Outline Button */
+/* Secondary New Search Button — Clean White / Grey Outline Button */
 .kiosk-btn-new-search {
   display: flex;
   align-items: center;
@@ -2404,9 +2421,9 @@
   width: 100%;
   height: 50px;
   border-radius: 16px;
-  border: 1.5px solid #dbeafe;
+  border: 1.5px solid #E5E7EB;
   background: #ffffff;
-  color: #1e3a8a;
+  color: #1A1A1A;
   font-size: 14.5px;
   font-weight: 700;
   cursor: pointer;
@@ -2415,9 +2432,9 @@
 }
 
 .kiosk-btn-new-search:hover {
-  background: #f8fafc;
-  border-color: #bfdbfe;
-  color: #1d4ed8;
+  background: #F9FAFB;
+  border-color: #D1D5DB;
+  color: #000000;
   transform: translateY(-1px);
 }
 
@@ -2834,9 +2851,9 @@
   width: 100%;
   height: 48px;
   border-radius: 14px;
-  border: 1.5px solid #2563eb;
-  background: #eff6ff;
-  color: #1d4ed8;
+  border: 1.5px solid #D1D5DB;
+  background: #F3F4F6;
+  color: #1A1A1A;
   font-size: 14.5px;
   font-weight: 700;
   cursor: pointer;
@@ -2844,7 +2861,7 @@
 }
 
 .kiosk-btn-back-overview:hover {
-  background: #dbeafe;
+  background: #E5E7EB;
 }
 
 .kiosk-btn-reset-light {
@@ -3189,7 +3206,8 @@
   }
 
   .kiosk-map-bottom-tag {
-    bottom: 80px !important;
+    top: 75px !important;
+    bottom: auto !important;
     left: 12px !important;
     right: 12px !important;
     width: calc(100% - 24px) !important;
@@ -4831,10 +4849,62 @@
     height: 50% !important;
     border-radius: 24px 24px 0 0 !important;
     background: #ffffff !important;
-    overflow-y: auto !important;
+    overflow: hidden !important; /* Fix curves by clipping children */
     box-shadow: 0 -4px 24px rgba(0, 0, 0, 0.12) !important;
     animation: none !important;
     transform: none !important;
+    position: relative !important;
+    z-index: 100 !important;
+    transition: height 0.3s cubic-bezier(0.16, 1, 0.3, 1), flex 0.3s cubic-bezier(0.16, 1, 0.3, 1) !important;
+  }
+  
+  #kiosk-app .kiosk-panel-col.collapsed {
+    flex: 0 0 64px !important;
+    height: 64px !important;
+  }
+  
+  #kiosk-app .kiosk-map-body.kiosk-split .kiosk-map-col {
+    flex: 1 !important;
+    width: 100% !important;
+    height: auto !important;
+  }
+
+  .kiosk-mobile-handle {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 12px;
+    background: #ffffff;
+    cursor: pointer;
+    position: sticky;
+    top: 0;
+    z-index: 50;
+  }
+
+  .kiosk-mobile-handle-bar {
+    width: 36px;
+    height: 5px;
+    background: #cbd5e1;
+    border-radius: 9999px;
+  }
+  
+  .kiosk-mobile-handle-text {
+    font-size: 13px;
+    font-weight: 700;
+    color: #1A1A1A;
+    margin-top: 8px;
+  }
+
+  #kiosk-app .kiosk-panel-info {
+    padding-top: 4px !important;
+  }
+
+
+  #kiosk-app .kiosk-side-panel {
+    border-radius: 24px 24px 0 0 !important;
+    border: none !important;
+    box-shadow: none !important;
   }
 
   /* Adjust the indicators position since layout changed */
@@ -4912,4 +4982,26 @@
   #kiosk-app .glass-cards-grid {
     grid-template-columns: 1fr !important;
   }
+}
+
+/* ── Leaflet Popup Overrides ─────────────────────────────────────────────── */
+.leaflet-popup-content-wrapper {
+  border-radius: 12px !important;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1) !important;
+  padding: 4px !important;
+}
+
+.leaflet-popup-content {
+  margin: 12px 28px 12px 14px !important; /* give room for the close button on the right */
+  line-height: 1.4 !important;
+  font-family: inherit !important;
+  display: flex !important;
+  align-items: center !important;
+  min-height: 24px !important;
+}
+
+.leaflet-popup-close-button {
+  top: 8px !important;
+  right: 8px !important;
+  color: #64748b !important;
 }

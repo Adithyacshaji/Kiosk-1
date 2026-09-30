@@ -1,4 +1,4 @@
-import { Suspense } from 'react';
+import { useState, Suspense } from 'react';
 import { Home, Clock, MapPin } from 'lucide-react';
 import { KioskSidePanel } from './KioskSidePanel';
 import logoImg from '../../assets/kiosk/logo.png';
@@ -40,6 +40,7 @@ export function KioskMapLayout({
   mapSlot,
 }) {
   const isSplit = Boolean(destination) && (kioskViewState === 'split-outdoor' || kioskViewState === 'split-indoor');
+  const [isMobileCollapsed, setIsMobileCollapsed] = useState(false);
 
   return (
     <div className={`kiosk-map-root theme-${theme}`}>
@@ -62,7 +63,7 @@ export function KioskMapLayout({
 
         {/* RIGHT — Side Panel (visible only when destination selected) */}
         {isSplit && destination && (
-          <div className="kiosk-panel-col">
+          <div className={`kiosk-panel-col ${isMobileCollapsed ? 'collapsed' : ''}`}>
             <KioskSidePanel
               viewState={kioskViewState}
               destination={destination}
@@ -73,6 +74,8 @@ export function KioskMapLayout({
               onBackToInfo={onBackToInfo}
               currentFloor={currentFloor}
               theme={theme}
+              isMobileCollapsed={isMobileCollapsed}
+              setIsMobileCollapsed={setIsMobileCollapsed}
             />
           </div>
         )}

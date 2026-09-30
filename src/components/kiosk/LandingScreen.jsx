@@ -72,7 +72,7 @@ export const LandingScreen = ({
 
       {/* ── MOBILE VIEW: existing UI unchanged ── */}
       <div className="landing-onboarding-wrapper landing-mobile-only"
-        style={{ backgroundColor: '#F8F9FA' }}
+        style={{ backgroundColor: 'transparent' }}
       >
         
         {/* Top Status & Controls */}
