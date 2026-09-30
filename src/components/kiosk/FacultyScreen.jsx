@@ -89,7 +89,7 @@ export const FacultyScreen = ({
     <section 
       id="screen-faculty" 
       className={`screen active directory-screen theme-${theme}`} 
-      style={{ backgroundColor: '#F9FAFB', color: '#1A1A1A' }}
+      style={{ backgroundColor: 'transparent', color: '#1A1A1A' }}
       role="region" 
       aria-label="Faculty Directory"
     >
