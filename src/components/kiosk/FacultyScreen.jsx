@@ -15,12 +15,19 @@ import {
   Building2, 
   Compass, 
   ChevronRight,
-  Sparkles
+  Sparkles,
+  Wrench,
+  Landmark,
+  Zap,
+  Radio,
+  GraduationCap,
+  Briefcase
 } from 'lucide-react';
 import { ThemeToggle } from './ThemeToggle';
 import { KIOSK_CONFIG } from '../../data/kiosk/kioskData';
 import { TRANSLATIONS } from '../../data/kiosk/translations';
 import { getFacultyPhoto } from '../../utils/facultyPhotos';
+import { getDeptShortName, getDeptIconName } from '../../utils/departmentUtils';
 
 
 import collegeBg from '../../assets/kiosk/college.png';
@@ -42,13 +49,31 @@ export const FacultyScreen = ({
 
   const selectedDepartment = departments.find(d => d.id === selectedDeptId);
 
-  const getDeptIcon = (iconName) => {
-    switch (iconName) {
+  const getDeptIcon = (iconName, dept) => {
+    const iconKey = dept?.icon || iconName || getDeptIconName(dept);
+    switch (iconKey) {
       case 'Monitor': return <Monitor size={24} />;
+      case 'Wrench': return <Wrench size={24} />;
+      case 'Landmark': return <Landmark size={24} />;
+      case 'Zap': return <Zap size={24} />;
+      case 'Radio': return <Radio size={24} />;
+      case 'GraduationCap': return <GraduationCap size={24} />;
+      case 'Briefcase': return <Briefcase size={24} />;
       case 'Compass': return <Compass size={24} />;
       case 'Building2': return <Building2 size={24} />;
-      case 'GraduationCap': return <Building2 size={24} />;
-      default: return <Building2 size={24} />;
+      default: {
+        const fallbackKey = getDeptIconName(dept);
+        switch (fallbackKey) {
+          case 'Monitor': return <Monitor size={24} />;
+          case 'Wrench': return <Wrench size={24} />;
+          case 'Landmark': return <Landmark size={24} />;
+          case 'Zap': return <Zap size={24} />;
+          case 'Radio': return <Radio size={24} />;
+          case 'GraduationCap': return <GraduationCap size={24} />;
+          case 'Briefcase': return <Briefcase size={24} />;
+          default: return <GraduationCap size={24} />;
+        }
+      }
     }
   };
 
@@ -105,9 +130,9 @@ export const FacultyScreen = ({
                 >
                   <div className="dept-card-header">
                     <div className="dept-icon-circle">
-                      {getDeptIcon(dept.icon || 'GraduationCap')}
+                      {getDeptIcon(dept.icon, dept)}
                     </div>
-                    <span className="dept-code-pill">{dept.name.substring(0, 4).toUpperCase()}</span>
+                    <span className="dept-code-pill">{getDeptShortName(dept)}</span>
                   </div>
 
                   <div className="dept-card-body">
@@ -139,7 +164,12 @@ export const FacultyScreen = ({
           <>
             <div className="directory-heading-box">
               <div className="dir-title-text">
-                <div className="dir-eyebrow">{selectedDepartment.name}</div>
+                <div className="dir-eyebrow" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flexWrap: 'wrap' }}>
+                  <span>{selectedDepartment.name}</span>
+                  <span style={{ fontSize: '0.8rem', background: '#1A1A1A', color: '#ffffff', padding: '0.15rem 0.55rem', borderRadius: '9999px', fontWeight: 800 }}>
+                    {getDeptShortName(selectedDepartment)}
+                  </span>
+                </div>
                 <h1 className="dir-title">Faculty Directory</h1>
                 <p className="dir-subtitle">Select a faculty member below to get turn-by-turn navigation to their cabin.</p>
               </div>
@@ -155,7 +185,7 @@ export const FacultyScreen = ({
 
             <div className="faculty-grid">
               {(selectedDepartment.faculties || []).map((fac, idx) => {
-                const photoPath = fac.image_url || fac.photo || getFacultyPhoto(fac.name, selectedDepartment?.code || selectedDepartment?.name);
+                const photoPath = fac.image_url || fac.photo || getFacultyPhoto(fac.name, getDeptShortName(selectedDepartment) || selectedDepartment?.code || selectedDepartment?.name);
 
                 return (
                   <div key={idx} className="faculty-card" onClick={() => onSelectFaculty(fac)}>

@@ -3,6 +3,7 @@ import { formatRoomId } from "../../utils/formatRoomId";
 import { memo, useState } from "react";
 import ImageModal from "./ImageModal";
 import { ChevronRight, School, Layers, TestTube, Car, Bath, Library, Users, Coffee, Navigation, User } from "lucide-react";
+import { getDeptShortName } from "../../utils/departmentUtils";
 
 export const normalizeName = (name) => {
   if (!name) return '';
@@ -288,7 +289,12 @@ function BottomSheet({
                       )}
                     </div>
                     <div>
-                      <h4 className="text-[16px] font-semibold text-gray-900 leading-tight mb-1">{dept.name}</h4>
+                      <div className="flex items-center gap-2 mb-1">
+                        <h4 className="text-[16px] font-semibold text-gray-900 leading-tight">{dept.name}</h4>
+                        <span className="text-[11px] font-bold px-2 py-0.5 rounded-full bg-gray-100 text-gray-700 tracking-wide shrink-0">
+                          {getDeptShortName(dept)}
+                        </span>
+                      </div>
                       <p className="text-[13px] text-gray-500">{dept.faculties.length} Faculty Members</p>
                     </div>
                   </div>
@@ -302,7 +308,12 @@ function BottomSheet({
                   <button className="self-start text-[15px] font-semibold text-primary mb-4 flex items-center gap-1 hover:opacity-80" onClick={() => setSelectedDepartment(null)}>
                     ← Back
                   </button>
-                  <h3 className="text-[18px] font-bold mb-4">{selectedDepartment.name}</h3>
+                  <div className="flex items-center gap-2 mb-4">
+                    <h3 className="text-[18px] font-bold text-gray-900">{selectedDepartment.name}</h3>
+                    <span className="text-[12px] font-extrabold px-2.5 py-0.5 rounded-full bg-[#1A1A1A] text-white tracking-wide">
+                      {getDeptShortName(selectedDepartment)}
+                    </span>
+                  </div>
                   {selectedDepartment.faculties.map((faculty, index) => {
                     const normalizedName = normalizeName(faculty.name);
                     const photoPath = faculty.image_url || FACULTY_PHOTOS[normalizedName];
@@ -392,7 +403,14 @@ function BottomSheet({
                         <img src={item.image_url} alt={item.name || item.title} className="w-full h-full object-cover" />
                       </div>
                     )}
-                    <h4 className="text-[16px] font-semibold text-gray-900 leading-tight">{item.name || item.title}</h4>
+                    <div className="flex items-center justify-between gap-2">
+                      <h4 className="text-[16px] font-semibold text-gray-900 leading-tight">{item.name || item.title}</h4>
+                      {isDept && (
+                        <span className="text-[11px] font-bold px-2.5 py-0.5 rounded-full bg-gray-100 text-gray-700 tracking-wide shrink-0">
+                          {getDeptShortName(item)}
+                        </span>
+                      )}
+                    </div>
                     {item.description && <p className="text-[13px] text-gray-600">{item.description}</p>}
                     {isDept && (
                       <div className="flex flex-col gap-0.5 mt-0.5">

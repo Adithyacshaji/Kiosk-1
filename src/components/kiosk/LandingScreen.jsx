@@ -1,9 +1,9 @@
 import React from 'react';
-import { Compass } from 'lucide-react';
 import { ThemeToggle } from './ThemeToggle';
 import { StatusPills } from './StatusPills';
 import { TRANSLATIONS } from '../../data/kiosk/translations';
 import logoImg from '../../assets/kiosk/logo.png';
+import landingBg from '../../assets/kiosk/landing-bg.jpg';
 
 export const LandingScreen = ({ 
   onStart, 
@@ -22,11 +22,33 @@ export const LandingScreen = ({
       className={`screen active minimal-landing theme-${theme}`}
       role="region" 
       aria-label="Welcome Landing Page"
-      style={{ 
-        backgroundColor: '#F8F9FA'
-      }}
     >
-      <div className="landing-onboarding-wrapper">
+      {/* ── DESKTOP VIEW: full-screen bg image, click anywhere to start ── */}
+      <div
+        className="landing-desktop-fullbg"
+        onClick={onStart}
+        role="button"
+        aria-label="Tap anywhere to start"
+        tabIndex={0}
+        onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') onStart(); }}
+        style={{ backgroundImage: `url(${landingBg})` }}
+      >
+        {/* Top-right: weather, time, sound only */}
+        <div className="landing-desktop-topbar" onClick={(e) => e.stopPropagation()}>
+          <div className="landing-desktop-pills">
+            <StatusPills weather={t.weather || '24°C'} currentTime={currentTime} darkVariant={false} />
+          </div>
+          <ThemeToggle
+            theme={theme}
+            onToggleTheme={onToggleTheme}
+            soundEnabled={soundEnabled}
+            onToggleSound={onToggleSound}
+          />
+        </div>
+      </div>
+
+      {/* ── MOBILE VIEW: existing UI unchanged ── */}
+      <div className="landing-onboarding-wrapper landing-mobile-only">
         
         {/* Top Status & Controls */}
         <header className="landing-top-bar" onClick={(e) => e.stopPropagation()}>

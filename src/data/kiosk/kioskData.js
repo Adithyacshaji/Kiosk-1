@@ -301,7 +301,8 @@ export const KIOSK_CONFIG = {
     {
       id: "cse",
       name: "Computer Science & Engineering",
-      code: "CSE",
+      code: "CS",
+      shortName: "CS",
       hod: "Dr. V. P. Paulose",
       floor: 1,
       cabinBlock: "North Wing, Level 1",
@@ -362,10 +363,11 @@ export const KIOSK_CONFIG = {
       id: "ece",
       name: "Electronics & Communication Engineering",
       code: "ECE",
+      shortName: "ECE",
       hod: "Dr. Thomas George",
       floor: 2,
       cabinBlock: "East Wing, Level 2",
-      icon: "Compass",
+      icon: "Radio",
       color: "#967C6E",
       facultyMembers: [
         {
@@ -409,11 +411,12 @@ export const KIOSK_CONFIG = {
     {
       id: "me",
       name: "Mechanical Engineering",
-      code: "MECH",
+      code: "ME",
+      shortName: "ME",
       hod: "Dr. K. R. Suresh",
       floor: 2,
       cabinBlock: "South Wing & Workshop, Level 2",
-      icon: "Building2",
+      icon: "Wrench",
       color: "#38221B",
       facultyMembers: [
         {
@@ -445,11 +448,12 @@ export const KIOSK_CONFIG = {
     {
       id: "ce",
       name: "Civil Engineering",
-      code: "CIVIL",
+      code: "CE",
+      shortName: "CE",
       hod: "Dr. Marykutty Abraham",
       floor: 1,
       cabinBlock: "Central Block, Level 1",
-      icon: "Home",
+      icon: "Landmark",
       color: "#744F43",
       facultyMembers: [
         {
@@ -482,6 +486,7 @@ export const KIOSK_CONFIG = {
       id: "bsh",
       name: "Basic Science & Humanities",
       code: "BSH",
+      shortName: "BSH",
       hod: "Dr. Lissy Jose",
       floor: 0,
       cabinBlock: "Admin Ground Block",
