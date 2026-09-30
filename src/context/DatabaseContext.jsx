@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useState, useEffect, useMemo } from 'react';
 import { supabase, isSupabaseConfigured } from '../utils/supabaseClient';
 import { formatRoomId } from '../utils/formatRoomId';
+import { getDeptShortName } from '../utils/departmentUtils';
 
 
 
@@ -180,6 +181,8 @@ export const DatabaseProvider = ({ children }) => {
       return {
         id: dept.id,
         name: dept.name,
+        code: dept.code || getDeptShortName(dept.name),
+        shortName: dept.short_name || dept.shortName || getDeptShortName(dept.name),
         faculties,
         building: dept.building || undefined,
         floor: dept.floor || undefined,

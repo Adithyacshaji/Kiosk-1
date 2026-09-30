@@ -7,16 +7,16 @@ export const InactivityModal = ({ isOpen, remainingSeconds, totalWarningSeconds 
   const progressOffset = totalCircumference - (remainingSeconds / totalWarningSeconds) * totalCircumference;
 
   return (
-    <div className="modal-backdrop open">
-      <div className="kiosk-modal-box">
+    <div className="modal-backdrop open" role="dialog" aria-modal="true">
+      <div className="kiosk-modal-box inactivity-modal-card">
         <div className="inactivity-circle-timer">
-          <svg width="90" height="90" viewBox="0 0 90 90">
-            <circle cx="45" cy="45" r="38" stroke="rgba(255,255,255,0.1)" strokeWidth="6" fill="none" />
+          <svg width="88" height="88" viewBox="0 0 90 90">
+            <circle cx="45" cy="45" r="38" stroke="#E5E7EB" strokeWidth="6" fill="none" />
             <circle
               cx="45"
               cy="45"
               r="38"
-              stroke="#06B6D4"
+              stroke="#1A1A1A"
               strokeWidth="6"
               fill="none"
               strokeDasharray={totalCircumference}
@@ -32,13 +32,15 @@ export const InactivityModal = ({ isOpen, remainingSeconds, totalWarningSeconds 
           <span className="inactivity-countdown-num">{remainingSeconds}</span>
         </div>
 
-        <h3 style={{ fontSize: '1.4rem', fontWeight: 800 }}>Are you still using this kiosk?</h3>
-        <p style={{ fontSize: '0.95rem', color: 'var(--text-muted)' }}>
-          Due to inactivity, the kiosk will automatically reset to the home screen to protect your privacy and welcome new visitors.
-        </p>
+        <div className="inactivity-text-group">
+          <h3 className="inactivity-modal-title">Are you still using this kiosk?</h3>
+          <p className="inactivity-modal-desc">
+            Due to inactivity, the kiosk will automatically reset to the home screen to protect your privacy and welcome new visitors.
+          </p>
+        </div>
+
         <button
-          className="btn-view-map-hero"
-          style={{ width: '100%', justifyContent: 'center', padding: '1rem' }}
+          className="btn-inactivity-stay"
           onClick={onStay}
         >
           <span>I'm Still Here</span>

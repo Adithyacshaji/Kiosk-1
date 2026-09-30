@@ -25,8 +25,6 @@
   border-radius: 16px;
   border: 1px solid rgba(0, 0, 0, 0.08);
   background: rgba(255, 255, 255, 0.96);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12), 0 2px 6px rgba(0, 0, 0, 0.04);
   cursor: pointer;
   transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
@@ -36,7 +34,7 @@
 .floor-current:hover {
   transform: translateY(-2px);
   box-shadow: 0 12px 30px rgba(0, 0, 0, 0.16);
-  border-color: rgba(37, 99, 235, 0.25);
+  border-color: rgba(0, 0, 0, 0.15);
 }
 
 .floor-current:active {
@@ -47,13 +45,13 @@
   width: 36px;
   height: 36px;
   border-radius: 10px;
-  background: #eff6ff;
-  color: #2563eb;
+  background: #F0F0F0;
+  color: #1A1A1A;
   display: flex;
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
-  border: 1px solid #dbeafe;
+  border: 1px solid #E0E0E0;
 }
 
 .floor-current-text {
@@ -86,7 +84,7 @@
 
 .arrow.rotate {
   transform: rotate(180deg);
-  color: #2563eb;
+  color: #1A1A1A;
 }
 
 /* ── Expanded Floor Dropdown ──────────────────────────────────────────────── */
@@ -94,8 +92,6 @@
   margin-top: 10px;
   width: 170px;
   background: rgba(255, 255, 255, 0.98);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
   border-radius: 20px;
   border: 1px solid rgba(0, 0, 0, 0.08);
   box-shadow: 0 16px 40px rgba(0, 0, 0, 0.16), 0 4px 12px rgba(0, 0, 0, 0.06);
@@ -188,9 +184,9 @@
 
 /* Active State */
 .floor-item.active {
-  background: #2563eb;
+  background: #1A1A1A;
   color: #ffffff;
-  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
 }
 
 .floor-item.active .floor-item-key-wrap {

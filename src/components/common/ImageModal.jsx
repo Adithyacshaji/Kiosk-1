@@ -7,7 +7,7 @@ export default function ImageModal({ imageUrl, altText, onClose }) {
 
   return createPortal(
     <div 
-      className="fixed inset-0 z-9999999 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4 animate-[fadeIn_0.2s_ease-out]"
+      className="fixed inset-0 z-9999999 flex items-center justify-center bg-black  p-4 animate-[fadeIn_0.2s_ease-out]"
       onClick={onClose}
     >
       <div 
@@ -16,7 +16,7 @@ export default function ImageModal({ imageUrl, altText, onClose }) {
       >
         <button 
           onClick={onClose}
-          className="absolute -top-12 right-0 p-2 text-white/80 hover:text-white bg-white/10 hover:bg-white/20 rounded-full backdrop-blur-md transition-all"
+          className="absolute -top-12 right-0 p-2 text-white/80 hover:text-white bg-white hover:bg-white rounded-full  transition-all"
         >
           <X size={24} />
         </button>

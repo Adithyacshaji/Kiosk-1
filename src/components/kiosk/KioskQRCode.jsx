@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { QRCodeSVG } from 'qrcode.react';
+import { QRCodeCanvas } from 'qrcode.react';
 import { Smartphone, QrCode, Sparkles, Check, Copy, ExternalLink, Settings, Wifi, Globe, Link2 } from 'lucide-react';
 import logoImg from '../../assets/kiosk/logo.png';
 
@@ -67,8 +67,8 @@ export function KioskQRCode({ destination }) {
 
   const qrUrl = `${baseOrigin}/?${queryParams.toString()}`;
 
-  const accentColor = '#2563eb';
-  const accentBg = 'rgba(37, 99, 235, 0.08)';
+  const accentColor = '#1A1A1A';
+  const accentBg = '#F3F4F6';
 
   const handleCopyLink = () => {
     if (navigator.clipboard?.writeText) {
@@ -96,7 +96,7 @@ export function KioskQRCode({ destination }) {
 
       {/* Clean QR Code Container */}
       <div className="kiosk-qr-canvas-box" style={{ padding: '16px', background: '#ffffff', border: '1px solid #e2e8f0', borderRadius: '16px', boxShadow: '0 4px 16px rgba(0,0,0,0.04)' }}>
-        <QRCodeSVG
+        <QRCodeCanvas
           value={qrUrl}
           size={210}
           level="Q"
@@ -128,7 +128,7 @@ export function KioskQRCode({ destination }) {
           gap: 8,
         }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-            <span style={{ width: 8, height: 8, borderRadius: '50%', background: '#2563eb' }} />
+            <span style={{ width: 8, height: 8, borderRadius: '50%', background: '#1A1A1A' }} />
             <span style={{ fontSize: '11px', fontWeight: '700', color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.04em' }}>Destination</span>
           </div>
           <span style={{ fontSize: '12.5px', fontWeight: '700', color: '#0f172a', textAlign: 'right', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: '180px' }}>

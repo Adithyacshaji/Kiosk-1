@@ -25,8 +25,8 @@ export default function LocationAlertCard({ onRetry }) {
         right: "16px",
         zIndex: 2500,
         background: "rgba(255,255,255,0.97)",
-        backdropFilter: "blur(16px)",
-        WebkitBackdropFilter: "blur(16px)",
+        
+        
         borderRadius: "20px",
         boxShadow: "0 8px 32px rgba(0,0,0,0.14), 0 2px 8px rgba(0,0,0,0.08)",
         border: "1px solid rgba(0,0,0,0.07)",

@@ -21,8 +21,8 @@ function SearchChips({ onSelectCategory, activeCategory = "all", isKiosk = false
               onClick={() => onSelectCategory?.(cat.id, cat.label)}
               className={`flex items-center gap-2.5 shrink-0 px-5 py-2.5 sm:px-6 sm:py-3 rounded-full text-[16px] sm:text-[17px] font-medium transition-all duration-200 border whitespace-nowrap cursor-pointer select-none
                 ${isActive 
-                  ? "bg-blue-600 border-blue-600 text-white shadow-[0_4px_16px_rgba(37,99,235,0.35)] scale-[1.02]" 
-                  : "bg-white border-gray-200/90 text-gray-700 hover:bg-gray-50 hover:border-gray-300 hover:text-gray-900 shadow-[0_2px_8px_rgba(0,0,0,0.06)] active:scale-95"
+                  ? "bg-[#1A1A1A] border-[#1A1A1A] text-white shadow-lg scale-[1.02]" 
+                  : "bg-white border-gray-100 text-gray-500 hover:bg-gray-50 hover:text-gray-900 shadow-[0_4px_16px_rgba(0,0,0,0.06)] active:scale-95"
                 }`}
             >
               <Icon size={20} strokeWidth={isActive ? 2.5 : 2} className={isActive ? "text-white" : "text-gray-600"} />

@@ -1,6 +1,8 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import "./LoadingScreen.css";
+import logoImg from "../../assets/kiosk/logo.png";
+
 
 export default function LoadingScreen({ isLoading, gpsStatus, onExplore }) {
   const [shouldRender, setShouldRender] = useState(isLoading);
@@ -58,7 +60,7 @@ export default function LoadingScreen({ isLoading, gpsStatus, onExplore }) {
     <div className={`minimal-loading-overlay ${isFadingOut ? "minimal-loading-overlay--fade" : ""}`}>
       <div className="minimal-loading-content">
         <img 
-          src="/logo.png" 
+          src={logoImg}
           alt="Campus Compass Logo" 
           className={`loading-logo ${isFadingOut ? "loading-logo--zoom-fade" : ""}`} 
           onClick={handleLogoTap}

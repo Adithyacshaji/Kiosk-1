@@ -5,11 +5,12 @@ import {
   Clock, 
   SunMedium, 
   MapPin, 
-  Navigation
+  Navigation,
+  Monitor
 } from 'lucide-react';
 import { ThemeToggle } from './ThemeToggle';
+import { DirectoryHeader } from './DirectoryHeader';
 import { TRANSLATIONS } from '../../data/kiosk/translations';
-import logoImg from '../../assets/kiosk/logo.png';
 import collegeBg from '../../assets/kiosk/college.png';
 
 // Helper to filter and parse classroom details (S1 - S8)
@@ -115,55 +116,32 @@ export const ClassroomsScreen = ({
   return (
     <section 
       id="screen-classrooms" 
-      className={`screen active directory-screen glass-dashboard-screen theme-${theme}`} 
-      style={{ backgroundImage: `linear-gradient(rgba(10, 16, 28, 0.6), rgba(10, 16, 28, 0.72)), url(${collegeBg})`, color: 'white' }}
+      className={`screen active directory-screen theme-${theme}`} 
+      style={{ backgroundColor: 'transparent', color: '#1A1A1A' }}
       role="region" 
       aria-label="Classrooms Directory"
     >
-      <div className="glass-main-wrapper directory-glass-wrapper">
+      <div style={{ display: 'flex', flexDirection: 'column', width: '100%', height: '100%', overflow: 'hidden' }}>
         {/* Top Navigation Bar */}
-        <header className="directory-top-bar">
-          <div className="dir-bar-left">
-            <button className="btn-dir-back" onClick={onBack} title="Back">
-              <ArrowLeft size={20} />
-              <span>Back</span>
-            </button>
-            <div className="dir-brand-badge" onClick={onGoHome}>
-              <img src={logoImg} alt="Logo" className="dir-logo-mini" />
-              <div className="dir-brand-text">
-                <span className="dir-brand-name">Campus Compass</span>
-                <span className="dir-brand-tag">CLASSROOM DIRECTORY</span>
-              </div>
-            </div>
-          </div>
-
-          <div className="dir-bar-right">
-            <div className="landing-weather-pill">
-              <SunMedium size={16} className="pill-icon-weather" />
-              <span>{t.weather || '24°C'}</span>
-            </div>
-            <div className="landing-time-pill">
-              <Clock size={16} className="pill-icon-time" />
-              <span className="time-clock">{currentTime}</span>
-            </div>
-            <ThemeToggle 
-              theme={theme}
-              onToggleTheme={onToggleTheme}
-              soundEnabled={soundEnabled}
-              onToggleSound={onToggleSound}
-            />
-            <button className="btn-campus-home" onClick={onGoHome} title={t.home}>
-              <Home size={18} />
-            </button>
-          </div>
-        </header>
+        <DirectoryHeader 
+          title="CLASSROOM DIRECTORY"
+          onBack={onBack}
+          onGoHome={onGoHome}
+          currentTime={currentTime}
+          weather={t.weather || '24°C'}
+          theme={theme}
+          onToggleTheme={onToggleTheme}
+          soundEnabled={soundEnabled}
+          onToggleSound={onToggleSound}
+          backText="Back"
+        />
 
         {/* Main Content Area */}
-        <main className="directory-main-content" style={{ gap: '1.25rem', paddingTop: '1.5rem', paddingBottom: '1.5rem' }}>
+        <main className="directory-main-content" style={{ flex: 1, overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '1.25rem', padding: '1.25rem 1.5rem', WebkitOverflowScrolling: 'touch' }}>
           {/* Header Title & Small Year / Semester Chips */}
           {/* Header Title */}
           <div style={{ display: 'flex', flexDirection: 'column', gap: '0.85rem' }}>
-            <h1 style={{ fontSize: '2.4rem', fontWeight: 800, color: '#ffffff', letterSpacing: '-0.02em', margin: 0, textShadow: '0 2px 10px rgba(0,0,0,0.2)' }}>
+            <h1 style={{ fontSize: 'clamp(1.8rem, 6vw, 2.4rem)', fontWeight: 800, color: '#1A1A1A', letterSpacing: '-0.02em', margin: 0 }}>
               Find Your Classroom
             </h1>
 
@@ -180,10 +158,10 @@ export const ClassroomsScreen = ({
                     fontWeight: 700,
                     cursor: 'pointer',
                     transition: 'all 0.15s ease',
-                    background: selectedYear === chip.id ? 'rgba(144, 187, 172, 0.45)' : 'rgba(255, 255, 255, 0.14)',
-                    color: '#ffffff',
-                    border: selectedYear === chip.id ? '1.5px solid #ffffff' : '1px solid rgba(255, 255, 255, 0.3)',
-                    boxShadow: selectedYear === chip.id ? '0 0 14px rgba(144, 187, 172, 0.35)' : 'none'
+                    background: selectedYear === chip.id ? '#1A1A1A' : '#ffffff',
+                    color: selectedYear === chip.id ? '#ffffff' : '#1A1A1A',
+                    border: selectedYear === chip.id ? 'none' : '1px solid rgba(0, 0, 0, 0.08)',
+                    boxShadow: selectedYear === chip.id ? '0 4px 12px rgba(0,0,0,0.15)' : '0 2px 8px rgba(0,0,0,0.04)'
                   }}
                 >
                   {chip.label}
@@ -193,7 +171,7 @@ export const ClassroomsScreen = ({
 
             {/* Small Semester Chips for faster filtering */}
             <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap', alignItems: 'center' }}>
-              <span style={{ fontSize: '0.85rem', fontWeight: 700, opacity: 0.8, marginRight: '0.2rem' }}>Sem:</span>
+              <span style={{ fontSize: '0.85rem', fontWeight: 700, color: '#6B7280', marginRight: '0.2rem' }}>Sem:</span>
               {semesterChips.map((sem) => (
                 <button
                   key={sem}
@@ -205,10 +183,10 @@ export const ClassroomsScreen = ({
                     fontWeight: 700,
                     cursor: 'pointer',
                     transition: 'all 0.15s ease',
-                    background: selectedSemester === sem ? 'rgba(93, 133, 155, 0.55)' : 'rgba(255, 255, 255, 0.10)',
-                    color: '#ffffff',
-                    border: selectedSemester === sem ? '1.5px solid #ffffff' : '1px solid rgba(255, 255, 255, 0.22)',
-                    boxShadow: selectedSemester === sem ? '0 0 10px rgba(93, 133, 155, 0.35)' : 'none'
+                    background: selectedSemester === sem ? '#1A1A1A' : '#ffffff',
+                    color: selectedSemester === sem ? '#ffffff' : '#1A1A1A',
+                    border: selectedSemester === sem ? 'none' : '1px solid rgba(0, 0, 0, 0.08)',
+                    boxShadow: selectedSemester === sem ? '0 4px 12px rgba(0,0,0,0.15)' : '0 2px 8px rgba(0,0,0,0.04)'
                   }}
                 >
                   {sem === 'All' ? 'All' : sem}
@@ -218,27 +196,23 @@ export const ClassroomsScreen = ({
           </div>
 
           {/* Clean Classroom Cards Grid - Only Classroom Names on Clean Clickable Cards */}
-          <div 
-            className="classrooms-cards-grid" 
-            style={{ 
-              gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', 
-              gap: '1.25rem',
-              marginTop: '0.4rem' 
-            }}
-          >
+            <div 
+              className="classrooms-cards-grid" 
+              style={{ 
+                gridTemplateColumns: 'repeat(auto-fill, minmax(330px, 1fr))', 
+                gap: '1.25rem',
+                marginTop: '0.4rem' 
+              }}
+            >
             {filteredClassrooms.map((cls) => (
               <div 
                 key={cls.id || cls.name} 
-                className="classroom-item-card cls-item-card-enhanced"
+                className="cls-item-card-enhanced"
                 onClick={() => onSelectClassroom(cls)}
               >
                 <div className="cls-item-left">
                   <div className="cls-item-icon-badge">
-                    <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
-                      <rect x="2" y="3" width="20" height="14" rx="2" />
-                      <line x1="8" y1="21" x2="16" y2="21" />
-                      <line x1="12" y1="17" x2="12" y2="21" />
-                    </svg>
+                    <Monitor size={22} />
                   </div>
                   <div className="cls-item-text">
                     <h3 className="cls-item-title">{cls.displayTitle}</h3>
@@ -260,11 +234,11 @@ export const ClassroomsScreen = ({
             ))}
 
             {filteredClassrooms.length === 0 && (
-              <div style={{ gridColumn: '1 / -1', padding: '2.5rem', textAlign: 'center', background: 'rgba(255,255,255,0.08)', borderRadius: '20px' }}>
-                <p style={{ fontSize: '1.1rem', fontWeight: 600, color: '#ffffff' }}>No classrooms found matching this filter.</p>
+              <div style={{ gridColumn: '1 / -1', padding: '2.5rem', textAlign: 'center', background: '#ffffff', borderRadius: '20px', border: '1px solid #E5E7EB' }}>
+                <p style={{ fontSize: '1.1rem', fontWeight: 600, color: '#1A1A1A' }}>No classrooms found matching this filter.</p>
                 <button 
                   onClick={() => { setSelectedYear('1'); setSelectedSemester('S1'); }}
-                  style={{ marginTop: '0.8rem', padding: '0.5rem 1.2rem', borderRadius: '30px', background: 'rgba(144,187,172,0.4)', color: '#fff', border: '1px solid #fff', cursor: 'pointer', fontWeight: 700 }}
+                  style={{ marginTop: '0.8rem', padding: '0.5rem 1.2rem', borderRadius: '30px', background: '#1A1A1A', color: '#fff', border: 'none', cursor: 'pointer', fontWeight: 700 }}
                 >
                   Reset Filters
                 </button>
@@ -274,14 +248,9 @@ export const ClassroomsScreen = ({
         </main>
 
         {/* Directory Footer */}
-        <footer className="campus-bottom-footer">
-          <div className="footer-left-info">
-            <MapPin size={16} color="#90bbac" />
-            <span>Christ College of Engineering (Autonomous) | Classroom Directory</span>
-          </div>
-          <div className="footer-right-motto">
-            <span>"Smarter campus. A better you."</span>
-          </div>
+        <footer style={{ background: '#1A1A1A', padding: '1rem', display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '0.5rem', color: '#ffffff', fontSize: '0.8rem', flexShrink: 0, textAlign: 'center', flexWrap: 'wrap' }}>
+          <MapPin size={16} color="#ffffff" />
+          <span>Christ College of Engineering (Autonomous) | Classroom Directory</span>
         </footer>
       </div>
     </section>

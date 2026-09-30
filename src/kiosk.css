@@ -11,23 +11,23 @@
 
 :root {
   /* Core Glass & Ambient Tokens */
-  --glass-bg-base: rgba(11, 19, 26, 0.95);
-  --glass-overlay: rgba(0, 0, 0, 0.52);
+  --glass-bg-base: #F8F9FA;
+  --glass-overlay: rgba(255, 255, 255, 0.4);
   --glass-blur: blur(14px);
   --glass-blur-heavy: blur(22px);
-  
+
   --glass-card: rgba(255, 255, 255, 0.14);
   --glass-card-hover: rgba(255, 255, 255, 0.24);
   --glass-card-alt: rgba(255, 255, 255, 0.09);
   --glass-card-active: rgba(144, 187, 172, 0.38);
-  
+
   --glass-border: rgba(255, 255, 255, 0.35);
   --glass-border-subtle: rgba(255, 255, 255, 0.20);
   --glass-border-glow: rgba(255, 255, 255, 0.65);
-  
+
   --glass-header: rgba(255, 255, 255, 0.12);
   --glass-footer: rgba(255, 255, 255, 0.10);
-  
+
   /* Jewel-Tone Accents */
   --c-sage: #819a84;
   --c-sage-glow: rgba(129, 154, 132, 0.45);
@@ -50,13 +50,13 @@
   /* Typography & Layout Tokens */
   --font-family: 'Plus Jakarta Sans', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   --font-serif: 'Playfair Display', Georgia, serif;
-  
+
   --radius-sm: 8px;
   --radius-md: 14px;
-  --radius-lg: 20px;
-  --radius-xl: 28px;
+  --radius-lg: 28px;
+  --radius-xl: 32px;
   --radius-full: 9999px;
-  
+
   --transition-fast: 0.15s ease;
   --transition-normal: 0.3s cubic-bezier(0.16, 1, 0.3, 1);
   --transition-smooth: 0.4s cubic-bezier(0.2, 0.8, 0.2, 1);
@@ -65,21 +65,32 @@
 /* Light Theme Mode (Luminous Frosted Glass on Campus Backdrop) */
 #kiosk-app.theme-light,
 #kiosk-app {
-  --bg-page: transparent;
-  --bg-card: rgba(255, 255, 255, 0.15);
-  --bg-card-alt: rgba(255, 255, 255, 0.10);
-  --bg-header: rgba(255, 255, 255, 0.14);
-  --border-color: rgba(255, 255, 255, 0.28);
-  --border-card: rgba(255, 255, 255, 0.35);
-  --text-main: #ffffff;
-  --text-muted: rgba(255, 255, 255, 0.85);
-  --text-sub: rgba(255, 255, 255, 0.70);
-  --accent-color: #90bbac;
-  --accent-text: #ffffff;
-  --shadow-sm: 0 4px 16px rgba(0, 0, 0, 0.12);
-  --shadow-md: 0 8px 32px rgba(0, 0, 0, 0.22);
-  --shadow-lg: 0 16px 48px rgba(0, 0, 0, 0.35);
-  --shadow-glow: 0 0 24px rgba(144, 187, 172, 0.40);
+  --bg-page: #F8F9FA;
+  --bg-card: #FFFFFF;
+  --bg-card-alt: #F8F9FA;
+  --bg-header: #FFFFFF;
+  --border-color: rgba(0, 0, 0, 0.08);
+  --border-card: rgba(0, 0, 0, 0.08);
+  --text-main: #1A1A1A;
+  --text-muted: #6B7280;
+  --text-sub: #9CA3AF;
+  --accent-color: #1A1A1A;
+  --accent-text: #FFFFFF;
+  --shadow-sm: 0 4px 12px rgba(0, 0, 0, 0.04);
+  --shadow-md: 0 8px 24px rgba(0, 0, 0, 0.06);
+  --shadow-lg: 0 16px 48px rgba(0, 0, 0, 0.08);
+  --shadow-glow: none;
+}
+
+#kiosk-app.theme-light {
+  background-image: linear-gradient(rgba(248, 249, 250, 0.9), rgba(248, 249, 250, 0.9)), url('./assets/kiosk/college.png');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+#screen-map {
+  background: var(--bg-page);
 }
 
 /* Dark Theme Mode (Deep Ambient Frosted Obsidian Glass) */
@@ -135,7 +146,7 @@
   line-height: 1.5;
   font-size: 16px;
   touch-action: manipulation;
-  background-color: #0b131a;
+  background-color: var(--bg-page);
   z-index: 1000;
   scrollbar-width: none !important;
   -ms-overflow-style: none !important;
@@ -175,17 +186,11 @@
   display: flex;
   flex-direction: column;
   overflow: hidden;
-  color: #ffffff;
+  color: var(--text-main, #1A1A1A);
 }
 
 #kiosk-app .glass-dashboard-screen::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background: var(--glass-overlay);
-  backdrop-filter: var(--glass-blur);
-  -webkit-backdrop-filter: var(--glass-blur);
-  z-index: 1;
+  content: none;
 }
 
 #kiosk-app .glass-main-wrapper {
@@ -220,139 +225,315 @@
   flex-direction: column;
   justify-content: space-between;
   align-items: center;
-  cursor: pointer;
   height: 100vh;
   width: 100vw;
   position: relative;
-  background-color: #0b1120;
+  background-color: transparent;
   overflow: hidden;
 }
 
-#kiosk-app .landing-page-bg-img {
+/* ── Desktop full-screen component scene ── */
+#kiosk-app .landing-desktop-scene {
+  display: none; /* hidden on mobile */
   position: absolute;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 100vh;
-  object-fit: contain;
-  z-index: 0;
-  pointer-events: none;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  background: transparent;
+  cursor: pointer;
+  z-index: 2;
+  overflow: hidden;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
 }
 
-#kiosk-app .landing-minimal-header {
+/* Subtle dot-grid overlay */
+#kiosk-app .landing-desktop-grid {
+  position: absolute;
+  inset: 0;
+  background-image:
+    radial-gradient(circle, rgba(0, 0, 0, 0.04) 1px, transparent 1px);
+  background-size: 44px 44px;
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* Top-right bar: weather, time, sound */
+#kiosk-app .landing-desktop-topbar {
+  position: absolute;
+  top: 2rem;
+  right: 2.5rem;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  z-index: 10;
+}
+
+#kiosk-app .landing-desktop-pills {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+/* Pills: dark charcoal style */
+#kiosk-app .landing-desktop-topbar .landing-weather-pill,
+#kiosk-app .landing-desktop-topbar .landing-time-pill {
+  background: rgba(26, 26, 26, 0.9) !important;
+  border: none !important;
+  color: #ffffff !important;
+  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.14) !important;
+}
+#kiosk-app .landing-desktop-topbar .landing-weather-pill svg,
+#kiosk-app .landing-desktop-topbar .landing-time-pill svg {
+  color: #ffffff !important;
+}
+
+/* Sound button */
+#kiosk-app .landing-desktop-topbar .btn-sound-switch {
+  background: rgba(26, 26, 26, 0.9) !important;
+  border: none !important;
+  color: #ffffff !important;
+  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.14) !important;
+}
+#kiosk-app .landing-desktop-topbar .btn-sound-switch:hover {
+  background: rgba(26, 26, 26, 1) !important;
+}
+
+/* Center content wrapper */
+#kiosk-app .landing-desktop-center {
+  position: relative;
+  z-index: 5;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2.5rem;
+  user-select: none;
+}
+
+/* Logo illustration without background box */
+#kiosk-app .landing-desktop-logo-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: landingLogoFloat 6s ease-in-out infinite;
+}
+
+@keyframes landingLogoFloat {
+  0%, 100% { transform: translateY(0px); }
+  50%       { transform: translateY(-14px); }
+}
+
+#kiosk-app .landing-desktop-logo {
+  width: 330px;
+  height: 330px;
+  max-width: 85vw;
+  object-fit: contain;
+  pointer-events: none;
+  /* Clean natural drop-shadow without colored glow */
+  filter: drop-shadow(0 14px 28px rgba(0, 0, 0, 0.08));
+  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), filter 0.3s ease;
+}
+
+#kiosk-app .landing-desktop-scene:hover .landing-desktop-logo {
+  transform: scale(1.03);
+  filter: drop-shadow(0 18px 36px rgba(0, 0, 0, 0.12));
+}
+
+/* CTA pill */
+#kiosk-app .landing-cta-pill {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #1a1a1a;
+  border-radius: 9999px;
+  padding: 1.2rem 4rem;
+  box-shadow:
+    0 8px 32px rgba(0,0,0,0.12),
+    0 2px 8px rgba(0,0,0,0.08);
+  transition: transform 0.25s cubic-bezier(0.16,1,0.3,1), box-shadow 0.25s ease;
+  cursor: pointer;
+}
+#kiosk-app .landing-desktop-scene:hover .landing-cta-pill {
+  transform: translateY(-3px) scale(1.02);
+  box-shadow: 0 14px 40px rgba(0,0,0,0.16), 0 4px 12px rgba(0,0,0,0.1);
+}
+#kiosk-app .landing-desktop-scene:active .landing-cta-pill {
+  transform: translateY(1px) scale(0.99);
+}
+
+#kiosk-app .landing-cta-text {
+  font-size: 1.25rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  color: #ffffff;
+  white-space: nowrap;
+}
+
+/* Subtitle */
+#kiosk-app .landing-desktop-subtitle {
+  font-size: 1.05rem;
+  font-weight: 500;
+  color: #9ca3af;
+  letter-spacing: 0.04em;
+  margin: 0;
+}
+
+/* Mobile-only wrapper: visible on small screens, hidden on desktop */
+#kiosk-app .landing-mobile-only {
+  display: flex;
+}
+
+/* ── Desktop breakpoint: show scene, hide mobile wrapper ── */
+@media (min-width: 769px) {
+  #kiosk-app .landing-desktop-scene {
+    display: flex;
+  }
+  #kiosk-app .landing-mobile-only {
+    display: none !important;
+  }
+  #kiosk-app #screen-landing.minimal-landing {
+    background-color: transparent;
+  }
+}
+
+#kiosk-app .landing-onboarding-wrapper {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
   width: 100%;
+  height: 100%;
+  padding: 2.5rem 3.5rem;
+  max-width: 1600px;
+  margin: 0 auto;
+  box-sizing: border-box;
+}
+
+#kiosk-app .landing-top-bar {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding-bottom: 1.5rem;
+  width: 100%;
 }
 
-#kiosk-app .landing-header-left {
+#kiosk-app .landing-header-left,
+#kiosk-app .landing-header-right {
   display: flex;
-  gap: 1rem;
   align-items: center;
+  gap: 1rem;
 }
 
 #kiosk-app .landing-weather-pill,
 #kiosk-app .landing-time-pill {
   display: flex;
+  flex-direction: row;
   align-items: center;
+  justify-content: center;
   gap: 0.6rem;
   padding: 0.6rem 1.3rem;
-  background: rgba(255, 255, 255, 0.16);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  border: 1px solid rgba(255, 255, 255, 0.38);
-  border-radius: var(--radius-full);
+  border-radius: 9999px;
   font-size: 0.95rem;
   font-weight: 700;
-  color: #ffffff;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+  white-space: nowrap;
 }
 
-#kiosk-app .pill-icon-weather,
-#kiosk-app .pill-icon-time {
-  color: #90bbac;
-}
-
-#kiosk-app .landing-minimal-center {
-  flex: 1;
+#kiosk-app .landing-text-header {
   display: flex;
   flex-direction: column;
-  align-items: center;
-  justify-content: center;
+  align-items: flex-start;
+  margin-top: 4rem;
   width: 100%;
-  margin: auto 0;
-  gap: 2.2rem;
-  z-index: 5;
 }
 
-#kiosk-app .landing-logo-container {
+#kiosk-app .landing-title {
+  font-size: 5.5rem;
+  font-weight: 800;
+  color: var(--text-main, #1A1A1A);
+  margin: 0;
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+}
+
+#kiosk-app .landing-subtitle {
+  font-size: 1.8rem;
+  color: #6B7280;
+  margin: 0.5rem 0 0 0;
+  font-weight: 500;
+}
+
+#kiosk-app .landing-illustration-container {
+  flex: 1;
   display: flex;
   align-items: center;
   justify-content: center;
+  width: 100%;
   position: relative;
+  min-height: 0; /* allows shrinking */
 }
 
-#kiosk-app .landing-logo-container::after {
-  content: '';
-  position: absolute;
-  width: 320px;
-  height: 320px;
-  background: radial-gradient(circle, rgba(144, 187, 172, 0.22) 0%, rgba(144, 187, 172, 0) 70%);
-  border-radius: 50%;
-  z-index: -1;
-  animation: logoGlowPulse 4s infinite ease-in-out;
-}
-
-#kiosk-app .landing-center-logo {
-  max-width: 340px;
-  width: 75vw;
+#kiosk-app .landing-illustration {
+  max-width: 450px;
+  width: 100%;
   height: auto;
   object-fit: contain;
-  filter: drop-shadow(0 12px 28px rgba(0, 0, 0, 0.45));
   transition: transform 0.3s ease;
+  animation: floatIllustration 6s ease-in-out infinite;
 }
 
-#kiosk-app .landing-pulsing-text {
-  font-size: 1.6rem;
-  font-weight: 700;
-  color: #ffffff;
-  letter-spacing: 0.05em;
-  text-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
-  margin: 0;
-  padding: 0;
-  animation: textPulse 2.4s infinite ease-in-out;
-}
-
-@keyframes textPulse {
+@keyframes floatIllustration {
   0%, 100% {
-    opacity: 1;
-    transform: scale(1);
-    text-shadow: 0 0 12px rgba(255, 255, 255, 0.4), 0 4px 16px rgba(0, 0, 0, 0.4);
+    transform: translateY(0);
   }
   50% {
-    opacity: 0.4;
-    transform: scale(1.05);
-    text-shadow: 0 0 24px rgba(255, 255, 255, 0.8), 0 4px 20px rgba(0, 0, 0, 0.6);
+    transform: translateY(-15px);
   }
 }
 
-@keyframes logoGlowPulse {
-  0%, 100% {
-    transform: scale(0.92);
-    opacity: 0.35;
-  }
-  50% {
-    transform: scale(1.18);
-    opacity: 0.65;
-  }
-}
-
-#kiosk-app .landing-minimal-footer {
+#kiosk-app .landing-bottom-controls {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
   width: 100%;
-  text-align: center;
-  padding: 1rem 0;
+  margin-bottom: 2rem;
+}
+
+#kiosk-app .landing-indicators {
+  display: flex;
+  gap: 0.8rem;
+  align-items: center;
+}
+
+#kiosk-app .landing-indicators .indicator {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background-color: rgba(26, 26, 26, 0.2);
+  transition: all 0.3s ease;
+}
+
+#kiosk-app .landing-indicators .indicator.active {
+  width: 32px;
+  border-radius: 12px;
+  background-color: var(--text-main, #1A1A1A);
+}
+
+#kiosk-app .btn-onboarding-start {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--text-main, #1A1A1A);
+  color: #ffffff;
+  border: none;
+  border-radius: 20px;
+  padding: 1.25rem 3.5rem;
+  font-size: 1.35rem;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: none;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  letter-spacing: 0.02em;
 }
 
 /* ==========================================================================
@@ -369,53 +550,95 @@
 #kiosk-app .glass-brand {
   display: flex;
   align-items: center;
-  gap: 1rem;
+  gap: 0.75rem;
   opacity: 0.95;
   cursor: pointer;
   transition: transform var(--transition-fast);
+  flex-shrink: 0;
 }
 
 #kiosk-app .glass-brand:hover {
   transform: scale(1.02);
 }
 
+#kiosk-app .glass-brand-logo-img {
+  height: 48px;
+  width: auto;
+  flex-shrink: 0;
+  object-fit: contain;
+}
+
+#kiosk-app .glass-brand-text {
+  display: flex;
+  flex-direction: column;
+  text-align: left;
+  justify-content: center;
+}
+
 #kiosk-app .glass-brand-name {
-  font-size: 0.85rem;
+  font-size: 0.8rem;
   font-weight: 700;
-  letter-spacing: 0.15em;
+  letter-spacing: 0.08em;
   text-transform: uppercase;
-  color: #ffffff;
+  color: var(--text-main, #1A1A1A);
+  white-space: nowrap;
+  line-height: 1.2;
+}
+
+#kiosk-app .glass-brand-subtitle {
+  font-size: 0.55rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  color: #6B7280;
+  white-space: nowrap;
+  margin-top: 2px;
 }
 
 #kiosk-app .glass-nav-right {
   display: flex;
   align-items: center;
   gap: 1rem;
+  flex-shrink: 0;
 }
 
 #kiosk-app .glass-time-menu-pill {
   display: flex;
   align-items: center;
-  gap: 1rem;
-  background: rgba(255, 255, 255, 0.16);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  border: 1px solid rgba(255, 255, 255, 0.38);
+  gap: 0.85rem;
+  background: #F0F0F0;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+  border: 1px solid rgba(0, 0, 0, 0.08);
   border-radius: var(--radius-full);
-  padding: 0.65rem 1.4rem;
-  color: #ffffff;
-  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.15);
+  padding: 0.55rem 1.2rem;
+  color: var(--text-main, #1A1A1A);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+  flex-shrink: 0;
 }
 
 #kiosk-app .glass-time {
-  font-size: 0.95rem;
+  font-size: 0.85rem;
   font-weight: 600;
+  white-space: nowrap;
+}
+
+#kiosk-app .glass-pill-weather {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+#kiosk-app .glass-weather-text {
+  font-size: 0.85rem;
+  font-weight: 600;
+  white-space: nowrap;
 }
 
 #kiosk-app .glass-menu-divider {
   width: 1px;
-  height: 20px;
-  background: rgba(255, 255, 255, 0.35);
+  height: 18px;
+  background: rgba(0, 0, 0, 0.15);
+  flex-shrink: 0;
 }
 
 /* Hero Section */
@@ -432,7 +655,7 @@
   flex-direction: column;
   align-items: center;
   line-height: 1.15;
-  text-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+  text-shadow: none;
 }
 
 #kiosk-app .glass-serif-title .italic {
@@ -440,7 +663,7 @@
   font-size: 4.2rem;
   font-weight: 400;
   font-style: italic;
-  color: #ffffff;
+  color: var(--text-main, #1A1A1A);
 }
 
 #kiosk-app .glass-serif-title .bold {
@@ -448,7 +671,7 @@
   font-size: 4.5rem;
   font-weight: 700;
   font-style: normal;
-  color: #ffffff;
+  color: var(--text-main, #1A1A1A);
   letter-spacing: -0.01em;
 }
 
@@ -459,11 +682,11 @@
 }
 
 #kiosk-app .btn-glass-explore {
-  background: var(--c-explore-btn);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  border: 1.5px solid rgba(255, 255, 255, 0.65);
-  border-radius: 60px;
+  background: #1A1A1A;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+  border: none;
+  border-radius: var(--radius-full);
   padding: 1.25rem 2.8rem;
   display: flex;
   align-items: center;
@@ -472,14 +695,14 @@
   font-size: 1.35rem;
   font-weight: 700;
   cursor: pointer;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2), 0 0 20px rgba(144, 187, 172, 0.3);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
   transition: transform 0.3s ease, background 0.3s ease, box-shadow 0.3s ease;
 }
 
 #kiosk-app .btn-glass-explore:hover {
   transform: translateY(-4px) scale(1.02);
-  background: var(--c-explore-btn-hover);
-  box-shadow: 0 12px 36px rgba(0, 0, 0, 0.3), 0 0 28px rgba(144, 187, 172, 0.5);
+  background: #222222;
+  box-shadow: 0 12px 36px rgba(0, 0, 0, 0.25);
 }
 
 /* Services Grid */
@@ -492,11 +715,11 @@
 }
 
 #kiosk-app .glass-card {
-  background: rgba(255, 255, 255, 0.16);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  border: 1.5px solid rgba(255, 255, 255, 0.38);
-  border-radius: var(--radius-xl);
+  background: #FFFFFF;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+  border: 1px solid rgba(0, 0, 0, 0.07);
+  border-radius: 32px;
   padding: 1.6rem 1.8rem;
   display: flex;
   flex-direction: row;
@@ -504,15 +727,15 @@
   align-items: center;
   min-height: 160px;
   cursor: pointer;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.07);
   transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), background 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
 }
 
 #kiosk-app .glass-card:hover {
   transform: translateY(-6px);
-  background: rgba(255, 255, 255, 0.26);
-  border-color: rgba(255, 255, 255, 0.7);
-  box-shadow: 0 14px 40px rgba(0, 0, 0, 0.25), 0 0 20px rgba(255, 255, 255, 0.2);
+  background: #FAFAFA;
+  border-color: rgba(0, 0, 0, 0.12);
+  box-shadow: 0 14px 40px rgba(0, 0, 0, 0.12);
 }
 
 #kiosk-app .glass-card-content {
@@ -526,12 +749,12 @@
 #kiosk-app .glass-card-icon-wrap {
   width: 58px;
   height: 58px;
-  border-radius: 50%;
+  border-radius: 16px;
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #ffffff;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+  color: var(--text-main, #1A1A1A);
+  box-shadow: none;
   flex-shrink: 0;
 }
 
@@ -547,15 +770,15 @@
   font-size: 1.4rem;
   font-weight: 700;
   margin: 0;
-  color: #ffffff;
-  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+  color: var(--text-main, #1A1A1A);
+  text-shadow: none;
   line-height: 1.25;
   text-align: left;
 }
 
 #kiosk-app .glass-card-desc {
   font-size: 0.95rem;
-  color: rgba(255, 255, 255, 0.85);
+  color: #6B7280;
   margin: 0;
   line-height: 1.4;
   text-align: left;
@@ -565,46 +788,46 @@
   width: 46px;
   height: 46px;
   border-radius: 50%;
-  background: rgba(255, 255, 255, 0.18);
-  border: 1px solid rgba(255, 255, 255, 0.45);
+  background: #F0F0F0;
+  border: 1px solid rgba(0, 0, 0, 0.08);
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #ffffff;
-  backdrop-filter: blur(10px);
+  color: var(--text-main, #1A1A1A);
+  backdrop-filter: none;
   flex-shrink: 0;
   transition: transform var(--transition-fast), background var(--transition-fast);
 }
 
 #kiosk-app .glass-card:hover .glass-card-arrow {
   transform: translateX(4px);
-  background: rgba(255, 255, 255, 0.35);
+  background: #E0E0E0;
 }
 
 /* Quick Tip Banner */
 #kiosk-app .glass-quick-tip-banner {
-  background: rgba(255, 255, 255, 0.14);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  border: 1px solid rgba(255, 255, 255, 0.38);
-  border-radius: var(--radius-lg);
+  background: #FFFFFF;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+  border: 1px solid rgba(0, 0, 0, 0.07);
+  border-radius: 32px;
   padding: 1.2rem 2.2rem;
   display: flex;
   align-items: center;
   gap: 1.6rem;
   cursor: pointer;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
   margin-top: auto;
   transition: transform var(--transition-fast), background var(--transition-fast);
 }
 
 #kiosk-app .glass-quick-tip-banner:hover {
   transform: translateY(-2px);
-  background: rgba(255, 255, 255, 0.22);
+  background: #FAFAFA;
 }
 
 #kiosk-app .glass-tip-icon-badge {
-  color: #ffffff;
+  color: var(--text-main, #1A1A1A);
   display: flex;
   align-items: center;
 }
@@ -612,7 +835,7 @@
 #kiosk-app .glass-tip-vertical-divider {
   width: 1px;
   height: 38px;
-  background: rgba(255, 255, 255, 0.35);
+  background: rgba(0, 0, 0, 0.12);
 }
 
 #kiosk-app .glass-tip-text-content {
@@ -626,13 +849,13 @@
   font-size: 1.15rem;
   font-weight: 700;
   margin: 0;
-  color: #ffffff;
+  color: var(--text-main, #1A1A1A);
 }
 
 #kiosk-app .glass-tip-desc {
   font-size: 0.95rem;
   margin: 0;
-  color: rgba(255, 255, 255, 0.88);
+  color: #6B7280;
 }
 
 /* ==========================================================================
@@ -652,11 +875,11 @@
   justify-content: space-between;
   align-items: center;
   padding: 1.1rem 3.5rem;
-  background: rgba(255, 255, 255, 0.14);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  border-bottom: 1.5px solid rgba(255, 255, 255, 0.32);
-  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.18);
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
   z-index: 20;
   flex-shrink: 0;
   width: 100%;
@@ -674,19 +897,19 @@
   gap: 0.6rem;
   padding: 0.65rem 1.4rem;
   border-radius: var(--radius-full);
-  background: rgba(255, 255, 255, 0.16);
-  backdrop-filter: blur(14px);
-  color: #ffffff;
-  border: 1.5px solid rgba(255, 255, 255, 0.4);
+  background: #F0F0F0;
+  backdrop-filter: none;
+  color: var(--text-main, #1A1A1A);
+  border: 1px solid rgba(0, 0, 0, 0.08);
   font-size: 0.95rem;
   font-weight: 700;
   cursor: pointer;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.12);
+  box-shadow: none;
   transition: all var(--transition-fast);
 }
 
 #kiosk-app .btn-dir-back:hover {
-  background: rgba(255, 255, 255, 0.28);
+  background: #E0E0E0;
   transform: translateY(-2px);
 }
 
@@ -705,8 +928,8 @@
   width: 42px;
   height: 42px;
   border-radius: 50%;
-  background: rgba(255, 255, 255, 0.2);
-  border: 1.5px solid rgba(255, 255, 255, 0.5);
+  background: #F0F0F0;
+  border: 1px solid rgba(0, 0, 0, 0.08);
   padding: 3px;
 }
 
@@ -718,16 +941,16 @@
 #kiosk-app .dir-brand-name {
   font-size: 1.2rem;
   font-weight: 800;
-  color: #ffffff;
+  color: var(--text-main, #1A1A1A);
   line-height: 1.1;
-  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  text-shadow: none;
 }
 
 #kiosk-app .dir-brand-tag {
   font-size: 0.7rem;
   font-weight: 800;
   letter-spacing: 0.12em;
-  color: #90bbac;
+  color: #6B7280;
 }
 
 #kiosk-app .dir-bar-right {
@@ -742,17 +965,17 @@
   justify-content: center;
   width: 44px;
   height: 44px;
-  border-radius: 50%;
-  background: rgba(255, 255, 255, 0.18);
-  border: 1.5px solid rgba(255, 255, 255, 0.45);
-  color: #ffffff;
+  border-radius: var(--radius-full);
+  background: #F0F0F0;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  color: var(--text-main, #1A1A1A);
   cursor: pointer;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+  box-shadow: none;
   transition: all var(--transition-fast);
 }
 
 #kiosk-app .btn-campus-home:hover {
-  background: rgba(255, 255, 255, 0.32);
+  background: #E0E0E0;
   transform: translateY(-2px);
 }
 
@@ -779,13 +1002,13 @@
   display: flex;
   justify-content: space-between;
   align-items: flex-end;
-  background: rgba(255, 255, 255, 0.15);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  border: 1.5px solid rgba(255, 255, 255, 0.38);
+  background: #FFFFFF;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+  border: 1px solid rgba(0, 0, 0, 0.07);
   border-radius: var(--radius-xl);
   padding: 1.8rem 2.4rem;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.07);
   gap: 2rem;
   width: 100%;
 }
@@ -799,7 +1022,7 @@
   font-size: 0.82rem;
   font-weight: 800;
   letter-spacing: 0.15em;
-  color: #90bbac;
+  color: #6B7280;
   margin-bottom: 0.35rem;
   text-transform: uppercase;
 }
@@ -807,16 +1030,16 @@
 #kiosk-app .dir-title {
   font-size: 2.2rem;
   font-weight: 800;
-  color: #ffffff;
+  color: var(--text-main, #1A1A1A);
   letter-spacing: -0.02em;
   line-height: 1.15;
   margin-bottom: 0.4rem;
-  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+  text-shadow: none;
 }
 
 #kiosk-app .dir-subtitle {
   font-size: 1rem;
-  color: rgba(255, 255, 255, 0.88);
+  color: #6B7280;
   max-width: 680px;
   line-height: 1.4;
 }
@@ -836,17 +1059,18 @@
   justify-content: center;
   padding: 0.75rem 1.6rem;
   border-radius: var(--radius-lg);
-  background: rgba(255, 255, 255, 0.12);
-  backdrop-filter: blur(14px);
-  border: 1.5px solid rgba(255, 255, 255, 0.32);
-  color: #ffffff;
+  background: #FFFFFF;
+  backdrop-filter: none;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  color: var(--text-main, #1A1A1A);
   cursor: pointer;
   transition: all var(--transition-fast);
   min-width: 120px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
 }
 
 #kiosk-app .year-tab-btn:hover {
-  background: rgba(255, 255, 255, 0.22);
+  background: #F0F0F0;
   transform: translateY(-2px);
 }
 
@@ -862,10 +1086,10 @@
 }
 
 #kiosk-app .year-tab-btn.active {
-  background: rgba(144, 187, 172, 0.45);
-  border-color: #ffffff;
-  color: #ffffff;
-  box-shadow: 0 0 20px rgba(144, 187, 172, 0.45), 0 4px 15px rgba(0, 0, 0, 0.2);
+  background: #1A1A1A;
+  border-color: #1A1A1A;
+  color: #FFFFFF;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
 }
 
 #kiosk-app .year-tab-btn.active .year-tab-sub {
@@ -879,10 +1103,11 @@
   align-items: center;
   gap: 1.2rem;
   padding: 0.9rem 1.8rem;
-  background: rgba(255, 255, 255, 0.12);
-  backdrop-filter: blur(16px);
-  border: 1px solid rgba(255, 255, 255, 0.3);
+  background: #FFFFFF;
+  backdrop-filter: none;
+  border: 1px solid rgba(0, 0, 0, 0.07);
   border-radius: var(--radius-lg);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
 }
 
 #kiosk-app .section-badge {
@@ -891,12 +1116,12 @@
   gap: 0.5rem;
   font-weight: 800;
   font-size: 1rem;
-  color: #ffffff;
+  color: var(--text-main, #1A1A1A);
 }
 
 #kiosk-app .section-subtext {
   font-size: 0.95rem;
-  color: rgba(255, 255, 255, 0.85);
+  color: #6B7280;
   flex: 1;
 }
 
@@ -905,9 +1130,9 @@
   font-weight: 800;
   padding: 0.35rem 0.85rem;
   border-radius: var(--radius-full);
-  background: rgba(255, 255, 255, 0.2);
-  border: 1px solid rgba(255, 255, 255, 0.4);
-  color: #ffffff;
+  background: #F0F0F0;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  color: var(--text-main, #1A1A1A);
 }
 
 /* Classroom Cards Grid */
@@ -919,26 +1144,26 @@
 }
 
 #kiosk-app .classroom-item-card {
-  background: rgba(255, 255, 255, 0.15);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  border: 1.5px solid rgba(255, 255, 255, 0.35);
+  background: #FFFFFF;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+  border: 1px solid rgba(0, 0, 0, 0.07);
   border-radius: var(--radius-xl);
   padding: 1.5rem;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
   gap: 1rem;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.14);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.07);
   cursor: pointer;
   transition: transform var(--transition-fast), background var(--transition-fast), border-color var(--transition-fast), box-shadow var(--transition-fast);
 }
 
 #kiosk-app .classroom-item-card:hover {
   transform: translateY(-4px);
-  background: rgba(255, 255, 255, 0.25);
-  border-color: rgba(255, 255, 255, 0.65);
-  box-shadow: 0 14px 40px rgba(0, 0, 0, 0.25), 0 0 20px rgba(144, 187, 172, 0.25);
+  background: #FAFAFA;
+  border-color: rgba(0, 0, 0, 0.12);
+  box-shadow: 0 14px 40px rgba(0, 0, 0, 0.12);
 }
 
 #kiosk-app .cls-card-top {
@@ -950,11 +1175,11 @@
 #kiosk-app .cls-room-badge {
   font-size: 1.3rem;
   font-weight: 800;
-  color: #ffffff;
+  color: #1A1A1A;
   padding: 0.4rem 1rem;
   border-radius: var(--radius-md);
-  background: rgba(129, 154, 132, 0.5);
-  border: 1px solid rgba(255, 255, 255, 0.4);
+  background: #F0F0F0;
+  border: 1px solid rgba(0, 0, 0, 0.08);
 }
 
 #kiosk-app .cls-type-pill {
@@ -963,16 +1188,16 @@
   gap: 0.45rem;
   font-size: 0.85rem;
   font-weight: 700;
-  color: rgba(255, 255, 255, 0.9);
+  color: #6B7280;
   padding: 0.3rem 0.75rem;
-  background: rgba(255, 255, 255, 0.15);
+  background: #F0F0F0;
   border-radius: var(--radius-full);
 }
 
 #kiosk-app .cls-name {
   font-size: 1.25rem;
   font-weight: 800;
-  color: #ffffff;
+  color: var(--text-main, #1A1A1A);
   margin-bottom: 0.6rem;
   line-height: 1.25;
 }
@@ -982,7 +1207,7 @@
   align-items: center;
   gap: 0.55rem;
   font-size: 0.9rem;
-  color: rgba(255, 255, 255, 0.88);
+  color: #6B7280;
   margin-bottom: 0.35rem;
 }
 
@@ -991,13 +1216,13 @@
   justify-content: space-between;
   align-items: center;
   padding-top: 1rem;
-  border-top: 1px solid rgba(255, 255, 255, 0.25);
+  border-top: 1px solid rgba(0, 0, 0, 0.08);
 }
 
 #kiosk-app .cls-dept-tag {
   font-size: 0.85rem;
   font-weight: 700;
-  color: #90bbac;
+  color: #6B7280;
 }
 
 #kiosk-app .btn-navigate-room,
@@ -1006,10 +1231,10 @@
   align-items: center;
   gap: 0.55rem;
   padding: 0.65rem 1.4rem;
-  border-radius: var(--radius-lg);
-  background: rgba(144, 187, 172, 0.42);
+  border-radius: var(--radius-full);
+  background: #1A1A1A;
   color: #ffffff;
-  border: 1.5px solid rgba(255, 255, 255, 0.6);
+  border: none;
   font-size: 0.92rem;
   font-weight: 800;
   cursor: pointer;
@@ -1019,9 +1244,9 @@
 
 #kiosk-app .btn-navigate-room:hover,
 #kiosk-app .btn-fac-navigate:hover {
-  background: rgba(144, 187, 172, 0.65);
+  background: #333333;
   transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(144, 187, 172, 0.4);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25);
 }
 
 /* ==========================================================================
@@ -1035,26 +1260,26 @@
 }
 
 #kiosk-app .department-item-card {
-  background: rgba(255, 255, 255, 0.15);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  border: 1.5px solid rgba(255, 255, 255, 0.35);
+  background: #FFFFFF;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+  border: 1px solid rgba(0, 0, 0, 0.07);
   border-radius: var(--radius-xl);
   padding: 1.5rem;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
   min-height: 200px;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.14);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.07);
   cursor: pointer;
   transition: transform var(--transition-fast), background var(--transition-fast), border-color var(--transition-fast);
 }
 
 #kiosk-app .department-item-card:hover {
   transform: translateY(-4px);
-  background: rgba(255, 255, 255, 0.25);
-  border-color: rgba(255, 255, 255, 0.65);
-  box-shadow: 0 14px 40px rgba(0, 0, 0, 0.25);
+  background: #FAFAFA;
+  border-color: rgba(0, 0, 0, 0.12);
+  box-shadow: 0 14px 40px rgba(0, 0, 0, 0.12);
 }
 
 #kiosk-app .dept-card-header {
@@ -1065,15 +1290,16 @@
 }
 
 #kiosk-app .dept-icon-circle {
-  width: 56px;
-  height: 56px;
-  border-radius: 50%;
-  background: #5d859b;
+  width: 54px;
+  height: 54px;
+  border-radius: 16px;
+  background: #1A1A1A;
   color: #ffffff;
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+  flex-shrink: 0;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.25);
 }
 
 #kiosk-app .dept-code-pill {
@@ -1081,15 +1307,15 @@
   font-weight: 800;
   padding: 0.35rem 0.9rem;
   border-radius: var(--radius-full);
-  background: rgba(255, 255, 255, 0.2);
-  border: 1px solid rgba(255, 255, 255, 0.4);
-  color: #ffffff;
+  background: #F0F0F0;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  color: var(--text-main, #1A1A1A);
 }
 
 #kiosk-app .dept-name {
   font-size: 1.35rem;
   font-weight: 800;
-  color: #ffffff;
+  color: var(--text-main, #1A1A1A);
   margin-bottom: 0.75rem;
   line-height: 1.2;
 }
@@ -1100,13 +1326,13 @@
 }
 
 #kiosk-app .hod-label {
-  color: rgba(255, 255, 255, 0.75);
+  color: #6B7280;
   margin-right: 0.35rem;
 }
 
 #kiosk-app .hod-val {
   font-weight: 700;
-  color: #ffffff;
+  color: var(--text-main, #1A1A1A);
 }
 
 #kiosk-app .dept-location-row {
@@ -1114,7 +1340,7 @@
   align-items: center;
   gap: 0.45rem;
   font-size: 0.85rem;
-  color: rgba(255, 255, 255, 0.85);
+  color: #6B7280;
 }
 
 #kiosk-app .dept-card-footer {
@@ -1122,32 +1348,32 @@
   justify-content: space-between;
   align-items: center;
   padding-top: 1.1rem;
-  border-top: 1px solid rgba(255, 255, 255, 0.25);
+  border-top: 1px solid rgba(0, 0, 0, 0.08);
   margin-top: 1.1rem;
 }
 
 #kiosk-app .dept-count-badge {
   font-size: 0.85rem;
   font-weight: 700;
-  color: #90bbac;
+  color: #6B7280;
 }
 
 #kiosk-app .dept-arrow-btn {
   width: 36px;
   height: 36px;
   border-radius: 50%;
-  background: rgba(255, 255, 255, 0.18);
-  border: 1px solid rgba(255, 255, 255, 0.4);
+  background: #F0F0F0;
+  border: 1px solid rgba(0, 0, 0, 0.08);
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #ffffff;
+  color: var(--text-main, #1A1A1A);
   transition: transform var(--transition-fast);
 }
 
 #kiosk-app .department-item-card:hover .dept-arrow-btn {
   transform: translateX(4px);
-  background: rgba(255, 255, 255, 0.32);
+  background: #E0E0E0;
 }
 
 /* Faculty Stage 2 Header Actions */
@@ -1161,12 +1387,12 @@
   align-items: center;
   gap: 0.5rem;
   padding: 0.45rem 1rem;
-  background: rgba(255, 255, 255, 0.18);
+  background: #F0F0F0;
   border-radius: var(--radius-full);
-  border: 1px solid rgba(255, 255, 255, 0.35);
+  border: 1px solid rgba(0, 0, 0, 0.08);
   font-size: 0.9rem;
   font-weight: 700;
-  color: #ffffff;
+  color: var(--text-main, #1A1A1A);
 }
 
 #kiosk-app .btn-switch-dept {
@@ -1175,9 +1401,9 @@
   gap: 0.55rem;
   padding: 0.65rem 1.3rem;
   border-radius: var(--radius-full);
-  background: rgba(255, 255, 255, 0.18);
-  border: 1.5px solid rgba(255, 255, 255, 0.4);
-  color: #ffffff;
+  background: #F0F0F0;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  color: var(--text-main, #1A1A1A);
   font-size: 0.92rem;
   font-weight: 800;
   cursor: pointer;
@@ -1185,7 +1411,7 @@
 }
 
 #kiosk-app .btn-switch-dept:hover {
-  background: rgba(255, 255, 255, 0.3);
+  background: #E0E0E0;
   transform: translateY(-2px);
 }
 
@@ -1199,26 +1425,26 @@
 }
 
 #kiosk-app .faculty-card {
-  background: rgba(255, 255, 255, 0.15);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  border: 1.5px solid rgba(255, 255, 255, 0.35);
+  background: #FFFFFF;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+  border: 1px solid rgba(0, 0, 0, 0.07);
   border-radius: var(--radius-xl);
   padding: 1.4rem;
   display: flex;
   justify-content: space-between;
   align-items: center;
   gap: 1rem;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.14);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.07);
   cursor: pointer;
   transition: transform var(--transition-fast), background var(--transition-fast), border-color var(--transition-fast);
 }
 
 #kiosk-app .faculty-card:hover {
   transform: translateY(-3px);
-  background: rgba(255, 255, 255, 0.25);
-  border-color: rgba(255, 255, 255, 0.65);
-  box-shadow: 0 14px 40px rgba(0, 0, 0, 0.25);
+  background: #FAFAFA;
+  border-color: rgba(0, 0, 0, 0.12);
+  box-shadow: 0 14px 40px rgba(0, 0, 0, 0.12);
 }
 
 #kiosk-app .fac-card-left {
@@ -1231,12 +1457,12 @@
   width: 58px;
   height: 58px;
   border-radius: 50%;
-  background: #5d859b;
-  border: 2px solid rgba(255, 255, 255, 0.5);
+  background: #F0F0F0;
+  border: 2px solid rgba(0, 0, 0, 0.08);
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #ffffff;
+  color: var(--text-main, #1A1A1A);
   flex-shrink: 0;
   overflow: hidden;
 }
@@ -1258,14 +1484,14 @@
 #kiosk-app .fac-name {
   font-size: 1.2rem;
   font-weight: 800;
-  color: #ffffff;
+  color: var(--text-main, #1A1A1A);
   line-height: 1.2;
 }
 
 #kiosk-app .fac-role {
   font-size: 0.85rem;
   font-weight: 700;
-  color: #90bbac;
+  color: #6B7280;
   margin-bottom: 0.35rem;
 }
 
@@ -1280,29 +1506,49 @@
   align-items: center;
   gap: 0.45rem;
   font-size: 0.85rem;
-  color: rgba(255, 255, 255, 0.85);
+  color: #6B7280;
 }
 
 /* Directory Bottom Footer */
 #kiosk-app .campus-bottom-footer {
   display: flex;
-  justify-content: space-between;
+  justify-content: center;
   align-items: center;
-  padding: 0.95rem 3.5rem;
-  background: rgba(255, 255, 255, 0.12);
-  backdrop-filter: blur(16px);
-  border-top: 1.5px solid rgba(255, 255, 255, 0.28);
-  font-size: 0.9rem;
-  color: rgba(255, 255, 255, 0.85);
+  padding: 1rem 1.5rem;
+  background: #1A1A1A;
+  border-radius: 9999px;
+  margin: 0 auto 24px auto;
+  width: fit-content;
+  max-width: 92%;
+  gap: 1rem;
+  border: none;
+  font-size: 0.85rem;
+  color: #ffffff;
   font-weight: 600;
-  flex-shrink: 0;
-  width: 100%;
+  box-shadow: 0 16px 48px rgba(0, 0, 0, 0.2);
+  position: relative;
+  bottom: 0;
+  flex-wrap: wrap;
+  text-align: center;
 }
+
+@media (min-width: 768px) {
+  #kiosk-app .campus-bottom-footer {
+    border-radius: 9999px;
+    padding: 1rem 2rem;
+    font-size: 0.95rem;
+    justify-content: space-between;
+    flex-wrap: nowrap;
+    text-align: left;
+  }
+}
+
 
 #kiosk-app .footer-left-info {
   display: flex;
   align-items: center;
   gap: 0.6rem;
+  color: #ffffff;
 }
 
 /* ==========================================================================
@@ -1312,8 +1558,6 @@
   position: fixed;
   inset: 0;
   background: rgba(0, 0, 0, 0.65);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -1329,64 +1573,63 @@
 }
 
 #kiosk-app .kiosk-modal-box {
-  background: rgba(15, 23, 42, 0.92);
-  backdrop-filter: blur(24px);
-  -webkit-backdrop-filter: blur(24px);
-  border: 1.5px solid rgba(255, 255, 255, 0.35);
-  border-radius: var(--radius-xl);
-  padding: 2.5rem;
-  max-width: 520px;
+  background: #ffffff;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  border-radius: 28px;
+  padding: 2.2rem 2.4rem;
+  max-width: 480px;
   width: 90%;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 1.4rem;
+  gap: 1.3rem;
   text-align: center;
-  color: #ffffff;
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.6), 0 0 30px rgba(144, 187, 172, 0.2);
+  color: #1A1A1A;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.14), 0 4px 16px rgba(0, 0, 0, 0.04);
+  animation: flashcardPop 0.35s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 #kiosk-app .btn-close-drawer {
-  background: rgba(255, 255, 255, 0.15);
-  border: 1px solid rgba(255, 255, 255, 0.35);
-  border-radius: 50%;
+  background: #ffffff;
+  color: #1A1A1A;
+  border: none;
+  border-radius: var(--radius-full);
   width: 36px;
   height: 36px;
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #ffffff;
   cursor: pointer;
   transition: all var(--transition-fast);
 }
 
 #kiosk-app .btn-close-drawer:hover {
-  background: rgba(255, 255, 255, 0.3);
+  background: rgba(0, 0, 0, 0.05);
 }
 
 #kiosk-app .qr-canvas-wrapper {
   background: #ffffff;
   padding: 1.2rem;
   border-radius: var(--radius-lg);
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
 }
 
 #kiosk-app .btn-secondary-touch {
   display: inline-flex;
   align-items: center;
   padding: 0.8rem 1.8rem;
-  border-radius: var(--radius-lg);
-  background: rgba(255, 255, 255, 0.18);
-  border: 1px solid rgba(255, 255, 255, 0.4);
-  color: #ffffff;
+  border-radius: var(--radius-full);
+  background: #F3F4F6;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  color: #1A1A1A;
   font-weight: 700;
   cursor: pointer;
 }
 
 #kiosk-app .inactivity-circle-timer {
   position: relative;
-  width: 90px;
-  height: 90px;
+  width: 88px;
+  height: 88px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -1394,23 +1637,60 @@
 
 #kiosk-app .inactivity-countdown-num {
   position: absolute;
-  font-size: 2rem;
+  font-size: 2.2rem;
   font-weight: 800;
-  color: #ffffff;
+  color: #1A1A1A;
+  line-height: 1;
 }
 
-#kiosk-app .btn-view-map-hero {
+#kiosk-app .inactivity-text-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+  align-items: center;
+}
+
+#kiosk-app .inactivity-modal-title {
+  font-size: 1.4rem;
+  font-weight: 800;
+  color: #1A1A1A;
+  letter-spacing: -0.01em;
+  margin: 0;
+  line-height: 1.25;
+}
+
+#kiosk-app .inactivity-modal-desc {
+  font-size: 0.92rem;
+  color: #6B7280;
+  margin: 0;
+  line-height: 1.5;
+}
+
+#kiosk-app .btn-inactivity-stay {
+  width: 100%;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  background: rgba(144, 187, 172, 0.45);
-  border: 1.5px solid rgba(255, 255, 255, 0.6);
-  border-radius: var(--radius-lg);
+  background: #1A1A1A;
+  border: 1.5px solid #1A1A1A;
+  border-radius: var(--radius-full);
   color: #ffffff;
-  font-size: 1.1rem;
-  font-weight: 800;
+  font-size: 1rem;
+  font-weight: 700;
+  padding: 0.95rem 1.6rem;
   cursor: pointer;
-  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.18);
+  transition: all 0.25s ease;
+}
+
+#kiosk-app .btn-inactivity-stay:hover {
+  background: #000000;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.25);
+}
+
+#kiosk-app .btn-inactivity-stay:active {
+  transform: scale(0.98);
 }
 
 /* POI Detail Drawer */
@@ -1422,8 +1702,6 @@
   width: 90%;
   max-width: 600px;
   background: rgba(15, 23, 42, 0.94);
-  backdrop-filter: blur(24px);
-  -webkit-backdrop-filter: blur(24px);
   border: 1.5px solid rgba(255, 255, 255, 0.35);
   border-bottom: none;
   border-radius: 28px 28px 0 0;
@@ -1431,7 +1709,7 @@
   display: flex;
   flex-direction: column;
   gap: 1.1rem;
-  color: #ffffff;
+  color: var(--text-main, #ffffff);
   z-index: 1200;
   box-shadow: 0 -10px 40px rgba(0, 0, 0, 0.5);
   transition: transform var(--transition-normal);
@@ -1459,7 +1737,7 @@
 #kiosk-app .poi-drawer-title {
   font-size: 1.5rem;
   font-weight: 800;
-  color: #ffffff;
+  color: var(--text-main, #ffffff);
 }
 
 #kiosk-app .poi-meta-row {
@@ -1496,8 +1774,8 @@
   padding: 0.9rem;
   background: rgba(144, 187, 172, 0.45);
   border: 1.5px solid rgba(255, 255, 255, 0.6);
-  border-radius: var(--radius-lg);
-  color: #ffffff;
+  border-radius: var(--radius-full);
+  color: var(--text-main, #ffffff);
   font-weight: 800;
   font-size: 1rem;
   cursor: pointer;
@@ -1511,8 +1789,8 @@
   justify-content: center;
   background: rgba(255, 255, 255, 0.18);
   border: 1.5px solid rgba(255, 255, 255, 0.4);
-  border-radius: var(--radius-lg);
-  color: #ffffff;
+  border-radius: var(--radius-full);
+  color: var(--text-main, #ffffff);
   cursor: pointer;
 }
 
@@ -1523,8 +1801,6 @@
   left: 0;
   right: 0;
   background: rgba(15, 23, 42, 0.96);
-  backdrop-filter: blur(24px);
-  -webkit-backdrop-filter: blur(24px);
   border-top: 1.5px solid rgba(255, 255, 255, 0.35);
   padding: 1.2rem 2rem 2rem;
   display: flex;
@@ -1552,7 +1828,7 @@
   border-radius: var(--radius-md);
   background: rgba(255, 255, 255, 0.16);
   border: 1px solid rgba(255, 255, 255, 0.35);
-  color: #ffffff;
+  color: var(--text-main, #ffffff);
   font-size: 1.2rem;
   font-weight: 700;
   cursor: pointer;
@@ -1592,9 +1868,9 @@
   gap: 0.5rem;
   padding: 0.55rem 1.15rem;
   border-radius: var(--radius-full);
-  background: rgba(255, 255, 255, 0.16);
+  background: #1A1A1A;
   color: #ffffff;
-  border: 1.5px solid rgba(255, 255, 255, 0.4);
+  border: none;
   font-family: inherit;
   font-size: 0.9rem;
   font-weight: 700;
@@ -1603,7 +1879,7 @@
 }
 
 #kiosk-app .btn-theme-switch:hover {
-  background: rgba(255, 255, 255, 0.28);
+  background: #333333;
 }
 
 #kiosk-app .btn-sound-switch {
@@ -1613,42 +1889,25 @@
   width: 42px;
   height: 42px;
   border-radius: var(--radius-full);
-  background: rgba(255, 255, 255, 0.16);
-  border: 1.5px solid rgba(255, 255, 255, 0.4);
+  background: #1A1A1A;
+  border: none;
   color: #ffffff;
   cursor: pointer;
 }
 
 #kiosk-app .btn-sound-switch:hover {
-  background: rgba(255, 255, 255, 0.28);
+  background: #333333;
 }
 
 /* Floating Kiosk Home Button on Map View */
 .kiosk-map-home-btn {
-  position: absolute;
-  top: 24px;
-  left: 24px;
-  z-index: 9999;
-  background: rgba(242, 243, 246, 0.82) !important;
-  backdrop-filter: blur(16px) !important;
-  -webkit-backdrop-filter: blur(16px) !important;
-  border: 1.5px solid rgba(255, 255, 255, 0.45) !important;
-  border-radius: 20% !important;
-  width: 67px !important;
-  height: 40px !important;
-  display: flex !important;
-  align-items: center !important;
-  justify-content: center !important;
-  box-shadow: 0 8px 32px rgba(95, 50, 246, 0.4) !important;
-  cursor: pointer !important;
-  transition: all 0.25s ease !important;
-  padding: 0 24px 0 6px !important;
+  transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1) !important;
 }
 
 .kiosk-map-home-btn:hover {
-  transform: scale(1.08) !important;
-  background: rgba(20, 32, 50, 0.95) !important;
-  border-color: rgba(255, 255, 255, 0.8) !important;
+  background: #F3F4F6 !important;
+  transform: translateY(-2px) !important;
+  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.12) !important;
 }
 
 .kiosk-map-home-btn:active {
@@ -1660,16 +1919,47 @@
   #kiosk-app .glass-cards-grid {
     grid-template-columns: 1fr;
   }
+
   #kiosk-app .glass-serif-title .bold,
   #kiosk-app .glass-serif-title .italic {
     font-size: 3.2rem;
   }
-  #kiosk-app .directory-top-bar,
-  #kiosk-app .directory-main-content,
+
   #kiosk-app .campus-bottom-footer {
-    padding-left: 1.8rem;
-    padding-right: 1.8rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 1.5rem;
+    background: var(--accent-color, #1A1A1A);
+    border-radius: 32px;
+    /* fallback for very long text, ideally pill shape */
+    margin: 0 auto 24px auto;
+    width: max-content;
+    max-width: 92%;
+    gap: 1rem;
+    border: none;
+    font-size: 0.85rem;
+    color: #ffffff;
+    font-weight: 600;
+    box-shadow: 0 16px 48px rgba(0, 0, 0, 0.15);
+    position: relative;
+    bottom: 0;
+    flex-wrap: wrap;
+    text-align: center;
+    justify-content: center;
   }
+
+  @media (min-width: 768px) {
+    #kiosk-app .campus-bottom-footer {
+      border-radius: 9999px;
+      padding: 1.25rem 2rem;
+      font-size: 0.95rem;
+      justify-content: space-between;
+      flex-wrap: nowrap;
+      text-align: left;
+    }
+  }
+
 }
 
 /* ==========================================================================
@@ -1767,7 +2057,12 @@
   border-radius: 50%;
   animation: spin 0.9s linear infinite;
 }
-@keyframes spin { to { transform: rotate(360deg); } }
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
 
 /* ── Panel Column (Right Area Container) ─────────────────────────────────── */
 .kiosk-panel-col {
@@ -1788,13 +2083,17 @@
   z-index: 100;
   animation: kioskPanelSlideIn 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
-.kiosk-panel-col::-webkit-scrollbar { display: none; }
+
+.kiosk-panel-col::-webkit-scrollbar {
+  display: none;
+}
 
 @keyframes kioskPanelSlideIn {
   from {
     opacity: 0;
     transform: translateX(30px);
   }
+
   to {
     opacity: 1;
     transform: translateX(0);
@@ -1814,6 +2113,7 @@
   overflow: hidden;
   box-sizing: border-box;
 }
+
 .kiosk-side-panel-scroll {
   width: 100%;
   height: 100%;
@@ -1825,6 +2125,7 @@
   scrollbar-width: none;
   padding-left: 30px;
 }
+
 /* ── DESTINATION INFO PANEL (Matches Screenshot Design Exactly) ─────────── */
 .kiosk-panel-info {
   padding: 24px 22px 22px 0px;
@@ -1844,7 +2145,7 @@
   gap: 14px;
   flex: 1;
   justify-content: justify;
-  
+
 }
 
 /* Header Topbar & Title */
@@ -1853,8 +2154,13 @@
   align-items: center;
   justify-content: space-between;
   gap: 14px;
-  padding-bottom: 2px;
+  padding-bottom: 8px;
+  padding-top: 8px;
   padding-left: 6px;
+  position: sticky;
+  top: 0;
+  background: var(--bg-card, #FFFFFF);
+  z-index: 10;
 }
 
 .kiosk-panel-dest-header-block {
@@ -1888,6 +2194,7 @@
 .kiosk-panel-dest-title-box {
   display: flex;
   flex-direction: column;
+  justify-content: center;
   gap: 2px;
   overflow: hidden;
   flex: 1;
@@ -1952,18 +2259,18 @@
 }
 
 .kiosk-info-row-card.kiosk-card-building {
-  background: #f8faff;
-  border: 1.5px solid #dbeafe;
+  background: #F9FAFB;
+  border: 1.5px solid #E5E7EB;
 }
 
 .kiosk-info-row-card.kiosk-card-floor {
-  background: #f4fbf6;
-  border: 1.5px solid #dcfce7;
+  background: #F9FAFB;
+  border: 1.5px solid #E5E7EB;
 }
 
 .kiosk-info-row-card.kiosk-card-room {
-  background: #fefbf3;
-  border: 1.5px solid #fde68a;
+  background: #F9FAFB;
+  border: 1.5px solid #E5E7EB;
 }
 
 .kiosk-info-row-card:hover {
@@ -2073,7 +2380,7 @@
   border-radius: 16px;
   border: none;
   background: #00875a;
-  color: #ffffff;
+  color: var(--text-main, #ffffff);
   font-size: 15.5px !important;
   font-weight: 700;
   cursor: pointer;
@@ -2105,7 +2412,7 @@
   transform: translateX(3px);
 }
 
-/* Secondary New Search Button — Clean White / Blue Outline Button */
+/* Secondary New Search Button — Clean White / Grey Outline Button */
 .kiosk-btn-new-search {
   display: flex;
   align-items: center;
@@ -2114,9 +2421,9 @@
   width: 100%;
   height: 50px;
   border-radius: 16px;
-  border: 1.5px solid #dbeafe;
+  border: 1.5px solid #E5E7EB;
   background: #ffffff;
-  color: #1e3a8a;
+  color: #1A1A1A;
   font-size: 14.5px;
   font-weight: 700;
   cursor: pointer;
@@ -2125,9 +2432,9 @@
 }
 
 .kiosk-btn-new-search:hover {
-  background: #f8fafc;
-  border-color: #bfdbfe;
-  color: #1d4ed8;
+  background: #F9FAFB;
+  border-color: #D1D5DB;
+  color: #000000;
   transform: translateY(-1px);
 }
 
@@ -2304,8 +2611,17 @@
 }
 
 @keyframes qrLivePulse {
-  0%, 100% { opacity: 1; transform: scale(1); }
-  50% { opacity: 0.4; transform: scale(0.8); }
+
+  0%,
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+
+  50% {
+    opacity: 0.4;
+    transform: scale(0.8);
+  }
 }
 
 .kiosk-qr-sub {
@@ -2347,10 +2663,23 @@
 }
 
 @keyframes laserScan {
-  0% { top: 0%; opacity: 0; }
-  15% { opacity: 0.85; }
-  85% { opacity: 0.85; }
-  100% { top: 96%; opacity: 0; }
+  0% {
+    top: 0%;
+    opacity: 0;
+  }
+
+  15% {
+    opacity: 0.85;
+  }
+
+  85% {
+    opacity: 0.85;
+  }
+
+  100% {
+    top: 96%;
+    opacity: 0;
+  }
 }
 
 /* High-Tech Corner Target Decorators */
@@ -2361,10 +2690,34 @@
   border-style: solid;
   border-color: #2563eb;
 }
-.qr-corner-tl { top: 2px; left: 2px; border-width: 3px 0 0 3px; border-radius: 6px 0 0 0; }
-.qr-corner-tr { top: 2px; right: 2px; border-width: 3px 3px 0 0; border-radius: 0 6px 0 0; }
-.qr-corner-bl { bottom: 2px; left: 2px; border-width: 0 0 3px 3px; border-radius: 0 0 0 6px; }
-.qr-corner-br { bottom: 2px; right: 2px; border-width: 0 3px 3px 0; border-radius: 0 0 6px 0; }
+
+.qr-corner-tl {
+  top: 2px;
+  left: 2px;
+  border-width: 3px 0 0 3px;
+  border-radius: 6px 0 0 0;
+}
+
+.qr-corner-tr {
+  top: 2px;
+  right: 2px;
+  border-width: 3px 3px 0 0;
+  border-radius: 0 6px 0 0;
+}
+
+.qr-corner-bl {
+  bottom: 2px;
+  left: 2px;
+  border-width: 0 0 3px 3px;
+  border-radius: 0 0 0 6px;
+}
+
+.qr-corner-br {
+  bottom: 2px;
+  right: 2px;
+  border-width: 0 3px 3px 0;
+  border-radius: 0 0 6px 0;
+}
 
 .kiosk-qr-instruction {
   display: flex;
@@ -2498,9 +2851,9 @@
   width: 100%;
   height: 48px;
   border-radius: 14px;
-  border: 1.5px solid #2563eb;
-  background: #eff6ff;
-  color: #1d4ed8;
+  border: 1.5px solid #D1D5DB;
+  background: #F3F4F6;
+  color: #1A1A1A;
   font-size: 14.5px;
   font-weight: 700;
   cursor: pointer;
@@ -2508,7 +2861,7 @@
 }
 
 .kiosk-btn-back-overview:hover {
-  background: #dbeafe;
+  background: #E5E7EB;
 }
 
 .kiosk-btn-reset-light {
@@ -2797,7 +3150,7 @@
   pointer-events: none;
 }
 
-.kiosk-floating-search-wrapper > * {
+.kiosk-floating-search-wrapper>* {
   pointer-events: auto;
 }
 
@@ -2805,13 +3158,13 @@
   width: 100%;
 }
 
-.kiosk-floating-search-wrapper .kiosk-fs-input-wrap > div {
+.kiosk-floating-search-wrapper .kiosk-fs-input-wrap>div {
   padding-left: 0 !important;
   padding-right: 0 !important;
 }
 
 /* Rounded Pill Search Bar — sits flush with top row (Home & Time) */
-.kiosk-floating-search-wrapper .kiosk-fs-input-wrap > div > div:first-child {
+.kiosk-floating-search-wrapper .kiosk-fs-input-wrap>div>div:first-child {
   height: 56px !important;
   border-radius: 9999px !important;
   background: #ffffff !important;
@@ -2822,7 +3175,75 @@
   transition: box-shadow 0.2s ease, border-color 0.2s ease;
 }
 
-.kiosk-floating-search-wrapper .kiosk-fs-input-wrap > div > div:first-child:focus-within {
+/* Responsive adjustments for Kiosk Map floating UI */
+@media (max-width: 768px) {
+  .kiosk-map-home-btn,
+  .kiosk-map-time-pill {
+    top: 12px !important;
+    height: 44px !important;
+    padding: 0 14px !important;
+  }
+  .kiosk-map-home-btn {
+    left: 12px !important;
+  }
+  .kiosk-map-time-pill {
+    right: 12px !important;
+  }
+  .kiosk-map-home-btn span,
+  .kiosk-map-time-pill span {
+    font-size: 13px !important;
+  }
+  
+  .kiosk-floating-search-wrapper {
+    top: 68px !important;
+    width: calc(100% - 24px) !important;
+    left: 12px !important;
+    transform: none !important;
+  }
+
+  .kiosk-floating-search-wrapper .kiosk-fs-input-wrap>div>div:first-child {
+    height: 48px !important;
+  }
+
+  .kiosk-map-bottom-tag {
+    top: 75px !important;
+    bottom: auto !important;
+    left: 12px !important;
+    right: 12px !important;
+    width: calc(100% - 24px) !important;
+    height: auto !important;
+    min-height: 50px !important;
+  }
+
+  .kiosk-map-body .campus-map .leaflet-bottom.leaflet-right {
+    right: 12px !important;
+    bottom: 80px !important;
+  }
+  
+  .kiosk-floating-search-wrapper .kiosk-fs-chips-wrap button {
+    min-height: 32px !important;
+    padding: 4px 12px !important;
+    font-size: 13px !important;
+    gap: 5px !important;
+  }
+  
+  .kiosk-floating-search-wrapper .kiosk-fs-chips-wrap button svg {
+    width: 15px !important;
+    height: 15px !important;
+    min-width: 15px !important;
+    flex-shrink: 0 !important;
+    display: block !important;
+  }
+
+  .kiosk-floating-search-wrapper .kiosk-fs-chips-wrap {
+    overflow-x: auto !important;
+    -webkit-overflow-scrolling: touch !important;
+    touch-action: pan-x !important;
+    pointer-events: auto !important;
+  }
+}
+
+.kiosk-floating-search-wrapper .kiosk-fs-input-wrap>div>div:first-child:focus-within {
   box-shadow: 0 6px 28px rgba(37, 99, 235, 0.16) !important;
   border-color: rgba(37, 99, 235, 0.3) !important;
 }
@@ -2847,8 +3268,8 @@
   border-radius: 24px !important;
   box-shadow: 0 16px 48px rgba(0, 0, 0, 0.16) !important;
   border: 1px solid rgba(0, 0, 0, 0.08) !important;
-  background: rgba(255, 255, 255, 0.98) !important;
-  backdrop-filter: blur(16px) !important;
+  background: #ffffff !important;
+
   max-height: min(360px, calc(100vh - 460px)) !important;
   z-index: 2000 !important;
 }
@@ -2923,9 +3344,7 @@
   transform: translateX(-50%);
   width: min(940px, 94vw);
   z-index: 3500;
-  background: rgba(255, 255, 255, 0.98);
-  backdrop-filter: blur(28px);
-  -webkit-backdrop-filter: blur(28px);
+  background: #ffffff;
   border: 1px solid rgba(0, 0, 0, 0.1);
   border-radius: 24px;
   box-shadow: 0 -8px 36px rgba(0, 0, 0, 0.18), 0 0 0 1px rgba(255, 255, 255, 0.8) inset;
@@ -2942,6 +3361,7 @@
     opacity: 0;
     transform: translate(-50%, 60px);
   }
+
   to {
     opacity: 1;
     transform: translate(-50%, 0);
@@ -3034,7 +3454,7 @@
   flex: 1.5;
   max-width: 140px;
   background: #2563eb;
-  color: #ffffff;
+  color: var(--text-main, #ffffff);
   border-color: #1d4ed8;
   font-size: 16px;
 }
@@ -3083,19 +3503,17 @@
   justify-content: space-between !important;
   min-height: unset !important;
   gap: 1rem;
-  background: rgba(255, 255, 255, 0.14) !important;
-  backdrop-filter: blur(20px) !important;
-  -webkit-backdrop-filter: blur(20px) !important;
-  border: 1.5px solid rgba(255, 255, 255, 0.3) !important;
+  background: #ffffff !important;
+  border: 1.5px solid rgba(0, 0, 0, 0.07) !important;
+  border-radius: 20px !important;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.12) !important;
   transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), background 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease !important;
 }
 
 #kiosk-app .cls-item-card-enhanced:hover {
-  transform: translateY(-4px) scale(1.01) !important;
-  background: rgba(255, 255, 255, 0.24) !important;
-  border-color: rgba(255, 255, 255, 0.65) !important;
-  box-shadow: 0 12px 36px rgba(0, 0, 0, 0.25), 0 0 20px rgba(144, 187, 172, 0.2) !important;
+  background: #FAFAFA !important;
+  border-color: rgba(0, 0, 0, 0.12) !important;
+  box-shadow: 0 12px 36px rgba(0, 0, 0, 0.12) !important;
 }
 
 #kiosk-app .cls-item-left {
@@ -3109,9 +3527,9 @@
 #kiosk-app .cls-item-icon-badge {
   width: 46px;
   height: 46px;
-  border-radius: 14px;
-  background: linear-gradient(135deg, rgba(116, 156, 142, 0.55) 0%, rgba(74, 116, 103, 0.55) 100%);
-  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 9999px;
+  background: #1A1A1A;
+  border: 1px solid rgba(255, 255, 255, 0.1);
   color: #ffffff;
   display: flex;
   align-items: center;
@@ -3128,15 +3546,12 @@
 }
 
 #kiosk-app .cls-item-title {
-  font-size: 1.1rem;
-  font-weight: 800;
-  color: #ffffff;
+  color: #1A1A1A;
   margin: 0;
   line-height: 1.2;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  text-shadow: 0 1px 6px rgba(0, 0, 0, 0.2);
 }
 
 #kiosk-app .cls-item-meta {
@@ -3144,18 +3559,18 @@
   align-items: center;
   gap: 0.35rem;
   font-size: 0.82rem;
-  color: rgba(255, 255, 255, 0.78);
+  color: #6B7280;
   font-weight: 600;
 }
 
 #kiosk-app .cls-meta-dot {
-  color: rgba(255, 255, 255, 0.45);
+  color: #9CA3AF;
 }
 
 #kiosk-app .cls-room-tag {
   font-size: 0.78rem;
   font-weight: 700;
-  color: #90bbac;
+  color: #1A1A1A;
   letter-spacing: 0.03em;
 }
 
@@ -3163,7 +3578,7 @@
   flex-shrink: 0;
   padding: 0.55rem 1.1rem !important;
   font-size: 0.85rem !important;
-  border-radius: 12px !important;
+  border-radius: 9999px !important;
   gap: 0.4rem;
 }
 
@@ -3178,11 +3593,9 @@
 }
 
 #kiosk-app .outdoor-poi-card {
-  background: rgba(255, 255, 255, 0.14);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  border: 1.5px solid rgba(255, 255, 255, 0.3);
-  border-radius: var(--radius-xl);
+  background: #ffffff;
+  border: 1.5px solid rgba(0, 0, 0, 0.07);
+  border-radius: 32px !important;
   padding: 1.4rem 1.4rem;
   display: flex;
   align-items: center;
@@ -3194,16 +3607,16 @@
 
 #kiosk-app .outdoor-poi-card:hover {
   transform: translateY(-4px) scale(1.01);
-  background: rgba(255, 255, 255, 0.24);
-  border-color: rgba(255, 255, 255, 0.65);
-  box-shadow: 0 14px 40px rgba(0, 0, 0, 0.25), 0 0 18px rgba(144, 187, 172, 0.2);
+  background: #FAFAFA;
+  border-color: rgba(0, 0, 0, 0.12);
+  box-shadow: 0 14px 40px rgba(0, 0, 0, 0.12);
 }
 
 #kiosk-app .outdoor-poi-icon {
   width: 54px;
   height: 54px;
   border-radius: 16px;
-  color: #ffffff;
+  color: var(--text-main, #ffffff);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -3222,10 +3635,9 @@
 #kiosk-app .outdoor-poi-name {
   font-size: 1.1rem;
   font-weight: 800;
-  color: #ffffff;
+  color: #1A1A1A;
   margin: 0;
   line-height: 1.2;
-  text-shadow: 0 1px 6px rgba(0, 0, 0, 0.2);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -3233,7 +3645,7 @@
 
 #kiosk-app .outdoor-poi-desc {
   font-size: 0.82rem;
-  color: rgba(255, 255, 255, 0.75);
+  color: #6B7280;
   margin: 0;
   font-weight: 500;
   white-space: nowrap;
@@ -3247,7 +3659,7 @@
   gap: 0.3rem;
   font-size: 0.78rem;
   font-weight: 700;
-  color: #90bbac;
+  color: #1A1A1A;
   margin-top: 0.1rem;
 }
 
@@ -3260,9 +3672,9 @@
   align-items: center;
   gap: 0.4rem;
   padding: 0.6rem 1.2rem;
-  border-radius: 12px;
+  border-radius: var(--radius-full);
   background: rgba(144, 187, 172, 0.42);
-  color: #ffffff;
+  color: var(--text-main, #ffffff);
   border: 1.5px solid rgba(255, 255, 255, 0.55);
   font-size: 0.88rem;
   font-weight: 800;
@@ -3290,19 +3702,28 @@
     opacity: 0;
     transform: translateY(20px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);
   }
 }
 
-#kiosk-app .directory-main-content > * {
+#kiosk-app .directory-main-content>* {
   animation: slideUpFadeIn 0.4s cubic-bezier(0.16, 1, 0.3, 1) both;
 }
 
-#kiosk-app .directory-main-content > *:nth-child(1) { animation-delay: 0.05s; }
-#kiosk-app .directory-main-content > *:nth-child(2) { animation-delay: 0.12s; }
-#kiosk-app .directory-main-content > *:nth-child(3) { animation-delay: 0.18s; }
+#kiosk-app .directory-main-content>*:nth-child(1) {
+  animation-delay: 0.05s;
+}
+
+#kiosk-app .directory-main-content>*:nth-child(2) {
+  animation-delay: 0.12s;
+}
+
+#kiosk-app .directory-main-content>*:nth-child(3) {
+  animation-delay: 0.18s;
+}
 
 #kiosk-app .cls-item-card-enhanced,
 #kiosk-app .outdoor-poi-card,
@@ -3315,32 +3736,44 @@
 #kiosk-app .cls-item-card-enhanced:nth-child(1),
 #kiosk-app .outdoor-poi-card:nth-child(1),
 #kiosk-app .department-item-card:nth-child(1),
-#kiosk-app .faculty-card:nth-child(1) { animation-delay: 0.08s; }
+#kiosk-app .faculty-card:nth-child(1) {
+  animation-delay: 0.08s;
+}
 
 #kiosk-app .cls-item-card-enhanced:nth-child(2),
 #kiosk-app .outdoor-poi-card:nth-child(2),
 #kiosk-app .department-item-card:nth-child(2),
-#kiosk-app .faculty-card:nth-child(2) { animation-delay: 0.13s; }
+#kiosk-app .faculty-card:nth-child(2) {
+  animation-delay: 0.13s;
+}
 
 #kiosk-app .cls-item-card-enhanced:nth-child(3),
 #kiosk-app .outdoor-poi-card:nth-child(3),
 #kiosk-app .department-item-card:nth-child(3),
-#kiosk-app .faculty-card:nth-child(3) { animation-delay: 0.18s; }
+#kiosk-app .faculty-card:nth-child(3) {
+  animation-delay: 0.18s;
+}
 
 #kiosk-app .cls-item-card-enhanced:nth-child(4),
 #kiosk-app .outdoor-poi-card:nth-child(4),
 #kiosk-app .department-item-card:nth-child(4),
-#kiosk-app .faculty-card:nth-child(4) { animation-delay: 0.23s; }
+#kiosk-app .faculty-card:nth-child(4) {
+  animation-delay: 0.23s;
+}
 
 #kiosk-app .cls-item-card-enhanced:nth-child(5),
 #kiosk-app .outdoor-poi-card:nth-child(5),
 #kiosk-app .department-item-card:nth-child(5),
-#kiosk-app .faculty-card:nth-child(5) { animation-delay: 0.28s; }
+#kiosk-app .faculty-card:nth-child(5) {
+  animation-delay: 0.28s;
+}
 
 #kiosk-app .cls-item-card-enhanced:nth-child(6),
 #kiosk-app .outdoor-poi-card:nth-child(6),
 #kiosk-app .department-item-card:nth-child(6),
-#kiosk-app .faculty-card:nth-child(6) { animation-delay: 0.33s; }
+#kiosk-app .faculty-card:nth-child(6) {
+  animation-delay: 0.33s;
+}
 
 /* ==========================================================================
    INSTRUCTION DASHBOARD — ENHANCED CARDS WITH ACTIVE PRESS STATE
@@ -3381,8 +3814,17 @@
    LANDING SCREEN — AMBIENT GLOW RING
    ========================================================================== */
 @keyframes ringPulse {
-  0%, 100% { transform: scale(0.95); opacity: 0.18; }
-  50% { transform: scale(1.12); opacity: 0.38; }
+
+  0%,
+  100% {
+    transform: scale(0.95);
+    opacity: 0.18;
+  }
+
+  50% {
+    transform: scale(1.12);
+    opacity: 0.38;
+  }
 }
 
 #kiosk-app .landing-logo-container::before {
@@ -3401,8 +3843,6 @@
    ========================================================================== */
 #kiosk-app .directory-top-bar {
   background: rgba(8, 14, 24, 0.35);
-  backdrop-filter: blur(22px);
-  -webkit-backdrop-filter: blur(22px);
   border-bottom: 1px solid rgba(255, 255, 255, 0.18);
   box-shadow: 0 4px 24px rgba(0, 0, 0, 0.2);
 }
@@ -3414,7 +3854,7 @@
   content: '';
   position: absolute;
   inset: 0;
-  background: 
+  background:
     radial-gradient(ellipse 70% 50% at 15% 20%, rgba(144, 187, 172, 0.07) 0%, transparent 60%),
     radial-gradient(ellipse 60% 45% at 85% 75%, rgba(93, 133, 155, 0.07) 0%, transparent 60%);
   pointer-events: none;
@@ -3434,6 +3874,7 @@
     opacity: 0;
     transform: translateY(28px) scale(0.97);
   }
+
   to {
     opacity: 1;
     transform: translateY(0) scale(1);
@@ -3444,14 +3885,29 @@
   animation: cardFloatIn 0.5s cubic-bezier(0.16, 1, 0.3, 1) both;
 }
 
-#kiosk-app .glass-card:nth-child(1) { animation-delay: 0.1s; }
-#kiosk-app .glass-card:nth-child(2) { animation-delay: 0.2s; }
-#kiosk-app .glass-card:nth-child(3) { animation-delay: 0.3s; }
+#kiosk-app .glass-card:nth-child(1) {
+  animation-delay: 0.1s;
+}
+
+#kiosk-app .glass-card:nth-child(2) {
+  animation-delay: 0.2s;
+}
+
+#kiosk-app .glass-card:nth-child(3) {
+  animation-delay: 0.3s;
+}
 
 /* Hero title entry */
 @keyframes heroFadeUp {
-  from { opacity: 0; transform: translateY(16px); }
-  to   { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 #kiosk-app .glass-serif-title {
@@ -3478,23 +3934,13 @@
   position: relative;
 }
 
-#kiosk-app .directory-glass-wrapper::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(160deg, rgba(8, 14, 26, 0.72) 0%, rgba(8, 14, 26, 0.62) 50%, rgba(8, 14, 26, 0.75) 100%);
-  z-index: -1;
-}
-
 /* ==========================================================================
    MAP GUIDE FLASHCARD MODAL (HOW TO USE CAMPUS COMPASS)
    ========================================================================== */
 .modal-backdrop {
   position: fixed;
   inset: 0;
-  background: rgba(6, 10, 18, 0.75);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
+  background: rgba(0, 0, 0, 0.85);
   z-index: 9999;
   display: flex;
   align-items: center;
@@ -3511,26 +3957,33 @@
 }
 
 .campus-instruction-flashcard {
-  background: linear-gradient(145deg, rgba(18, 28, 45, 0.95), rgba(10, 17, 30, 0.96));
-  border: 1.5px solid rgba(144, 187, 172, 0.45);
+  background: #ffffff;
+  border: 1px solid rgba(0, 0, 0, 0.08);
   border-radius: 28px;
-  padding: 2.2rem 2.6rem;
-  max-width: 680px;
+  padding: 1.8rem 2.2rem;
+  max-width: 580px;
   width: 92%;
-  max-height: 90vh;
+  max-height: 86vh;
   overflow-y: auto;
-  box-shadow: 0 28px 70px rgba(0, 0, 0, 0.65), 0 0 35px rgba(144, 187, 172, 0.25);
+  box-shadow: 0 16px 48px rgba(0, 0, 0, 0.14);
   display: flex;
   flex-direction: column;
-  gap: 1.35rem;
+  gap: 1.15rem;
   animation: flashcardPop 0.38s cubic-bezier(0.16, 1, 0.3, 1);
-  color: #ffffff;
+  color: #1A1A1A;
   position: relative;
 }
 
 @keyframes flashcardPop {
-  0% { transform: scale(0.92) translateY(24px); opacity: 0; }
-  100% { transform: scale(1) translateY(0); opacity: 1; }
+  0% {
+    transform: scale(0.92) translateY(24px);
+    opacity: 0;
+  }
+
+  100% {
+    transform: scale(1) translateY(0);
+    opacity: 1;
+  }
 }
 
 .flashcard-top-nav {
@@ -3540,139 +3993,143 @@
   width: 100%;
 }
 
-.btn-flashcard-back {
+.flashcard-badge {
   display: inline-flex;
   align-items: center;
-  gap: 0.55rem;
-  background: rgba(255, 255, 255, 0.12);
-  border: 1px solid rgba(255, 255, 255, 0.25);
-  border-radius: 30px;
-  padding: 0.45rem 1rem;
-  font-size: 0.9rem;
+  padding: 0.3rem 0.8rem;
+  border-radius: var(--radius-full);
+  background: #F3F4F6;
+  font-size: 0.78rem;
   font-weight: 700;
-  color: #ffffff;
-  cursor: pointer;
-  transition: all 0.25s ease;
-}
-
-.btn-flashcard-back:hover {
-  background: rgba(255, 255, 255, 0.22);
-  transform: translateX(-2px);
+  color: #1A1A1A;
+  letter-spacing: 0.02em;
 }
 
 .btn-flashcard-close {
   width: 36px;
   height: 36px;
-  border-radius: 50%;
-  background: rgba(255, 255, 255, 0.14);
-  border: 1px solid rgba(255, 255, 255, 0.28);
+  border-radius: var(--radius-full);
+  background: #F9FAFB;
+  border: 1px solid rgba(0, 0, 0, 0.08);
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #ffffff;
+  color: #1A1A1A;
   cursor: pointer;
   transition: all 0.25s ease;
 }
 
 .btn-flashcard-close:hover {
-  background: rgba(239, 68, 68, 0.3);
-  border-color: rgba(239, 68, 68, 0.5);
+  background: rgba(239, 68, 68, 0.1);
+  border-color: rgba(239, 68, 68, 0.3);
+  color: #ef4444;
   transform: scale(1.08);
 }
 
 .flashcard-heading {
   display: flex;
   flex-direction: column;
-  gap: 0.3rem;
+  gap: 0.25rem;
 }
 
 .flashcard-heading h2 {
-  font-size: 1.85rem;
+  font-size: 1.6rem;
   font-weight: 800;
-  color: #ffffff;
+  color: #1A1A1A;
   letter-spacing: -0.02em;
   margin: 0;
-  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+  line-height: 1.25;
 }
 
 .highlight-brand {
-  color: #90bbac;
-  text-shadow: 0 0 16px rgba(144, 187, 172, 0.5);
+  color: #1A1A1A;
 }
 
 .flashcard-heading p {
-  font-size: 1rem;
-  color: rgba(255, 255, 255, 0.78);
+  font-size: 0.92rem;
+  color: #6B7280;
   margin: 0;
+  line-height: 1.4;
 }
 
 .flashcard-steps-container {
   display: flex;
   flex-direction: column;
-  gap: 0.85rem;
+  gap: 0.75rem;
 }
 
 .campus-step-card {
   display: flex;
   align-items: center;
-  gap: 1.1rem;
-  background: rgba(255, 255, 255, 0.08);
-  border: 1.2px solid rgba(255, 255, 255, 0.18);
+  gap: 1rem;
+  background: #ffffff;
+  border: 1.2px solid rgba(0, 0, 0, 0.08);
   border-radius: 18px;
-  padding: 1rem 1.25rem;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
-  backdrop-filter: blur(10px);
+  padding: 0.85rem 1.15rem;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.03);
   transition: all 0.25s ease;
 }
 
 .campus-step-card:hover {
-  background: rgba(255, 255, 255, 0.14);
-  border-color: rgba(144, 187, 172, 0.5);
-  transform: translateX(4px);
-  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25);
+  background: #F9FAFB;
+  border-color: rgba(0, 0, 0, 0.15);
+  transform: translateX(3px);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.06);
 }
 
-.step-num-circle {
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-weight: 800;
-  font-size: 1.1rem;
+.step-badge-wrap {
+  position: relative;
   flex-shrink: 0;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
 }
 
 .step-icon-circle {
-  width: 42px;
-  height: 42px;
-  border-radius: 50%;
-  background: rgba(255, 255, 255, 0.15);
-  border: 1px solid rgba(255, 255, 255, 0.25);
+  width: 44px;
+  height: 44px;
+  border-radius: 14px;
+  background: #F3F4F6;
+  border: 1px solid rgba(0, 0, 0, 0.08);
   display: flex;
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
+}
+
+.step-num-badge {
+  position: absolute;
+  top: -5px;
+  left: -5px;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: #1A1A1A;
+  color: #ffffff;
+  font-size: 0.68rem;
+  font-weight: 800;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid #ffffff;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.15);
 }
 
 .step-text-content {
   display: flex;
   flex-direction: column;
-  gap: 0.2rem;
+  gap: 0.15rem;
+  min-width: 0;
+  flex: 1;
 }
 
-.step-text-content h4 {
-  font-size: 1.1rem;
+.step-card-title {
+  font-size: 1rem;
   font-weight: 700;
-  color: #ffffff;
+  color: #1A1A1A;
   margin: 0;
 }
 
-.step-text-content p {
-  font-size: 0.9rem;
-  color: rgba(255, 255, 255, 0.82);
+.step-card-desc {
+  font-size: 0.85rem;
+  color: #6B7280;
   margin: 0;
   line-height: 1.4;
 }
@@ -3680,72 +4137,871 @@
 .flashcard-tip-box {
   display: flex;
   align-items: center;
-  gap: 1rem;
-  background: linear-gradient(135deg, rgba(144, 187, 172, 0.18) 0%, rgba(59, 158, 234, 0.12) 100%);
-  border: 1.5px solid rgba(144, 187, 172, 0.45);
-  border-radius: 18px;
-  padding: 1rem 1.3rem;
+  gap: 0.85rem;
+  background: #F9FAFB;
+  border: 1.2px solid rgba(0, 0, 0, 0.08);
+  border-radius: 16px;
+  padding: 0.85rem 1.15rem;
 }
 
 .tip-icon-wrapper {
-  color: #90bbac;
+  color: #1A1A1A;
   display: flex;
   align-items: center;
   justify-content: center;
+  flex-shrink: 0;
 }
 
 .tip-text {
-  font-size: 0.92rem;
-  color: #ffffff;
+  font-size: 0.88rem;
+  color: #6B7280;
   line-height: 1.4;
 }
 
 .tip-text strong {
-  color: #90bbac;
+  color: #1A1A1A;
 }
 
 .flashcard-actions-row {
   display: flex;
-  gap: 1.2rem;
+  gap: 1rem;
   justify-content: space-between;
-  margin-top: 0.4rem;
+  margin-top: 0.25rem;
 }
 
-.btn-flashcard-home,
+.btn-flashcard-got-it,
 .btn-flashcard-view-map {
   flex: 1;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 0.65rem;
-  padding: 1rem 1.6rem;
-  border-radius: 50px;
-  font-size: 1rem;
+  gap: 0.5rem;
+  padding: 0.85rem 1.4rem;
+  border-radius: var(--radius-full);
+  font-size: 0.95rem;
   font-weight: 700;
   cursor: pointer;
   transition: all 0.25s ease;
 }
 
-.btn-flashcard-home {
-  background: rgba(255, 255, 255, 0.14);
-  border: 1.5px solid rgba(255, 255, 255, 0.35);
-  color: #ffffff;
+.btn-flashcard-got-it {
+  background: #F3F4F6;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  color: #1A1A1A;
 }
 
-.btn-flashcard-home:hover {
-  background: rgba(255, 255, 255, 0.24);
+.btn-flashcard-got-it:hover {
+  background: #E5E7EB;
   transform: translateY(-2px);
 }
 
 .btn-flashcard-view-map {
-  background: linear-gradient(135deg, #749c8e 0%, #4a7467 100%);
-  border: 1.5px solid rgba(255, 255, 255, 0.45);
+  background: #1A1A1A;
+  border: 1.5px solid #1A1A1A;
   color: #ffffff;
-  box-shadow: 0 6px 20px rgba(74, 116, 103, 0.4);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }
 
 .btn-flashcard-view-map:hover {
   transform: translateY(-2px);
-  box-shadow: 0 8px 24px rgba(74, 116, 103, 0.6);
-  background: linear-gradient(135deg, #82ab9d 0%, #568274 100%);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.25);
+  background: #000000;
+}
+
+/* ==========================================================================
+   MOBILE RESPONSIVE OVERRIDES (≤768px)
+   Covers: Landing, InstructionDashboard, DirectoryHeader, Classrooms,
+           Faculty, Outdoor — everything except the Map screen.
+   ========================================================================== */
+@media (max-width: 768px) {
+
+  /* ── Landing Screen ────────────────────────────────────────────────────── */
+  #kiosk-app .landing-onboarding-wrapper {
+    padding: 1.5rem 1.25rem !important;
+  }
+
+  #kiosk-app .landing-header-left,
+  #kiosk-app .landing-header-right {
+    gap: 0.5rem !important;
+  }
+
+  #kiosk-app .landing-weather-pill,
+  #kiosk-app .landing-time-pill {
+    padding: 0.45rem 0.85rem !important;
+    font-size: 0.8rem !important;
+    gap: 0.4rem !important;
+  }
+
+  #kiosk-app .landing-text-header {
+    margin-top: 2.5rem !important;
+  }
+
+  #kiosk-app .landing-title {
+    font-size: 3.8rem !important;
+  }
+
+  #kiosk-app .landing-subtitle {
+    font-size: 1.25rem !important;
+  }
+
+  #kiosk-app .landing-illustration {
+    max-width: 280px !important;
+  }
+
+  #kiosk-app .btn-onboarding-start {
+    padding: 1rem 1.8rem !important;
+    font-size: 1.1rem !important;
+  }
+
+  #kiosk-app .landing-bottom-controls {
+    margin-bottom: 1rem !important;
+  }
+
+  /* ── InstructionDashboard ──────────────────────────────────────────────── */
+  #kiosk-app .glass-main-wrapper {
+    padding: 1.25rem 1.25rem !important;
+    gap: 0 !important;
+    justify-content: flex-start !important;
+    display: flex !important;
+    flex-direction: column !important;
+    height: 100% !important;
+  }
+
+  /* Top nav — Common mobile standard: clean logo + title, compact status on right */
+  #kiosk-app .glass-top-nav {
+    display: flex !important;
+    justify-content: space-between !important;
+    align-items: center !important;
+    margin-bottom: 0.85rem !important;
+    width: 100% !important;
+  }
+
+  #kiosk-app .glass-brand {
+    gap: 0.6rem !important;
+    align-items: center !important;
+    flex-shrink: 0 !important;
+  }
+
+  /* Standard mobile logo: 34px height */
+  #kiosk-app .glass-brand img,
+  #kiosk-app .glass-brand-logo-img {
+    height: 34px !important;
+    width: auto !important;
+    flex-shrink: 0 !important;
+  }
+
+  /* Standard mobile app title: Title Case, 1rem, clean weight */
+  #kiosk-app .glass-brand-name {
+    font-size: 1rem !important;
+    font-weight: 700 !important;
+    text-transform: none !important;
+    letter-spacing: -0.01em !important;
+    white-space: nowrap !important;
+    line-height: 1.2 !important;
+    color: var(--text-main, #1A1A1A) !important;
+  }
+
+  /* Hide sub-tagline on mobile header (industry standard) */
+  #kiosk-app .glass-brand-subtitle {
+    display: none !important;
+  }
+
+  #kiosk-app .glass-nav-right {
+    flex-shrink: 0 !important;
+  }
+
+  /* Hide redundant digital clock on mobile (device OS already displays clock) */
+  #kiosk-app .glass-time,
+  #kiosk-app .glass-time-divider {
+    display: none !important;
+  }
+
+  /* Compact pill: weather badge + audio toggle */
+  #kiosk-app .glass-time-menu-pill {
+    padding: 0.35rem 0.65rem !important;
+    gap: 0.5rem !important;
+    background: #F0F0F0 !important;
+    border-radius: 9999px !important;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05) !important;
+    flex-shrink: 0 !important;
+  }
+
+  #kiosk-app .glass-pill-weather,
+  #kiosk-app .glass-weather-text {
+    font-size: 0.78rem !important;
+    font-weight: 600 !important;
+    white-space: nowrap !important;
+  }
+
+  #kiosk-app .glass-menu-divider {
+    height: 14px !important;
+  }
+
+  /* Hero title — proportional and balanced for mobile */
+  #kiosk-app .glass-hero-center {
+    margin-bottom: 1.5rem !important;
+    margin-top: 1rem !important;
+  }
+
+  #kiosk-app .glass-serif-title .italic {
+    font-size: 1.65rem !important;
+    line-height: 1.25 !important;
+  }
+
+  #kiosk-app .glass-serif-title .bold {
+    font-size: 1.95rem !important;
+    line-height: 1.25 !important;
+  }
+
+  /* Explore button — standard touch target */
+  #kiosk-app .glass-cta-row {
+    margin-top: 1rem !important;
+  }
+
+  #kiosk-app .btn-glass-explore {
+    padding: 1rem 2rem !important;
+    font-size: 1.1rem !important;
+    gap: 0.8rem !important;
+  }
+
+  /* Service Cards Grid — tight, single column */
+  #kiosk-app .glass-cards-grid {
+    grid-template-columns: 1fr !important;
+    gap: 0.85rem !important;
+    margin-bottom: 1rem !important;
+  }
+
+  #kiosk-app .glass-card {
+    padding: 1.1rem 1.25rem !important;
+    min-height: unset !important;
+    border-radius: 20px !important;
+    flex-direction: row !important;
+    align-items: center !important;
+  }
+
+  #kiosk-app .glass-card-content {
+    flex-direction: row !important;
+    align-items: center !important;
+    gap: 1.1rem !important;
+  }
+
+  #kiosk-app .glass-card-icon-wrap {
+    width: 46px !important;
+    height: 46px !important;
+    border-radius: 14px !important;
+    flex-shrink: 0 !important;
+  }
+
+  #kiosk-app .glass-card-text-group {
+    gap: 0.2rem !important;
+  }
+
+  #kiosk-app .glass-card-title {
+    font-size: 1.15rem !important;
+    font-weight: 700 !important;
+  }
+
+  /* Show description on mobile to make use of free space */
+  #kiosk-app .glass-card-desc {
+    display: block !important;
+    font-size: 0.85rem !important;
+    line-height: 1.3 !important;
+  }
+
+  #kiosk-app .glass-card-arrow {
+    width: 38px !important;
+    height: 38px !important;
+    flex-shrink: 0 !important;
+  }
+
+  /* Quick Tip Banner — visible, fits seamlessly on mobile */
+  #kiosk-app .glass-quick-tip-banner {
+    padding: 1.1rem 1.25rem !important;
+    gap: 1rem !important;
+    border-radius: 20px !important;
+    margin-top: auto !important;
+    margin-bottom: 0.5rem !important;
+    flex-shrink: 0 !important;
+  }
+
+  #kiosk-app .glass-tip-icon-badge {
+    width: 36px !important;
+    height: 36px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+  }
+
+  #kiosk-app .glass-tip-title {
+    font-size: 1.05rem !important;
+    font-weight: 700 !important;
+  }
+
+  #kiosk-app .glass-tip-desc {
+    display: block !important;
+    font-size: 0.85rem !important;
+    line-height: 1.3 !important;
+    margin-top: 0.2rem !important;
+  }
+
+  #kiosk-app .glass-tip-vertical-divider {
+    height: 36px !important;
+  }
+
+  /* ── Quick Guide Modal (MapGuideFlashcard) ────────────────────────── */
+  .modal-backdrop,
+  #kiosk-app .modal-backdrop {
+    padding: 0.75rem !important;
+    align-items: center !important;
+    justify-content: center !important;
+  }
+
+  .campus-instruction-flashcard,
+  #kiosk-app .campus-instruction-flashcard {
+    width: 95% !important;
+    max-width: 400px !important;
+    max-height: 86vh !important;
+    padding: 1.15rem 1.15rem !important;
+    border-radius: 24px !important;
+    gap: 0.75rem !important;
+    overflow-y: auto !important;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .flashcard-top-nav,
+  #kiosk-app .flashcard-top-nav {
+    margin-bottom: 0.1rem !important;
+  }
+
+  .flashcard-badge,
+  #kiosk-app .flashcard-badge {
+    font-size: 0.72rem !important;
+    padding: 0.25rem 0.65rem !important;
+  }
+
+  .btn-flashcard-close,
+  #kiosk-app .btn-flashcard-close {
+    width: 32px !important;
+    height: 32px !important;
+  }
+
+  .flashcard-heading,
+  #kiosk-app .flashcard-heading {
+    gap: 0.2rem !important;
+  }
+
+  .flashcard-heading h2,
+  #kiosk-app .flashcard-heading h2 {
+    font-size: 1.25rem !important;
+    line-height: 1.25 !important;
+    letter-spacing: -0.01em !important;
+  }
+
+  .flashcard-heading p,
+  #kiosk-app .flashcard-heading p {
+    font-size: 0.8rem !important;
+    line-height: 1.35 !important;
+  }
+
+  .flashcard-steps-container,
+  #kiosk-app .flashcard-steps-container {
+    gap: 0.45rem !important;
+  }
+
+  .campus-step-card,
+  #kiosk-app .campus-step-card {
+    padding: 0.6rem 0.8rem !important;
+    gap: 0.75rem !important;
+    border-radius: 14px !important;
+  }
+
+  .step-icon-circle,
+  #kiosk-app .step-icon-circle {
+    width: 36px !important;
+    height: 36px !important;
+    border-radius: 12px !important;
+  }
+
+  .step-num-badge,
+  #kiosk-app .step-num-badge {
+    width: 16px !important;
+    height: 16px !important;
+    font-size: 0.62rem !important;
+    top: -4px !important;
+    left: -4px !important;
+  }
+
+  .step-text-content,
+  #kiosk-app .step-text-content {
+    gap: 0.1rem !important;
+    min-width: 0 !important;
+    flex: 1 !important;
+  }
+
+  .step-card-title,
+  #kiosk-app .step-card-title {
+    font-size: 0.9rem !important;
+    font-weight: 700 !important;
+    white-space: normal !important;
+    word-break: normal !important;
+  }
+
+  .step-card-desc,
+  #kiosk-app .step-card-desc {
+    font-size: 0.76rem !important;
+    line-height: 1.35 !important;
+    color: #6B7280 !important;
+  }
+
+  .flashcard-tip-box,
+  #kiosk-app .flashcard-tip-box {
+    padding: 0.55rem 0.8rem !important;
+    border-radius: 14px !important;
+    gap: 0.6rem !important;
+  }
+
+  .tip-text,
+  #kiosk-app .tip-text {
+    font-size: 0.76rem !important;
+    line-height: 1.35 !important;
+  }
+
+  .flashcard-actions-row,
+  #kiosk-app .flashcard-actions-row {
+    gap: 0.6rem !important;
+    margin-top: 0.2rem !important;
+  }
+
+  .btn-flashcard-got-it,
+  #kiosk-app .btn-flashcard-got-it,
+  .btn-flashcard-view-map,
+  #kiosk-app .btn-flashcard-view-map {
+    padding: 0.65rem 1rem !important;
+    font-size: 0.85rem !important;
+  }
+
+  /* ── Inactivity Timeout Modal ─────────────────────────────────────────── */
+  #kiosk-app .kiosk-modal-box {
+    padding: 1.6rem 1.4rem !important;
+    max-width: 360px !important;
+    width: 90% !important;
+    gap: 1rem !important;
+    border-radius: 24px !important;
+  }
+
+  #kiosk-app .inactivity-circle-timer {
+    width: 76px !important;
+    height: 76px !important;
+  }
+
+  #kiosk-app .inactivity-circle-timer svg {
+    width: 76px !important;
+    height: 76px !important;
+  }
+
+  #kiosk-app .inactivity-countdown-num {
+    font-size: 1.85rem !important;
+  }
+
+  #kiosk-app .inactivity-modal-title {
+    font-size: 1.25rem !important;
+  }
+
+  #kiosk-app .inactivity-modal-desc {
+    font-size: 0.82rem !important;
+    line-height: 1.4 !important;
+  }
+
+  #kiosk-app .btn-inactivity-stay {
+    padding: 0.8rem 1.4rem !important;
+    font-size: 0.95rem !important;
+  }
+
+  /* ── DirectoryHeader (shared across Classrooms/Faculty/Outdoor) ────────── */
+  #kiosk-app .directory-top-bar {
+    padding: 0.75rem 1rem !important;
+    gap: 0.5rem;
+    background: transparent !important;
+    border-bottom: none !important;
+    box-shadow: none !important;
+  }
+
+  #kiosk-app .dir-bar-left {
+    gap: 0.55rem !important;
+  }
+
+  #kiosk-app .btn-dir-back {
+    padding: 0.45rem 0.75rem !important;
+    font-size: 0.75rem !important;
+    gap: 0.35rem !important;
+  }
+
+  /* Standard mobile mini logo: 34px */
+  #kiosk-app .dir-logo-mini {
+    width: 34px !important;
+    height: 34px !important;
+    flex-shrink: 0 !important;
+  }
+
+  #kiosk-app .dir-brand-name {
+    display: none !important;
+  }
+
+  #kiosk-app .dir-brand-tag {
+    font-size: 0.58rem !important;
+    letter-spacing: 0.05em !important;
+    white-space: nowrap !important;
+  }
+
+  /* Hide redundant digital clock on mobile in directory header */
+  #kiosk-app .dir-bar-right .landing-time-pill {
+    display: none !important;
+  }
+
+  #kiosk-app .dir-bar-right .landing-weather-pill {
+    padding: 0.35rem 0.65rem !important;
+    min-width: unset !important;
+    font-size: 0.78rem !important;
+  }
+
+  #kiosk-app .dir-bar-right .landing-time-pill {
+    gap: 0.3rem !important;
+  }
+
+  #kiosk-app .directory-main-content {
+    padding: 1rem 1rem !important;
+    max-width: 100vw !important;
+    overflow-x: hidden !important;
+    box-sizing: border-box !important;
+  }
+
+  #kiosk-app .btn-campus-home {
+    width: 36px !important;
+    height: 36px !important;
+  }
+
+  #kiosk-app .dir-bar-right {
+    gap: 0.5rem !important;
+  }
+
+  /* ── Directory Main Content ────────────────────────────────────────────── */
+  #kiosk-app .directory-main-content {
+    padding: 1rem 1rem !important;
+    gap: 1rem !important;
+  }
+
+  #kiosk-app .directory-heading-box {
+    padding: 1.25rem !important;
+    flex-direction: column !important;
+    align-items: flex-start !important;
+    gap: 0.75rem !important;
+    border-radius: 20px !important;
+  }
+
+  #kiosk-app .dir-title {
+    font-size: 1.5rem !important;
+  }
+
+  #kiosk-app .dir-eyebrow {
+    font-size: 0.7rem !important;
+  }
+
+  /* ── Classrooms Screen ─────────────────────────────────────────────────── */
+  #kiosk-app .classrooms-cards-grid {
+    grid-template-columns: 1fr !important;
+    gap: 0.75rem !important;
+  }
+
+  #kiosk-app .cls-item-card-enhanced {
+    padding: 1rem 1.1rem !important;
+    border-radius: 16px !important;
+  }
+
+  #kiosk-app .cls-item-icon-badge {
+    width: 40px !important;
+    height: 40px !important;
+  }
+
+  #kiosk-app .cls-item-title {
+    font-size: 0.95rem !important;
+  }
+
+  #kiosk-app .cls-item-meta {
+    font-size: 0.75rem !important;
+  }
+
+  #kiosk-app .btn-navigate-room {
+    padding: 0.45rem 0.9rem !important;
+    font-size: 0.8rem !important;
+    gap: 0.3rem !important;
+  }
+
+  /* Year / Semester filter chips */
+  #kiosk-app .year-chips-row,
+  #kiosk-app .semester-chips-row {
+    flex-wrap: wrap !important;
+    gap: 0.4rem !important;
+  }
+
+  /* ── Faculty Screen ────────────────────────────────────────────────────── */
+  #kiosk-app .department-cards-grid {
+    grid-template-columns: 1fr !important;
+    gap: 0.75rem !important;
+  }
+
+  #kiosk-app .department-item-card {
+    padding: 1.1rem 1.2rem !important;
+    border-radius: 20px !important;
+  }
+
+  #kiosk-app .dept-icon-circle {
+    width: 44px !important;
+    height: 44px !important;
+    border-radius: 12px !important;
+  }
+
+  #kiosk-app .dept-name {
+    font-size: 1rem !important;
+  }
+
+  #kiosk-app .dept-hod-row {
+    font-size: 0.82rem !important;
+  }
+
+  #kiosk-app .faculty-grid {
+    grid-template-columns: 1fr !important;
+    gap: 0.75rem !important;
+  }
+
+  #kiosk-app .faculty-card {
+    padding: 1rem 1.1rem !important;
+    border-radius: 20px !important;
+  }
+
+  #kiosk-app .fac-avatar {
+    width: 52px !important;
+    height: 52px !important;
+  }
+
+  #kiosk-app .fac-name {
+    font-size: 0.95rem !important;
+  }
+
+  #kiosk-app .fac-role {
+    font-size: 0.78rem !important;
+  }
+
+  /* ── Outdoor Screen ────────────────────────────────────────────────────── */
+  #kiosk-app .outdoor-poi-grid {
+    grid-template-columns: 1fr !important;
+    gap: 0.75rem !important;
+  }
+
+  #kiosk-app .outdoor-poi-card {
+    padding: 1rem 1.1rem !important;
+    border-radius: 20px !important;
+  }
+
+  #kiosk-app .outdoor-poi-icon {
+    width: 46px !important;
+    height: 46px !important;
+    border-radius: 14px !important;
+  }
+
+  #kiosk-app .outdoor-poi-name {
+    font-size: 0.95rem !important;
+  }
+
+  #kiosk-app .outdoor-poi-desc {
+    font-size: 0.78rem !important;
+    white-space: normal !important;
+    display: -webkit-box !important;
+    -webkit-line-clamp: 2 !important;
+    -webkit-box-orient: vertical !important;
+  }
+
+  #kiosk-app .btn-poi-navigate {
+    width: 40px !important;
+    height: 40px !important;
+    padding: 0 !important;
+    justify-content: center !important;
+    border-radius: 50% !important;
+  }
+  
+  #kiosk-app .btn-poi-navigate span {
+    display: none !important;
+  }
+
+  /* ── Mobile Map Split View ─────────────────────────────────────────────── */
+  .kiosk-map-body.kiosk-split {
+    flex-direction: column !important;
+  }
+  
+  .kiosk-map-body.kiosk-split .kiosk-map-col {
+    flex: 0 0 50% !important;
+    width: 100% !important;
+    height: 50% !important;
+  }
+  
+  #kiosk-app .kiosk-panel-col {
+    flex: 1 1 50% !important;
+    width: 100% !important;
+    height: 50% !important;
+    border-radius: 24px 24px 0 0 !important;
+    background: #ffffff !important;
+    overflow: hidden !important; /* Fix curves by clipping children */
+    box-shadow: 0 -4px 24px rgba(0, 0, 0, 0.12) !important;
+    animation: none !important;
+    transform: none !important;
+    position: relative !important;
+    z-index: 100 !important;
+    transition: height 0.3s cubic-bezier(0.16, 1, 0.3, 1), flex 0.3s cubic-bezier(0.16, 1, 0.3, 1) !important;
+  }
+  
+  #kiosk-app .kiosk-panel-col.collapsed {
+    flex: 0 0 64px !important;
+    height: 64px !important;
+  }
+  
+  #kiosk-app .kiosk-map-body.kiosk-split .kiosk-map-col {
+    flex: 1 !important;
+    width: 100% !important;
+    height: auto !important;
+  }
+
+  .kiosk-mobile-handle {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 12px;
+    background: #ffffff;
+    cursor: pointer;
+    position: sticky;
+    top: 0;
+    z-index: 50;
+  }
+
+  .kiosk-mobile-handle-bar {
+    width: 36px;
+    height: 5px;
+    background: #cbd5e1;
+    border-radius: 9999px;
+  }
+  
+  .kiosk-mobile-handle-text {
+    font-size: 13px;
+    font-weight: 700;
+    color: #1A1A1A;
+    margin-top: 8px;
+  }
+
+  #kiosk-app .kiosk-panel-info {
+    padding-top: 4px !important;
+  }
+
+
+  #kiosk-app .kiosk-side-panel {
+    border-radius: 24px 24px 0 0 !important;
+    border: none !important;
+    box-shadow: none !important;
+  }
+
+  /* Adjust the indicators position since layout changed */
+  .kiosk-map-root .landing-indicators {
+    bottom: 2rem !important;
+    left: 50% !important;
+    transform: translateX(-50%) !important;
+  }
+
+  /* ── Bottom Footer ─────────────────────────────────────────────────────── */
+  #kiosk-app .campus-bottom-footer {
+    padding: 0.75rem 1rem !important;
+    font-size: 0.75rem !important;
+    flex-direction: column !important;
+    gap: 0.25rem !important;
+    text-align: center !important;
+  }
+
+  #kiosk-app .footer-right-motto {
+    display: none !important;
+  }
+}
+
+/* ==========================================================================
+   EXTRA SMALL (≤480px) — tighten further
+   ========================================================================== */
+@media (max-width: 480px) {
+
+  #kiosk-app .directory-top-bar {
+    padding: 0.6rem 0.85rem !important;
+  }
+
+  #kiosk-app .dir-brand-badge {
+    display: flex !important;
+    align-items: center !important;
+    gap: 0.5rem !important;
+  }
+
+  #kiosk-app .dir-logo-mini {
+    width: 32px !important;
+    height: 32px !important;
+    flex-shrink: 0 !important;
+  }
+
+  #kiosk-app .dir-brand-name {
+    font-size: 0.9rem !important;
+    font-weight: 700 !important;
+    text-transform: none !important;
+    white-space: nowrap !important;
+  }
+
+  #kiosk-app .dir-brand-tag {
+    font-size: 0.52rem !important;
+    white-space: nowrap !important;
+  }
+
+  #kiosk-app .dir-bar-right .landing-weather-pill {
+    display: none !important;
+  }
+
+  #kiosk-app .directory-main-content {
+    padding: 0.85rem 0.85rem !important;
+  }
+
+  #kiosk-app .landing-weather-pill,
+  #kiosk-app .landing-time-pill {
+    padding: 0.4rem 0.7rem !important;
+    font-size: 0.75rem !important;
+  }
+
+  #kiosk-app .classrooms-cards-grid,
+  #kiosk-app .department-cards-grid,
+  #kiosk-app .faculty-grid,
+  #kiosk-app .outdoor-poi-grid,
+  #kiosk-app .glass-cards-grid {
+    grid-template-columns: 1fr !important;
+  }
+}
+
+/* ── Leaflet Popup Overrides ─────────────────────────────────────────────── */
+.leaflet-popup-content-wrapper {
+  border-radius: 12px !important;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1) !important;
+  padding: 4px !important;
+}
+
+.leaflet-popup-content {
+  margin: 12px 28px 12px 14px !important; /* give room for the close button on the right */
+  line-height: 1.4 !important;
+  font-family: inherit !important;
+  display: flex !important;
+  align-items: center !important;
+  min-height: 24px !important;
+}
+
+.leaflet-popup-close-button {
+  top: 8px !important;
+  right: 8px !important;
+  color: #64748b !important;
 }

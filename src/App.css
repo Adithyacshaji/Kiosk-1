@@ -4,9 +4,9 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
 
 :root {
-  --gm-blue-primary: #1a73e8;
-  --gm-blue-hover: #1557b0;
-  --gm-blue-light: #e8f0fe;
+  --gm-blue-primary: #1A1A1A;
+  --gm-blue-hover: #222222;
+  --gm-blue-light: #F8F9FA;
   --gm-text-primary: #202124;
   --gm-text-secondary: #5f6368;
   --gm-bg-white: #ffffff;
@@ -150,8 +150,6 @@ body,
   padding: 0px 0px 0px 8px;
   border-radius: 24px;
   background: rgba(255, 255, 255, 0.95);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
   box-shadow: var(--gm-shadow-elevation-2);
   border: 1px solid rgba(255, 255, 255, 0.6);
   transition: border-radius 0.2s, box-shadow 0.2s, background-color 0.2s;
@@ -198,8 +196,6 @@ body,
   border-radius: 28px 28px 0 0;
 
   background: rgba(255, 255, 255, 0.95);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
   color: var(--gm-text-primary);
   text-align: left;
 
@@ -342,8 +338,6 @@ body,
   inset: 0;
   background: rgba(15, 23, 42, 0.45);
   z-index: 9999;
-  backdrop-filter: blur(4px);
-  -webkit-backdrop-filter: blur(4px);
   animation: fadeInBackdrop 0.22s ease;
 }
 
@@ -367,7 +361,7 @@ body,
   min-height: 48px;
   /* 48px minimum touch target */
   border: 0;
-  border-radius: 24px;
+  border-radius: var(--radius-full);
   padding: 0 24px;
   font-size: 15px;
   font-weight: 600;
@@ -736,8 +730,6 @@ body,
   border-radius: 999px;
   padding: 10px 16px;
   background: rgba(255, 255, 255, 0.92);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
   color: var(--gm-text-primary);
   font-size: 13px;
   font-weight: 500;
@@ -777,8 +769,6 @@ body,
 
 .qr-simulator-toggle {
   background: rgba(255, 255, 255, 0.92);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
   color: var(--gm-text-primary);
   border: 1px solid rgba(0, 0, 0, 0.06);
   box-shadow: var(--gm-shadow-elevation-2);
@@ -809,8 +799,6 @@ body,
 
 .qr-simulator-panel {
   background: rgba(255, 255, 255, 0.95);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
   border: 1px solid rgba(255, 255, 255, 0.6);
   border-radius: 20px;
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.14), 0 2px 8px rgba(0, 0, 0, 0.08);
@@ -968,7 +956,7 @@ body,
   border-radius: 999px;
   padding: 10px 16px;
   background: rgba(255, 255, 255, 0.88);
-  backdrop-filter: blur(10px);
+  
   color: #202124;
   font-size: 13px;
   font-weight: 500;
@@ -1128,7 +1116,7 @@ body,
 .arrival-actions .primary-action {
   flex: 1.5;
   height: 52px;
-  border-radius: 16px;
+  border-radius: var(--radius-full);
   border: none;
   background: linear-gradient(135deg, #16a34a, #15803d);
   color: white;
@@ -1179,8 +1167,6 @@ body,
   align-items: center;
   gap: 5px;
   background: rgba(15, 15, 15, 0.62);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
   color: #fbbf24;
   font-size: 11px;
   font-weight: 600;
