@@ -2,61 +2,61 @@ import { useState, useEffect, useRef, useMemo, lazy, Suspense } from "react";
 import { Routes, Route } from "react-router-dom";
 import { Home, Building, Clock, CloudSun, MapPin, ChevronRight } from "lucide-react";
 
-const CampusMap = lazy(() => import("./components/map/CampusMap"));
+const CampusMap = lazy(() => import("./shared/components/map/CampusMap"));
 
 
-import SearchBar from "./components/common/SearchBar";
+import SearchBar from "./views/mobile/components/SearchBar";
 
-import { findPath } from "./utils/findPath";
-import { openGoogleMapsNavigation } from "./utils/openGoogleMaps";
+import { findPath } from "./shared/utils/findPath";
+import { openGoogleMapsNavigation } from "./shared/utils/openGoogleMaps";
 
-import { useDatabase } from "./context/DatabaseContext";
+import { useDatabase } from "./shared/context/DatabaseContext";
 
 import "./App.css";
-import "./kiosk.css";
+import "./views/kiosk/kiosk.css";
 
-import { LandingScreen } from "./components/kiosk/LandingScreen";
-import { InstructionDashboard } from "./components/kiosk/InstructionDashboard";
-import { ClassroomsScreen } from "./components/kiosk/ClassroomsScreen";
-import { FacultyScreen } from "./components/kiosk/FacultyScreen";
-import { OutdoorScreen } from "./components/kiosk/OutdoorScreen";
-import { QrModal } from "./components/kiosk/QrModal";
-import { InactivityModal } from "./components/kiosk/InactivityModal";
-import { audioService } from "./utils/kiosk/audio";
-import { KioskMapLayout } from "./components/kiosk/KioskMapLayout";
-import { KioskFloatingSearch } from "./components/kiosk/KioskFloatingSearch";
+import { LandingScreen } from "./views/kiosk/screens/LandingScreen";
+import { InstructionDashboard } from "./views/kiosk/screens/InstructionDashboard";
+import { ClassroomsScreen } from "./views/kiosk/screens/ClassroomsScreen";
+import { FacultyScreen } from "./views/kiosk/screens/FacultyScreen";
+import { OutdoorScreen } from "./views/kiosk/screens/OutdoorScreen";
+import { QrModal } from "./views/kiosk/components/QrModal";
+import { InactivityModal } from "./views/kiosk/components/InactivityModal";
+import { audioService } from "./shared/utils/kiosk/audio";
+import { KioskMapLayout } from "./views/kiosk/components/KioskMapLayout";
+import { KioskFloatingSearch } from "./views/kiosk/components/KioskFloatingSearch";
 
-import FloorSelector from "./components/map/FloorSelector";
+import FloorSelector from "./shared/components/map/FloorSelector";
 
-import useCurrentLocation from "./hooks/useCurrentLocation";
+import useCurrentLocation from "./shared/hooks/useCurrentLocation";
 
-import SearchChips from "./components/common/SearchChips";
+import SearchChips from "./views/mobile/components/SearchChips";
 
-import BottomSheet from "./components/common/BottomSheet";
+import BottomSheet from "./views/mobile/components/BottomSheet";
 
-import { isInsideCampus } from "./utils/isInsideCampus";
+import { isInsideCampus } from "./shared/utils/isInsideCampus";
 
 import { CAMPUS_ENTRANCE } from "./data/campus";
 
-import { findNearestNode } from "./utils/findNearestNode";
+import { findNearestNode } from "./shared/utils/findNearestNode";
 
-import IndoorRoutingCard from "./components/routing/IndoorRoutingCard";
+import IndoorRoutingCard from "./shared/components/map/IndoorRoutingCard";
 
-import { findNearestLocation } from "./utils/findNearestLocation";
-import { findNearestQRLocation } from "./utils/findNearestQRLocation";
-import { findNearestStMarysEntrance, findNearestBuildingEntrance, findNearestChavaraEntrance, findBestChavaraEntranceByPath } from "./utils/findNearestEntrance";
-import { calculateHaversineDistance } from "./utils/haversine";
-import { getDistanceToRoute } from "./utils/distanceToRoute";
+import { findNearestLocation } from "./shared/utils/findNearestLocation";
+import { findNearestQRLocation } from "./shared/utils/findNearestQRLocation";
+import { findNearestStMarysEntrance, findNearestBuildingEntrance, findNearestChavaraEntrance, findBestChavaraEntranceByPath } from "./shared/utils/findNearestEntrance";
+import { calculateHaversineDistance } from "./shared/utils/haversine";
+import { getDistanceToRoute } from "./shared/utils/distanceToRoute";
 import { FLOOR_IMAGES, CHAVARA_FLOOR_IMAGES } from "./data/floorImages";
 
-import LoadingScreen from "./components/common/LoadingScreen";
-import YDCard from "./components/common/YDCard";
-import { getBuildingDisplayName } from "./utils/buildingPolygons";
-import LocationAlertCard from "./components/common/LocationAlertCard";
+import LoadingScreen from "./shared/components/LoadingScreen";
+import YDCard from "./views/mobile/components/YDCard";
+import { getBuildingDisplayName } from "./shared/utils/buildingPolygons";
+import LocationAlertCard from "./views/mobile/components/LocationAlertCard";
 import { SignalLow } from "lucide-react";
-import { routeIndoor, routeOutdoor, geofence } from "./utils/edgeFunctions";
-import OutsideCampusModal from "./components/common/OutsideCampusModal";
-import DestinationInfoCard from "./components/common/DestinationInfoCard";
+import { routeIndoor, routeOutdoor, geofence } from "./shared/utils/edgeFunctions";
+import OutsideCampusModal from "./views/mobile/components/OutsideCampusModal";
+import DestinationInfoCard from "./views/mobile/components/DestinationInfoCard";
 
 // ── Floor label formatter ──────────────────────────────────────────────────────
 // Converts raw floor keys ("G", "1", "2", "3", "B1", "B2") to readable labels.
@@ -386,27 +386,16 @@ function MainApp() {
     audioService.enabled = soundEnabled;
   }, [soundEnabled]);
 
-  const resetToLanding = () => {
-    setDestination(null);
-    setSelectedLocation(null);
-    setIndoorDestination(null);
-    setQrModalPoi(null);
-    setCurrentFloor("G");
-    setCurrentScreen('landing');
-    setIsInactivityWarningOpen(false);
-    if (typeof window !== 'undefined') {
-      window.history.replaceState({}, '', window.location.pathname);
-    }
-  };
-
   const resetKiosk = () => {
     setKioskViewState('fullscreen');
     setDestination(null);
     setSelectedLocation(null);
     setIndoorDestination(null);
+    setQrModalPoi(null);
     setRoute([]);
     setIndoorRoute([]);
     setIndoorRouteNodes([]);
+    setIndoorRouteIndex(0);
     setMapMode('OUTDOOR');
     setNavStep(STEPS.IDLE);
     setHasSearched(false);
@@ -415,6 +404,28 @@ function MainApp() {
     }
   };
 
+  const resetToLanding = () => {
+    resetKiosk();
+    setDestination(null);
+    setSelectedLocation(null);
+    setIndoorDestination(null);
+    setQrModalPoi(null);
+    setRoute([]);
+    setIndoorRoute([]);
+    setIndoorRouteNodes([]);
+    setIndoorRouteIndex(0);
+    setCurrentFloor("G");
+    setCurrentBuilding("stmarys");
+    setMapMode("OUTDOOR");
+    setNavStep(STEPS.IDLE);
+    setHasSearched(false);
+    setKioskViewState('fullscreen');
+    setCurrentScreen('landing');
+    setIsInactivityWarningOpen(false);
+    if (typeof window !== 'undefined') {
+      window.history.replaceState({}, '', window.location.pathname);
+    }
+  };
 
   const initialUrlParams = useMemo(() => {
     if (typeof window === 'undefined') return new URLSearchParams();
@@ -424,11 +435,23 @@ function MainApp() {
   const checkIsMobileOrPhoneSession = () => {
     if (typeof window === 'undefined') return false;
     const params = new URLSearchParams(window.location.search);
-    if (params.get('kiosk') === 'true') return false; // Explicit force kiosk mode
-    if (params.get('kiosk') === 'false' || params.get('mobile') === 'true' || params.get('qrSession') === 'true') return true; // Explicit force mobile
-    if (params.has('dest') || params.has('qr')) return true; // Scanned QR code with destination
-    const isMobileUA = /Mobi|Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-    return isMobileUA;
+    // Explicit force kiosk mode: ALWAYS stay in kiosk view
+    if (params.get('kiosk') === 'true') return false;
+    // Explicit force mobile mode
+    if (params.get('kiosk') === 'false') return true;
+
+    // Mobile view should ONLY appear on phones after scanning the QR code:
+    // A scanned QR code URL generated by the kiosk contains 'dest', 'qr', 'start', 'qrSession', or 'mobile'
+    const hasQrScanParams = (
+      params.has('dest') ||
+      params.has('qr') ||
+      params.has('start') ||
+      params.get('qrSession') === 'true' ||
+      params.get('mobile') === 'true'
+    );
+
+    // If no QR code was scanned, NEVER show mobile view on the kiosk or direct visits
+    return Boolean(hasQrScanParams);
   };
 
   const [isMobileOrQrSession, setIsMobileOrQrSession] = useState(() => {
@@ -474,7 +497,12 @@ function MainApp() {
           setRemainingWarningSeconds((prev) => {
             if (prev <= 1) {
               clearInterval(warningIntervalRef.current);
+              setIsInactivityWarningOpen(false);
               resetToLanding();
+              // Complete system refresh after timeout: reloads clean root page
+              if (typeof window !== 'undefined') {
+                window.location.href = window.location.pathname;
+              }
               return 10;
             }
             return prev - 1;
@@ -2706,8 +2734,7 @@ function MainApp() {
           }}
           onGoHome={() => {
             audioService.playClick();
-            resetKiosk();
-            setCurrentScreen('landing');
+            resetToLanding();
           }}
           currentTime={currentTime}
           currentFloor={currentFloor}
@@ -2720,8 +2747,7 @@ function MainApp() {
                 title="Return to Welcome Screen"
                 onClick={() => {
                   audioService.playClick();
-                  resetKiosk();
-                  setCurrentScreen('landing');
+                  resetToLanding();
                 }}
                 style={{
                   position: 'absolute', top: 20, left: 20, zIndex: 1500,
@@ -2847,6 +2873,7 @@ function MainApp() {
             setIsInactivityWarningOpen(false);
             if (idleTimerRef.current) clearTimeout(idleTimerRef.current);
             if (warningIntervalRef.current) clearInterval(warningIntervalRef.current);
+            resetInactivityTimer();
           }}
         />
       </div>
@@ -2883,9 +2910,13 @@ function MainApp() {
           <InstructionDashboard
             onViewMap={() => {
               audioService.playClick();
+              resetKiosk();
               setCurrentScreen('map');
             }}
-            onGoHome={() => setCurrentScreen('landing')}
+            onGoHome={() => {
+              audioService.playClick();
+              resetToLanding();
+            }}
             onSelectService={(category, floor = 1) => {
               audioService.playClick();
               setCurrentFloor(floor);
@@ -2915,7 +2946,10 @@ function MainApp() {
           <ClassroomsScreen
             classrooms={bottomSheetData.classrooms}
             onBack={() => setCurrentScreen('instructions')}
-            onGoHome={() => setCurrentScreen('landing')}
+            onGoHome={() => {
+              audioService.playClick();
+              resetToLanding();
+            }}
             onSelectClassroom={(cls) => {
               audioService.playClick();
               const bldg = cls.building || (isChavaraBuilding(cls.buildingName || cls.building) ? "chavara" : "stmarys");
@@ -2948,7 +2982,10 @@ function MainApp() {
           <FacultyScreen
             departments={bottomSheetData.departments}
             onBack={() => setCurrentScreen('instructions')}
-            onGoHome={() => setCurrentScreen('landing')}
+            onGoHome={() => {
+              audioService.playClick();
+              resetToLanding();
+            }}
             onSelectFaculty={(fac) => {
               audioService.playClick();
               const bldg = fac.building || (fac.room?.startsWith('CH') || fac.room?.startsWith('S') || fac.room?.startsWith('2') ? 'chavara' : 'stmarys');
@@ -2982,7 +3019,10 @@ function MainApp() {
         {currentScreen === 'outdoor' && (
           <OutdoorScreen
             onBack={() => setCurrentScreen('instructions')}
-            onGoHome={() => setCurrentScreen('landing')}
+            onGoHome={() => {
+              audioService.playClick();
+              resetToLanding();
+            }}
             onSelectOutdoor={(poi) => {
               audioService.playClick();
               const bldg = poi.building || (isChavaraBuilding(poi.building) ? 'chavara' : (poi.id === 'poi-out-canteen' || poi.id === 'canteen' ? 'canteen' : 'stmarys'));
@@ -3025,7 +3065,28 @@ function MainApp() {
             setIsInactivityWarningOpen(false);
             if (idleTimerRef.current) clearTimeout(idleTimerRef.current);
             if (warningIntervalRef.current) clearInterval(warningIntervalRef.current);
+            resetInactivityTimer();
           }}
+        />
+      </div>
+    );
+  }
+
+  // Safety guard: Mobile view MUST ONLY appear on phones after scanning the QR code
+  if (!isMobileOrQrSession) {
+    return (
+      <div id="kiosk-app" className={`app-root theme-${theme}`}>
+        <LandingScreen
+          onStart={() => {
+            audioService.playClick();
+            setCurrentScreen('instructions');
+          }}
+          currentTime={currentTime}
+          theme={theme}
+          onToggleTheme={() => setTheme(prev => prev === 'light' ? 'dark' : 'light')}
+          soundEnabled={soundEnabled}
+          onToggleSound={() => setSoundEnabled(prev => !prev)}
+          language="en"
         />
       </div>
     );
@@ -4033,8 +4094,8 @@ function getStairNodeForBuilding(currentFloor, destinationFloor, building) {
 }
 
 // Admin lazy imports to prevent map bundle bloat
-const AdminLogin = lazy(() => import("./pages/AdminLogin"));
-const ControlPanel = lazy(() => import("./pages/ControlPanel"));
+const AdminLogin = lazy(() => import("./views/admin/AdminLogin"));
+const ControlPanel = lazy(() => import("./views/admin/ControlPanel"));
 
 export default function AppRouter() {
   return (

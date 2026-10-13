@@ -1,7 +1,7 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
 import App from "./App";
-import { DatabaseProvider } from "./context/DatabaseContext";
+import { DatabaseProvider } from "./shared/context/DatabaseContext";
 import "leaflet/dist/leaflet.css";
 import "./index.css";
 // import "react-modal-sheet/dist/style.css";

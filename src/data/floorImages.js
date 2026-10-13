@@ -1,4 +1,4 @@
-import { LOCKED_INDOOR_BOUNDS_RAW } from "../utils/indoorGrid";
+import { LOCKED_INDOOR_BOUNDS_RAW } from "../shared/utils/indoorGrid";
 
 // This calibration box is deliberately independent of PNG dimensions. Keep
 // node coordinates stable when an image asset is upgraded or replaced.
