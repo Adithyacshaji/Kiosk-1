@@ -182,10 +182,10 @@
   margin-top: 12px;
   padding: 12px 20px;
   min-height: 48px;
-  border-radius: 24px;
+  border-radius: 9999px;
   border: none;
-  background: #cddff6b3;
-  color: white;
+  background: #1A1A1A;
+  color: #FFFFFF;
   cursor: pointer;
   font-size: 14px;
   font-weight: 600;
@@ -195,7 +195,7 @@
 }
 
 .route-button:hover {
-  background: #b7cce8;
+  background: #333333;
 }
 
 .route-button:active {

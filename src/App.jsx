@@ -1866,8 +1866,8 @@ function MainApp() {
     const loc = locOverride || destInfoTarget;
     if (!loc) return;
     const targetBuilding = (loc.building || "").toLowerCase().includes("chavara") ? "chavara" : "stmarys";
-    const rawFloor = loc.floor ? String(loc.floor).toUpperCase() : "G";
-    const targetFloor = rawFloor.startsWith("B") ? rawFloor : (rawFloor === "G" || rawFloor === "GROUND" ? "G" : rawFloor);
+    const rawFloor = loc.floor !== undefined ? String(loc.floor).toUpperCase() : "G";
+    const targetFloor = rawFloor.startsWith("B") ? rawFloor : (rawFloor === "G" || rawFloor === "0" || rawFloor === "GROUND" ? "G" : rawFloor);
 
     // Set destination for the red pin marker in CampusMap
     setDestination(loc);
@@ -2728,12 +2728,12 @@ function MainApp() {
                   background: 'rgba(255, 255, 255, 0.96)', border: '1px solid rgba(0, 0, 0, 0.08)',
                   borderRadius: '9999px', padding: '0 20px 0 16px', height: 52, display: 'flex',
                   alignItems: 'center', gap: 10, cursor: 'pointer',
-                  boxShadow: '0 8px 24px rgba(0, 0, 0, 0.10)', backdropFilter: 'blur(16px)',
-                  color: '#0f294a', transition: 'all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1)'
+                  boxShadow: '0 8px 24px rgba(0, 0, 0, 0.10)', 
+                  color: '#1A1A1A', transition: 'all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1)'
                 }}
               >
-                <Home size={20} color="#0f294a" strokeWidth={2.4} />
-                <span style={{ fontWeight: 800, fontSize: '15px', letterSpacing: '0.3px', color: '#0f294a' }}>Home</span>
+                <Home size={20} color="#1A1A1A" strokeWidth={2.4} />
+                <span style={{ fontWeight: 800, fontSize: '15px', letterSpacing: '0.3px', color: '#1A1A1A' }}>Home</span>
               </button>
 
               {/* Top Right: Time Pill */}
@@ -2744,7 +2744,7 @@ function MainApp() {
                   display: 'flex', alignItems: 'center', gap: '10px',
                   background: 'rgba(255, 255, 255, 0.96)', border: '1px solid rgba(0, 0, 0, 0.08)',
                   borderRadius: '9999px', padding: '0 18px', height: 52,
-                  boxShadow: '0 8px 24px rgba(0, 0, 0, 0.10)', backdropFilter: 'blur(16px)',
+                  boxShadow: '0 8px 24px rgba(0, 0, 0, 0.10)', 
                 }}
               >
                 <div style={{ display: 'flex', alignItems: 'center', gap: 6, paddingRight: 8, borderRight: '1px solid #e2e8f0' }}>
@@ -2752,8 +2752,8 @@ function MainApp() {
                   <span style={{ color: '#15803d', fontWeight: 800, fontSize: '11.5px', letterSpacing: '0.06em' }}>LIVE MAP</span>
                 </div>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-                  <Clock size={18} color="#0f294a" strokeWidth={2.4} />
-                  <span style={{ color: '#0f294a', fontWeight: 800, fontSize: '16px', letterSpacing: '0.5px' }}>{currentTime}</span>
+                  <Clock size={18} color="#1A1A1A" strokeWidth={2.4} />
+                  <span style={{ color: '#1A1A1A', fontWeight: 800, fontSize: '16px', letterSpacing: '0.5px' }}>{currentTime}</span>
                 </div>
               </div>
 
@@ -2775,12 +2775,12 @@ function MainApp() {
                     padding: '0 20px 0 14px',
                     height: 50,
                     boxShadow: '0 12px 32px rgba(0, 0, 0, 0.12)',
-                    backdropFilter: 'blur(16px)',
+                    
                     animation: 'kioskPanelSlideIn 0.3s cubic-bezier(0.16, 1, 0.3, 1)'
                   }}
                 >
-                  <div style={{ width: 32, height: 32, borderRadius: '50%', background: '#dcfce7', display: 'flex', alignItems: 'center', justifyContent: 'center', border: '1.5px solid #bbf7d0' }}>
-                    <MapPin size={16} color="#15803d" />
+                  <div style={{ width: 32, height: 32, borderRadius: '50%', background: '#F3F4F6', display: 'flex', alignItems: 'center', justifyContent: 'center', border: '1.5px solid #E5E7EB' }}>
+                    <MapPin size={16} color="#1A1A1A" />
                   </div>
                   <div style={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
                     <span style={{ color: '#64748b', fontSize: 10, fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.06em' }}>Selected Destination</span>
@@ -3227,7 +3227,7 @@ function MainApp() {
 
         <Suspense fallback={
           <div className="absolute inset-0 flex flex-col items-center justify-center bg-gray-50 text-gray-500 font-semibold z-1300">
-            <div className="w-10 h-10 border-4 border-blue-500 border-t-transparent rounded-full animate-spin mb-4"></div>
+            <div className="w-10 h-10 border-4 border-[#1A1A1A] border-t-transparent rounded-full animate-spin mb-4"></div>
             Loading Map View...
           </div>
         }>
@@ -3315,8 +3315,8 @@ function MainApp() {
               border: "none",
               cursor: "pointer",
               background: "rgba(255,255,255,0.97)",
-              backdropFilter: "blur(12px)",
-              WebkitBackdropFilter: "blur(12px)",
+              
+              
               boxShadow: "0 4px 20px rgba(0,0,0,0.18), 0 1px 4px rgba(0,0,0,0.08)",
               display: "flex",
               flexDirection: "column",
@@ -3521,8 +3521,8 @@ function MainApp() {
               right: 16,
               zIndex: 1600,
               background: 'rgba(255, 255, 255, 0.98)',
-              backdropFilter: 'blur(16px)',
-              WebkitBackdropFilter: 'blur(16px)',
+              
+              
               borderRadius: 20,
               padding: '20px 20px 18px',
               boxShadow: '0 12px 36px rgba(0, 0, 0, 0.18), 0 2px 8px rgba(0, 0, 0, 0.08)',
@@ -4017,11 +4017,11 @@ function isIndoorDestination(destination) {
     destination.routeNode === "chavara";
 
   if (isStMarys || isChavara) {
-    return Boolean(destination.floor || destination.indoorNode || destination.room);
+    return Boolean(destination.floor !== undefined || destination.indoorNode || destination.room);
   }
 
-  const f = destination.floor ? destination.floor.toString().toUpperCase() : "";
-  return f.startsWith("B2") || f.startsWith("B1") || f.startsWith("G") || /^[1-6]/.test(f);
+  const f = destination.floor !== undefined ? destination.floor.toString().toUpperCase() : "";
+  return f.startsWith("B2") || f.startsWith("B1") || f.startsWith("G") || f === "0" || /^[1-6]/.test(f);
 }
 
 function getStairNodeForBuilding(currentFloor, destinationFloor, building) {

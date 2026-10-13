@@ -28,7 +28,7 @@
 
     background: #ffffff;
     border: 1px solid #dadce0; /* Google layout border token */
-    border-radius: 20px; /* Google shifted away from pill capsules to modern 8px rounded corners */
+    border-radius: 9999px; /* pill shape to match design theme */
 
     padding: 8px 14px; /* better touch-friendly padding */
 
@@ -57,17 +57,16 @@
     color: #202124;
 }
 
-/* Authentic Google Blue Active State for Filters */
-/* Authentic Google Active State with Enhanced High-Contrast Selection Color */
+/* Obsidian Active State */
 .chip.active {
-    color: #6eb4ed;             /* High-contrast white text */
-    background: hwb(220 9% 32%);        /* Google Dark Charcoal (or use #0f9d58 for Google Green) */
-    border-color: #202124;      /* Solid boundary fill */
-    box-shadow: 0 1px 3px 0 rgba(60,64,67,0.3), 0 4px 8px 3px rgba(60,64,67,0.15);
+    color: #FFFFFF;
+    background: #1A1A1A;
+    border-color: #1A1A1A;
+    box-shadow: 0 1px 3px 0 rgba(0,0,0,0.3), 0 4px 8px 3px rgba(0,0,0,0.12);
 }
 
 /* Subtle feedback when hovering over an already active chip */
 .chip.active:hover {
-    background-color: #303134;  /* Slightly lighter charcoal phase */
-    border-color: #303134;
+    background-color: #333333;
+    border-color: #333333;
 }

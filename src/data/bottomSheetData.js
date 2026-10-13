@@ -3,8 +3,11 @@ export const bottomSheetData = {
     {
       id: 1,
       name: "Computer Science",
+      code: "CS",
+      shortName: "CS",
+      icon: "Monitor",
       faculties: [
-                { name: "Dr. Dincy R Arikkat", designation: "Faculty", room: "St Chavara Block 5th Floor", floor: "5th Floor", building: "chavara", hasIndoorNavigation: true, routeNode: "chavara", indoorNode: "F501" },
+        { name: "Dr. Dincy R Arikkat", designation: "Faculty", room: "St Chavara Block 5th Floor", floor: "5th Floor", building: "chavara", hasIndoorNavigation: true, routeNode: "chavara", indoorNode: "F501" },
         { name: "Ms. Sincy Abraham", designation: "Faculty", room: "St Chavara Block 5th Floor", floor: "5th Floor", building: "chavara", hasIndoorNavigation: true, routeNode: "chavara", indoorNode: "F501" },
         { name: "Ms. Arya MA", designation: "Faculty", room: "St Chavara Block 5th Floor", floor: "5th Floor", building: "chavara", hasIndoorNavigation: true, routeNode: "chavara", indoorNode: "F501" },
         { name: "Mr. Sanjay Santhosh", designation: "Faculty", room: "St Chavara Block 5th Floor", floor: "5th Floor", building: "chavara", hasIndoorNavigation: true, routeNode: "chavara", indoorNode: "F501" },
@@ -23,7 +26,7 @@ export const bottomSheetData = {
         { name: "Dr. Savitha K K", designation: "Faculty", room: "St Chavara Block 5th Floor", floor: "5th Floor", building: "chavara", hasIndoorNavigation: true, routeNode: "chavara", indoorNode: "F501" },
         { name: "Ms. Biya Bijoy", designation: "Faculty", room: "St Chavara Block 5th Floor", floor: "5th Floor", building: "chavara", hasIndoorNavigation: true, routeNode: "chavara", indoorNode: "F501" },
         { name: "Mr. Midhun K S", designation: "Faculty", room: "St Chavara Block 5th Floor", floor: "5th Floor", building: "chavara", hasIndoorNavigation: true, routeNode: "chavara", indoorNode: "F501" },
-{ name: "Dr. SOORAJ T R", designation: "HOD", room: "St Chavara Block 5th Floor", floor: "5th Floor", building: "chavara", hasIndoorNavigation: true, routeNode: "chavara", indoorNode: "F501" },
+        { name: "Dr. SOORAJ T R", designation: "HOD", room: "St Chavara Block 5th Floor", floor: "5th Floor", building: "chavara", hasIndoorNavigation: true, routeNode: "chavara", indoorNode: "F501" },
         { name: "Ms. IRIS JOSE", designation: "Faculty", room: "St Chavara Block 5th Floor", floor: "5th Floor", building: "chavara", hasIndoorNavigation: true, routeNode: "chavara", indoorNode: "F501" },
         { name: "Ms. JASMINE JOLLY", designation: "Faculty", room: "St Chavara Block 5th Floor", floor: "5th Floor", building: "chavara", hasIndoorNavigation: true, routeNode: "chavara", indoorNode: "F501" },
         { name: "Mr. PRASANTH K BABY", designation: "Faculty", room: "St Chavara Block 5th Floor", floor: "5th Floor", building: "chavara", hasIndoorNavigation: true, routeNode: "chavara", indoorNode: "F501" },
@@ -68,10 +71,13 @@ export const bottomSheetData = {
     {
       id: 2,
       name: "Mechanical Engineering",
+      code: "ME",
+      shortName: "ME",
+      icon: "Wrench",
       faculties: [
-                { name: "Dr. Ananthan D Thampi", designation: "Faculty", room: "B400", floor: "F1", building: "stmarys", hasIndoorNavigation: true, routeNode: "stmarys", indoorNode: "B400" },
+        { name: "Dr. Ananthan D Thampi", designation: "Faculty", room: "B400", floor: "F1", building: "stmarys", hasIndoorNavigation: true, routeNode: "stmarys", indoorNode: "B400" },
         { name: "Mr. Nikhil Babu P", designation: "Faculty", room: "B400", floor: "F1", building: "stmarys", hasIndoorNavigation: true, routeNode: "stmarys", indoorNode: "B400" },
-{ name: "Dr. VISWANATH K KAIMAL", designation: "HOD", room: "N400", floor: "F1", building: "stmarys", hasIndoorNavigation: true, routeNode: "g", indoorNode: "N400" },
+        { name: "Dr. VISWANATH K KAIMAL", designation: "HOD", room: "N400", floor: "F1", building: "stmarys", hasIndoorNavigation: true, routeNode: "g", indoorNode: "N400" },
         { name: "Dr. MANOJ GEORGE", designation: "Faculty", room: "N400", floor: "F1", building: "stmarys", hasIndoorNavigation: true, routeNode: "g", indoorNode: "N400" },
         { name: "Dr. ARUN AUGUSTIN", designation: "Faculty", room: "N400", floor: "F1", building: "stmarys", hasIndoorNavigation: true, routeNode: "g", indoorNode: "N400" },
         { name: "Mr. REYNOLD JOSE", designation: "Faculty", room: "N400", floor: "F1", building: "stmarys", hasIndoorNavigation: true, routeNode: "g", indoorNode: "N400" },
@@ -93,6 +99,9 @@ export const bottomSheetData = {
     {
       id: 3,
       name: "Electrical and Electronics Engineering",
+      code: "EEE",
+      shortName: "EEE",
+      icon: "Zap",
       faculties: [
         { name: "Dr. Meenakshy K", designation: "HOD", room: "N401", floor: "1st Floor", building: "stmarys", hasIndoorNavigation: true, routeNode: "stmarys_entrance", indoorNode: "N401" },
         { name: "Dr. Needhu Varghese", designation: "Faculty", room: "N401", floor: "1st Floor", building: "stmarys", hasIndoorNavigation: true, routeNode: "stmarys_entrance", indoorNode: "N401" },
@@ -118,9 +127,12 @@ export const bottomSheetData = {
     {
       id: 4,
       name: "Civil Engineering",
+      code: "CE",
+      shortName: "CE",
+      icon: "Landmark",
       floor: "1st Floor",
-      faculties: [        { name: "Mr. Adarsh R", designation: "Faculty", room: "N411", floor: "F1", building: "stmarys", hasIndoorNavigation: true, routeNode: "stmarys", indoorNode: "N411" },
-
+      faculties: [
+        { name: "Mr. Adarsh R", designation: "Faculty", room: "N411", floor: "F1", building: "stmarys", hasIndoorNavigation: true, routeNode: "stmarys", indoorNode: "N411" },
         { name: "Dr. SHERJAH P YUSUF", designation: "HOD", room: "N411", floor: "1st Floor", building: "stmarys", hasIndoorNavigation: true, routeNode: "stmarys_entrance", indoorNode: "N411" },
         { name: "Dr. KRISHNAPRIYA M G", designation: "Faculty", room: "N411", floor: "1st Floor", building: "stmarys", hasIndoorNavigation: true, routeNode: "stmarys_entrance", indoorNode: "N411" },
         { name: "Dr. JINO JOHN", designation: "Faculty", room: "N411", floor: "1st Floor", building: "stmarys", hasIndoorNavigation: true, routeNode: "stmarys_entrance", indoorNode: "N411" },
@@ -142,10 +154,13 @@ export const bottomSheetData = {
     {
       id: 5,
       name: "Electrical and Communication Engineering",
+      code: "ECE",
+      shortName: "ECE",
+      icon: "Radio",
       floor: "2nd Floor",
-      faculties: [        { name: "Dr. Krishna Kumar S", designation: "Faculty", room: "N216", floor: "B1", building: "stmarys", hasIndoorNavigation: true, routeNode: "stmarys", indoorNode: "N216" },
+      faculties: [
+        { name: "Dr. Krishna Kumar S", designation: "Faculty", room: "N216", floor: "B1", building: "stmarys", hasIndoorNavigation: true, routeNode: "stmarys", indoorNode: "N216" },
         { name: "Mr. G Prashant", designation: "Faculty", room: "N216", floor: "B1", building: "stmarys", hasIndoorNavigation: true, routeNode: "stmarys", indoorNode: "N216" },
-
         { name: "Dr. KRISHNA KUMAR S", designation: "HOD", room: "N216", floor: "B1", building: "stmarys", hasIndoorNavigation: true, routeNode: "stmarys", indoorNode: "N216" },
         { name: "Dr. CAREN BABU", designation: "Faculty", room: "N216", floor: "B1", building: "stmarys", hasIndoorNavigation: true, routeNode: "stmarys", indoorNode: "N216" },
         { name: "Ms. SREELEKHA T", designation: "Faculty", room: "N216", floor: "B1", building: "stmarys", hasIndoorNavigation: true, routeNode: "stmarys", indoorNode: "N216" },
@@ -168,14 +183,17 @@ export const bottomSheetData = {
     {
       id: 6,
       name: "Basic Science and Humanities",
+      code: "BSH",
+      shortName: "BSH",
+      icon: "GraduationCap",
       floor: "1st Floor",
-      faculties: [        { name: "Ms. Anjana Krishna P T", designation: "Faculty", room: "St Chavara Block 1st Floor", floor: "1st Floor", building: "chavara", hasIndoorNavigation: true, routeNode: "chavara", indoorNode: "F101" },
+      faculties: [
+        { name: "Ms. Anjana Krishna P T", designation: "Faculty", room: "St Chavara Block 1st Floor", floor: "1st Floor", building: "chavara", hasIndoorNavigation: true, routeNode: "chavara", indoorNode: "F101" },
         { name: "Dr. Devika S Mohan", designation: "Faculty", room: "St Chavara Block 1st Floor", floor: "1st Floor", building: "chavara", hasIndoorNavigation: true, routeNode: "chavara", indoorNode: "F101" },
         { name: "Ms. Suryagayatri", designation: "Faculty", room: "St Chavara Block 1st Floor", floor: "1st Floor", building: "chavara", hasIndoorNavigation: true, routeNode: "chavara", indoorNode: "F101" },
         { name: "Dr. Sajitha V R", designation: "Faculty", room: "St Chavara Block 1st Floor", floor: "1st Floor", building: "chavara", hasIndoorNavigation: true, routeNode: "chavara", indoorNode: "F101" },
         { name: "Ms. Anjali Joby", designation: "Faculty", room: "St Chavara Block 1st Floor", floor: "1st Floor", building: "chavara", hasIndoorNavigation: true, routeNode: "chavara", indoorNode: "F101" },
         { name: "Ms. Aswathy Nair M S", designation: "Faculty", room: "St Chavara Block 1st Floor", floor: "1st Floor", building: "chavara", hasIndoorNavigation: true, routeNode: "chavara", indoorNode: "F101" },
-
         { name: "Dr. Saju M I", designation: "HOD", room: "F101", floor: "1st Floor", building: "chavara", hasIndoorNavigation: true, routeNode: "chavara", indoorNode: "F101" },
         { name: "Ms. Reena C G", designation: "Faculty", room: "F101", floor: "1st Floor", building: "chavara", hasIndoorNavigation: true, routeNode: "chavara", indoorNode: "F101" },
         { name: "Mr. Hingston Xavier", designation: "Faculty", room: "F101", floor: "1st Floor", building: "chavara", hasIndoorNavigation: true, routeNode: "chavara", indoorNode: "F101" },
@@ -198,6 +216,9 @@ export const bottomSheetData = {
     {
       id: 7,
       name: "Master of Business Administration (MBA)",
+      code: "MBA",
+      shortName: "MBA",
+      icon: "Briefcase",
       faculties: [
         { name: "Dr. Gopesh C R", designation: "HOD", room: "N502", floor: "F2", building: "stmarys", hasIndoorNavigation: true, routeNode: "stmarys_entrance", indoorNode: "N502" },
         { name: "Dr. Sneha John P", designation: "Faculty", room: "N502", floor: "F2", building: "stmarys", hasIndoorNavigation: true, routeNode: "stmarys_entrance", indoorNode: "N502" },
@@ -212,10 +233,13 @@ export const bottomSheetData = {
     {
       id: 8,
       name: "Administration",
+      code: "ADMIN",
+      shortName: "ADMIN",
+      icon: "Building2",
       faculties: [
-                { name: "Ms. Sreekala T", designation: "Administration", room: "Principal Room", floor: "G", building: "stmarys", hasIndoorNavigation: true, routeNode: "g", indoorNode: "N314" },
+        { name: "Ms. Sreekala T", designation: "Administration", room: "Principal Room", floor: "G", building: "stmarys", hasIndoorNavigation: true, routeNode: "g", indoorNode: "N314" },
         { name: "Dr. Soloman P A", designation: "Administration", room: "Principal Room", floor: "G", building: "stmarys", hasIndoorNavigation: true, routeNode: "g", indoorNode: "N314" },
-{ name: "John V.D", designation: "Administration", room: "Principal Room", floor: "G", building: "stmarys", hasIndoorNavigation: true, routeNode: "g", indoorNode: "N314" },
+        { name: "John V.D", designation: "Administration", room: "Principal Room", floor: "G", building: "stmarys", hasIndoorNavigation: true, routeNode: "g", indoorNode: "N314" },
         { name: "Sajeev John", designation: "Administration", room: "Office Room", floor: "G", building: "stmarys", hasIndoorNavigation: true, routeNode: "g", indoorNode: "N319" },
         { name: "Sijo M T", designation: "Administration", room: "Office Room", floor: "G", building: "stmarys", hasIndoorNavigation: true, routeNode: "g", indoorNode: "N319" }
       ],

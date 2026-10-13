@@ -180,7 +180,7 @@ export default function FacultyManager() {
 
         <div className="overflow-y-auto overflow-x-auto flex-1 custom-scrollbar">
           <table className="w-full text-left border-collapse min-w-[800px]">
-            <thead className="sticky top-0 bg-white/95 backdrop-blur-sm z-10 shadow-[0_1px_2px_rgba(0,0,0,0.02)]">
+            <thead className="sticky top-0 bg-white  z-10 shadow-[0_1px_2px_rgba(0,0,0,0.02)]">
               <tr className="text-slate-500 text-xs uppercase tracking-widest">
                 <th className="p-5 font-bold">Name & Title</th>
                 <th className="p-5 font-bold">Department</th>
@@ -212,7 +212,7 @@ export default function FacultyManager() {
               }
 
               return filteredFaculties.map((fac) => (
-                <tr key={fac.id} className="hover:bg-slate-50/50 transition-colors group">
+                <tr key={fac.id} className="hover:bg-slate-50 transition-colors group">
                   <td className="p-5">
                     <div className="font-bold text-slate-800">{fac.name}</div>
                     <div className="text-sm font-medium text-blue-600 mt-0.5">{fac.designation}</div>
@@ -253,7 +253,7 @@ export default function FacultyManager() {
       </div>
 
       {isFormOpen && (
-        <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-50 flex items-center justify-end md:p-4 animate-in fade-in">
+        <div className="fixed inset-0 bg-slate-900  z-50 flex items-center justify-end md:p-4 animate-in fade-in">
           <div className="bg-white w-full max-w-md h-full md:rounded-3xl rounded-none shadow-2xl flex flex-col overflow-hidden animate-in slide-in-from-right-8 duration-300">
             <div className="p-6 border-b border-slate-100 flex justify-between items-center bg-white z-10 shadow-sm">
               <h2 className="text-xl font-extrabold text-slate-800">

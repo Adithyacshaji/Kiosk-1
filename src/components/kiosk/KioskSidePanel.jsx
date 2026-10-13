@@ -40,28 +40,29 @@ function formatBuilding(building) {
 }
 
 function getCategoryMeta(destination) {
-  if (!destination) return { icon: MapPin, color: '#0284c7', bg: '#e0f2fe', border: '#7dd3fc' };
+  const defaultMeta = { icon: MapPin, color: '#1A1A1A', bg: '#F3F4F6', border: '#E5E7EB' };
+  if (!destination) return defaultMeta;
 
   const type = (destination.type || '').toLowerCase();
   const name = (destination.name || '').toLowerCase();
   const cat = (destination.category || '').toLowerCase();
 
   if (type === 'faculty' || cat === 'faculty') {
-    return { icon: User, color: '#16a34a', bg: '#dcfce7', border: '#86efac' };
+    return { icon: User, color: '#1A1A1A', bg: '#F3F4F6', border: '#E5E7EB' };
   }
   if (type === 'classroom' || cat === 'classrooms' || name.includes('class') || name.includes('hall') || name.includes('room')) {
-    return { icon: GraduationCap, color: '#2563eb', bg: '#dbeafe', border: '#93c5fd' };
+    return { icon: GraduationCap, color: '#1A1A1A', bg: '#F3F4F6', border: '#E5E7EB' };
   }
   if (name.includes('lab') || name.includes('computer') || name.includes('hardware')) {
-    return { icon: Monitor, color: '#0d9488', bg: '#ccfbf1', border: '#5eead4' };
+    return { icon: Monitor, color: '#1A1A1A', bg: '#F3F4F6', border: '#E5E7EB' };
   }
   if (name.includes('canteen') || name.includes('cafe') || name.includes('cafeteria') || cat === 'cafeteria') {
-    return { icon: Utensils, color: '#d97706', bg: '#fef3c7', border: '#fde68a' };
+    return { icon: Utensils, color: '#1A1A1A', bg: '#F3F4F6', border: '#E5E7EB' };
   }
   if (type === 'building' || cat === 'buildings') {
-    return { icon: Building2, color: '#0284c7', bg: '#e0f2fe', border: '#7dd3fc' };
+    return { icon: Building2, color: '#1A1A1A', bg: '#F3F4F6', border: '#E5E7EB' };
   }
-  return { icon: MapPin, color: '#0284c7', bg: '#e0f2fe', border: '#7dd3fc' };
+  return defaultMeta;
 }
 
 /**
@@ -77,6 +78,8 @@ export function KioskSidePanel({
   onBackToInfo,
   isIndoorDest = false,
   theme = 'light',
+  isMobileCollapsed,
+  setIsMobileCollapsed,
 }) {
   if (!destination) return null;
 
@@ -141,7 +144,7 @@ export function KioskSidePanel({
           <div className="kiosk-panel-info-rows-list">
             {buildingName && (
               <div className="kiosk-info-row-card kiosk-card-building">
-                <div className="kiosk-info-row-icon-wrap" style={{ background: '#eff6ff', color: '#2563eb' }}>
+                <div className="kiosk-info-row-icon-wrap" style={{ background: '#F3F4F6', color: '#1A1A1A' }}>
                   <Building2 size={20} />
                 </div>
                 <div className="kiosk-info-row-details">
@@ -153,7 +156,7 @@ export function KioskSidePanel({
 
             {floorLabel && (
               <div className="kiosk-info-row-card kiosk-card-floor">
-                <div className="kiosk-info-row-icon-wrap" style={{ background: '#f0fdf4', color: '#16a34a' }}>
+                <div className="kiosk-info-row-icon-wrap" style={{ background: '#F3F4F6', color: '#1A1A1A' }}>
                   <Layers size={20} />
                 </div>
                 <div className="kiosk-info-row-details">
@@ -165,7 +168,7 @@ export function KioskSidePanel({
 
             {roomId && (
               <div className="kiosk-info-row-card kiosk-card-room">
-                <div className="kiosk-info-row-icon-wrap" style={{ background: '#fffbeb', color: '#d97706' }}>
+                <div className="kiosk-info-row-icon-wrap" style={{ background: '#F3F4F6', color: '#1A1A1A' }}>
                   <MapPin size={20} />
                 </div>
                 <div className="kiosk-info-row-details">
@@ -199,7 +202,7 @@ export function KioskSidePanel({
           )}
 
           <button className="kiosk-btn-new-search" onClick={onReset}>
-            <RotateCcw size={16} color="#2563eb" />
+            <RotateCcw size={16} color="#1A1A1A" />
             <span>Search Another Location</span>
           </button>
         </div>
@@ -243,9 +246,9 @@ export function KioskSidePanel({
           <ArrowLeft size={16} />
           <span>Back to Route Overview</span>
         </button>
-        <button className="kiosk-btn-reset-light" onClick={onReset}>
-          <RotateCcw size={16} />
-          <span>New Search</span>
+        <button className="kiosk-btn-new-search" style={{ marginTop: 4 }} onClick={onReset}>
+          <RotateCcw size={16} color="#1A1A1A" />
+          <span style={{ color: '#1A1A1A' }}>Search Another Location</span>
         </button>
       </div>
     </div>
@@ -254,6 +257,19 @@ export function KioskSidePanel({
   // ── Render container ──────────────────────────────────────────────────────────
   return (
     <aside className={`kiosk-side-panel theme-${theme}`}>
+      {/* Mobile drag handle / collapse toggle (visible only via CSS on mobile) */}
+      <div 
+        className="kiosk-mobile-handle" 
+        onClick={() => setIsMobileCollapsed && setIsMobileCollapsed(!isMobileCollapsed)}
+      >
+        <div className="kiosk-mobile-handle-bar" />
+        {isMobileCollapsed && (
+          <span className="kiosk-mobile-handle-text">
+            {destination?.name || 'Selected Destination'} (Tap to expand)
+          </span>
+        )}
+      </div>
+      
       <div className="kiosk-side-panel-scroll">
         {viewState === 'split-indoor' ? renderIndoor() : renderInfo()}
       </div>

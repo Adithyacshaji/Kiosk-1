@@ -284,14 +284,14 @@ function makeUserIcon(heading) {
               <path d="M 50,100 L 15,10 A 40,40 0 0,1 85,10 Z" fill="url(#beamGradient)"/>
               <defs>
                 <linearGradient id="beamGradient" x1="0.5" y1="1" x2="0.5" y2="0">
-                  <stop offset="0%" stop-color="#2563EB" stop-opacity="0.45"/>
-                  <stop offset="100%" stop-color="#2563EB" stop-opacity="0"/>
+                  <stop offset="0%" stop-color="#3B82F6" stop-opacity="0.45"/>
+                  <stop offset="100%" stop-color="#3B82F6" stop-opacity="0"/>
                 </linearGradient>
               </defs>
             </svg>
           </div>
         ` : ""}
-        <div class="relative w-5 h-5 bg-primary border-[3px] border-white rounded-full shadow-[0_2px_10px_rgb(37,99,235,0.5)] z-2 flex items-center justify-center">
+        <div class="relative w-5 h-5 bg-[#3B82F6] border-[3px] border-white rounded-full shadow-md z-2 flex items-center justify-center">
           ${hasHeading ? `<div class="user-heading-arrow" style="transform: rotate(${heading}deg)">&#9650;</div>` : ""}
         </div>
       </div>
@@ -840,17 +840,20 @@ function CampusMap({
               String(destination.floor).toUpperCase() === String(currentFloor).toUpperCase() ||
               String(destFloorNorm).toUpperCase() === String(currentFloor).toUpperCase();
             const targetNode = activeIndoorNodes[targetNodeId] || activeIndoorNodes[destination.id];
+            
+            const hasLat = typeof destination.lat === 'number' && typeof destination.lng === 'number';
+            const position = targetNode?.position ? targetNode.position : (hasLat ? [destination.lat, destination.lng] : null);
 
-            if (isMatchingFloor && targetNode?.position) {
+            if (isMatchingFloor && position) {
               return (
                 <Marker
                   key={`indoor-dest-${targetNodeId}-${currentFloor}`}
-                  position={targetNode.position}
+                  position={position}
                   icon={indoorDestinationIcon}
                   zIndexOffset={900}
                 >
                   <Popup>
-                    <strong>{destination.name}</strong>
+                    <strong>{destination.name || destination.className || destination.roomNumber}</strong>
                   </Popup>
                 </Marker>
               );
@@ -1016,13 +1019,15 @@ function MapZoomManager({
         String(destFloorNorm).toUpperCase() === String(currentFloor).toUpperCase()
       );
       const targetNode = isMatchingFloor ? (activeIndoorNodes[targetNodeId] || activeIndoorNodes[destination?.id]) : null;
+      const hasLat = typeof destination?.lat === 'number' && typeof destination?.lng === 'number';
+      const destPos = targetNode?.position ? targetNode.position : (hasLat && isMatchingFloor ? [destination.lat, destination.lng] : null);
 
       let targetCenter = floorBounds.getCenter();
-      if (targetNode?.position) {
+      if (destPos) {
         // Bias center slightly towards destination (35% towards target, 65% floor center)
         targetCenter = [
-          targetCenter.lat * 0.65 + targetNode.position[0] * 0.35,
-          targetCenter.lng * 0.65 + targetNode.position[1] * 0.35,
+          targetCenter.lat * 0.65 + destPos[0] * 0.35,
+          targetCenter.lng * 0.65 + destPos[1] * 0.35,
         ];
       }
 
@@ -1352,7 +1357,7 @@ function CustomMapControls({ mapMode, currentLocation, onMyLocationClick, hasBot
       <div 
         className="absolute right-6 bottom-8 z-1400 pointer-events-none transition-all duration-300 flex flex-col items-center gap-4"
       >
-        <div className="pointer-events-auto flex flex-col bg-white/95 backdrop-blur-md rounded-[20px] shadow-[0_4px_20px_rgba(0,0,0,0.15)] border border-gray-100 overflow-hidden">
+        <div className="pointer-events-auto flex flex-col bg-white  rounded-[20px] shadow-[0_8px_24px_rgba(0,0,0,0.10)] border border-gray-100 overflow-hidden">
           <button
             onClick={(e) => { e.preventDefault(); map.zoomIn(0.5); }}
             className="w-12 h-11 flex items-center justify-center cursor-pointer hover:bg-gray-50 active:bg-gray-100 transition-colors text-gray-800 border-b border-gray-100 text-[24px] font-normal"
@@ -1399,13 +1404,13 @@ function CustomMapControls({ mapMode, currentLocation, onMyLocationClick, hasBot
               doRecenter();
             }
           }}
-          className="pointer-events-auto bg-white/95 backdrop-blur-md w-11 h-11 rounded-full shadow-[0_4px_16px_rgb(0,0,0,0.1)] border border-gray-100 flex items-center justify-center cursor-pointer hover:bg-gray-50 transition-colors text-gray-700"
+          className="pointer-events-auto bg-white  w-11 h-11 rounded-full shadow-[0_8px_24px_rgba(0,0,0,0.10)] border border-gray-100 flex items-center justify-center cursor-pointer hover:bg-gray-50 transition-colors text-gray-700"
           title="My Location"
         >
           <div className="w-4.5 h-4.5 rounded-full border-2 border-gray-700 relative flex items-center justify-center"><div className="w-1.5 h-1.5 bg-gray-700 rounded-full"></div></div>
         </button>
 
-        <div className="pointer-events-auto flex flex-col bg-white/95 backdrop-blur-md rounded-[20px] shadow-[0_4px_16px_rgb(0,0,0,0.1)] border border-gray-100 overflow-hidden">
+        <div className="pointer-events-auto flex flex-col bg-white  rounded-[20px] shadow-[0_8px_24px_rgba(0,0,0,0.10)] border border-gray-100 overflow-hidden">
           <button
             onClick={(e) => { e.preventDefault(); map.zoomIn(); }}
             className="w-11 h-10.5 flex items-center justify-center cursor-pointer hover:bg-gray-50 transition-colors text-gray-700 border-b border-gray-100 text-[22px] font-light"
@@ -1431,9 +1436,9 @@ function CustomMapControls({ mapMode, currentLocation, onMyLocationClick, hasBot
             border: "none",
             cursor: "pointer",
             background: "rgba(255,255,255,0.97)",
-            backdropFilter: "blur(12px)",
-            WebkitBackdropFilter: "blur(12px)",
-            boxShadow: "0 4px 20px rgba(0,0,0,0.18), 0 1px 4px rgba(0,0,0,0.08)",
+            
+            
+            boxShadow: "0 8px 24px rgba(0,0,0,0.10)",
             display: "flex",
             flexDirection: "column",
             alignItems: "center",
@@ -1444,15 +1449,15 @@ function CustomMapControls({ mapMode, currentLocation, onMyLocationClick, hasBot
           }}
           onMouseEnter={(e) => {
             e.currentTarget.style.transform = "scale(1.08)";
-            e.currentTarget.style.boxShadow = "0 6px 24px rgba(0,0,0,0.22), 0 2px 6px rgba(0,0,0,0.1)";
+            e.currentTarget.style.boxShadow = "0 12px 32px rgba(0,0,0,0.12)";
           }}
           onMouseLeave={(e) => {
             e.currentTarget.style.transform = "scale(1)";
-            e.currentTarget.style.boxShadow = "0 4px 20px rgba(0,0,0,0.18), 0 1px 4px rgba(0,0,0,0.08)";
+            e.currentTarget.style.boxShadow = "0 8px 24px rgba(0,0,0,0.10)";
           }}
         >
-          <Building size={20} color="#059669" strokeWidth={2.2} />
-          <span style={{ fontSize: 9, fontWeight: 700, color: "#059669", letterSpacing: 0.2 }}>
+          <Building size={20} color="#1A1A1A" strokeWidth={2.2} />
+          <span style={{ fontSize: 9, fontWeight: 800, color: "#1A1A1A", letterSpacing: 0.2 }}>
             Indoor
           </span>
         </button>

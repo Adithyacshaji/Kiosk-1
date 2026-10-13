@@ -55,13 +55,13 @@ export default function ControlPanel() {
       {/* Mobile Sidebar Overlay Backdrop */}
       {isSidebarOpen && (
         <div 
-          className="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-30 md:hidden"
+          className="fixed inset-0 bg-slate-900  z-30 md:hidden"
           onClick={() => setIsSidebarOpen(false)}
         />
       )}
 
       {/* Sidebar - Premium Glassmorphism */}
-      <aside className={`fixed inset-y-0 left-0 w-72 bg-white/90 backdrop-blur-xl border-r border-slate-200/60 flex flex-col shadow-[4px_0_24px_rgba(0,0,0,0.02)] z-40 transition-transform duration-300 md:relative md:translate-x-0 md:flex ${
+      <aside className={`fixed inset-y-0 left-0 w-72 bg-white  border-r border-slate-200/60 flex flex-col shadow-[4px_0_24px_rgba(0,0,0,0.02)] z-40 transition-transform duration-300 md:relative md:translate-x-0 md:flex ${
         isSidebarOpen ? "translate-x-0" : "-translate-x-full"
       }`}>
         <div className="p-8 border-b border-slate-100/50 text-center relative overflow-hidden">
@@ -87,7 +87,7 @@ export default function ControlPanel() {
             className={`flex items-center gap-3 px-4 py-3.5 rounded-xl transition-all duration-200 group ${
               location.pathname === "/admin/dashboard" || location.pathname === "/admin/dashboard/"
                 ? "bg-blue-600 text-white shadow-md shadow-blue-600/20"
-                : "text-slate-600 hover:bg-slate-100/80 hover:text-slate-900"
+                : "text-slate-600 hover:bg-slate-100 hover:text-slate-900"
             }`}
           >
             <Building size={20} className={location.pathname === "/admin/dashboard" || location.pathname === "/admin/dashboard/" ? "text-white" : "text-slate-400 group-hover:text-blue-600 transition-colors"} />
@@ -99,7 +99,7 @@ export default function ControlPanel() {
             className={`flex items-center gap-3 px-4 py-3.5 rounded-xl transition-all duration-200 group ${
               location.pathname.includes("/faculties")
                 ? "bg-blue-600 text-white shadow-md shadow-blue-600/20"
-                : "text-slate-600 hover:bg-slate-100/80 hover:text-slate-900"
+                : "text-slate-600 hover:bg-slate-100 hover:text-slate-900"
             }`}
           >
             <Users size={20} className={location.pathname.includes("/faculties") ? "text-white" : "text-slate-400 group-hover:text-blue-600 transition-colors"} />
@@ -111,7 +111,7 @@ export default function ControlPanel() {
             className={`flex items-center gap-3 px-4 py-3.5 rounded-xl transition-all duration-200 group ${
               location.pathname.includes("/nodes")
                 ? "bg-blue-600 text-white shadow-md shadow-blue-600/20"
-                : "text-slate-600 hover:bg-slate-100/80 hover:text-slate-900"
+                : "text-slate-600 hover:bg-slate-100 hover:text-slate-900"
             }`}
           >
             <MapPin size={20} className={location.pathname.includes("/nodes") ? "text-white" : "text-slate-400 group-hover:text-blue-600 transition-colors"} />
@@ -123,7 +123,7 @@ export default function ControlPanel() {
             className={`flex items-center gap-3 px-4 py-3.5 rounded-xl transition-all duration-200 group ${
               location.pathname.includes("/rooms")
                 ? "bg-blue-600 text-white shadow-md shadow-blue-600/20"
-                : "text-slate-600 hover:bg-slate-100/80 hover:text-slate-900"
+                : "text-slate-600 hover:bg-slate-100 hover:text-slate-900"
             }`}
           >
             <Building size={20} className={location.pathname.includes("/rooms") ? "text-white" : "text-slate-400 group-hover:text-blue-600 transition-colors"} />
@@ -131,7 +131,7 @@ export default function ControlPanel() {
           </Link>
         </nav>
         
-        <div className="p-5 border-t border-slate-100/50 bg-slate-50/30">
+        <div className="p-5 border-t border-slate-100/50 bg-slate-50">
           <button
             onClick={handleLogout}
             className="flex items-center justify-center gap-3 px-4 py-3.5 w-full text-rose-600 hover:bg-rose-50 hover:text-rose-700 rounded-xl transition-all duration-200 font-medium border border-transparent hover:border-rose-100"
@@ -145,7 +145,7 @@ export default function ControlPanel() {
       {/* Main Content Area */}
       <main className="flex-1 flex flex-col h-screen overflow-hidden relative bg-slate-50">
         {/* Mobile Header */}
-        <header className="flex items-center justify-between px-6 py-4 bg-white/80 backdrop-blur-md border-b border-slate-200/50 md:hidden z-20">
+        <header className="flex items-center justify-between px-6 py-4 bg-white  border-b border-slate-200/50 md:hidden z-20">
           <div className="flex items-center gap-3">
             <img src="/campus-compass-logo.svg" alt="Campus Compass Logo" className="w-8 h-8 object-contain" />
             <span className="font-bold text-slate-800 text-lg">Admin Console</span>

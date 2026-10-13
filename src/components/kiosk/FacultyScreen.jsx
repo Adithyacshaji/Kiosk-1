@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { DirectoryHeader } from './DirectoryHeader';
 import { 
   ArrowLeft, 
   Home, 
@@ -13,15 +14,21 @@ import {
   Monitor, 
   Building2, 
   Compass, 
-  GraduationCap,
   ChevronRight,
-  Sparkles
+  Sparkles,
+  Wrench,
+  Landmark,
+  Zap,
+  Radio,
+  GraduationCap,
+  Briefcase
 } from 'lucide-react';
 import { ThemeToggle } from './ThemeToggle';
 import { KIOSK_CONFIG } from '../../data/kiosk/kioskData';
 import { TRANSLATIONS } from '../../data/kiosk/translations';
 import { getFacultyPhoto } from '../../utils/facultyPhotos';
-import logoImg from '../../assets/kiosk/logo.png';
+import { getDeptShortName, getDeptIconName } from '../../utils/departmentUtils';
+
 
 import collegeBg from '../../assets/kiosk/college.png';
 
@@ -42,13 +49,31 @@ export const FacultyScreen = ({
 
   const selectedDepartment = departments.find(d => d.id === selectedDeptId);
 
-  const getDeptIcon = (iconName) => {
-    switch (iconName) {
-      case 'Monitor': return <Monitor size={28} />;
-      case 'Compass': return <Compass size={28} />;
-      case 'Building2': return <Building2 size={28} />;
-      case 'GraduationCap': return <GraduationCap size={28} />;
-      default: return <User size={28} />;
+  const getDeptIcon = (iconName, dept) => {
+    const iconKey = dept?.icon || iconName || getDeptIconName(dept);
+    switch (iconKey) {
+      case 'Monitor': return <Monitor size={24} />;
+      case 'Wrench': return <Wrench size={24} />;
+      case 'Landmark': return <Landmark size={24} />;
+      case 'Zap': return <Zap size={24} />;
+      case 'Radio': return <Radio size={24} />;
+      case 'GraduationCap': return <GraduationCap size={24} />;
+      case 'Briefcase': return <Briefcase size={24} />;
+      case 'Compass': return <Compass size={24} />;
+      case 'Building2': return <Building2 size={24} />;
+      default: {
+        const fallbackKey = getDeptIconName(dept);
+        switch (fallbackKey) {
+          case 'Monitor': return <Monitor size={24} />;
+          case 'Wrench': return <Wrench size={24} />;
+          case 'Landmark': return <Landmark size={24} />;
+          case 'Zap': return <Zap size={24} />;
+          case 'Radio': return <Radio size={24} />;
+          case 'GraduationCap': return <GraduationCap size={24} />;
+          case 'Briefcase': return <Briefcase size={24} />;
+          default: return <GraduationCap size={24} />;
+        }
+      }
     }
   };
 
@@ -63,51 +88,28 @@ export const FacultyScreen = ({
   return (
     <section 
       id="screen-faculty" 
-      className={`screen active directory-screen glass-dashboard-screen theme-${theme}`} 
-      style={{ backgroundImage: `linear-gradient(rgba(10, 16, 28, 0.6), rgba(10, 16, 28, 0.72)), url(${collegeBg})`, color: 'white' }}
+      className={`screen active directory-screen theme-${theme}`} 
+      style={{ backgroundColor: 'transparent', color: '#1A1A1A' }}
       role="region" 
       aria-label="Faculty Directory"
     >
-      <div className="glass-main-wrapper directory-glass-wrapper">
+      <div style={{ display: 'flex', flexDirection: 'column', width: '100%', height: '100%', overflow: 'hidden' }}>
       {/* Top Welcome/Navigation Bar for Faculty */}
-      <header className="directory-top-bar">
-        <div className="dir-bar-left">
-          <button className="btn-dir-back" onClick={handleBack} title={selectedDeptId ? "Back to Departments" : "Back"}>
-            <ArrowLeft size={20} />
-            <span>{selectedDeptId ? "Back to Departments" : "Back"}</span>
-          </button>
-          <div className="dir-brand-badge" onClick={onGoHome}>
-            <img src={logoImg} alt="Logo" className="dir-logo-mini" />
-            <div className="dir-brand-text">
-              <span className="dir-brand-name">Campus Compass</span>
-              <span className="dir-brand-tag">FACULTY DIRECTORY</span>
-            </div>
-          </div>
-        </div>
-
-        <div className="dir-bar-right">
-          <div className="landing-weather-pill">
-            <SunMedium size={16} className="pill-icon-weather" />
-            <span>{t.weather}</span>
-          </div>
-          <div className="landing-time-pill">
-            <Clock size={16} className="pill-icon-time" />
-            <span className="time-clock">{currentTime}</span>
-          </div>
-          <ThemeToggle 
-            theme={theme}
-            onToggleTheme={onToggleTheme}
-            soundEnabled={soundEnabled}
-            onToggleSound={onToggleSound}
-          />
-          <button className="btn-campus-home" onClick={onGoHome} title={t.home}>
-            <Home size={18} />
-          </button>
-        </div>
-      </header>
+      <DirectoryHeader 
+        title="FACULTY DIRECTORY"
+        onBack={handleBack}
+        onGoHome={onGoHome}
+        currentTime={currentTime}
+        weather={t.weather}
+        theme={theme}
+        onToggleTheme={onToggleTheme}
+        soundEnabled={soundEnabled}
+        onToggleSound={onToggleSound}
+        backText={selectedDeptId ? "Back to Departments" : "Back"}
+      />
 
       {/* Main Content Area */}
-      <main className="directory-main-content">
+      <main className="directory-main-content" style={{ flex: 1, overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '1.25rem', padding: '1.25rem 1.5rem', WebkitOverflowScrolling: 'touch' }}>
         {/* STAGE 1: DEPARTMENT SELECTION GRID */}
         {!selectedDepartment && (
           <>
@@ -128,9 +130,9 @@ export const FacultyScreen = ({
                 >
                   <div className="dept-card-header">
                     <div className="dept-icon-circle">
-                      {getDeptIcon(dept.icon || 'GraduationCap')}
+                      {getDeptIcon(dept.icon, dept)}
                     </div>
-                    <span className="dept-code-pill">{dept.name.substring(0, 4).toUpperCase()}</span>
+                    <span className="dept-code-pill">{getDeptShortName(dept)}</span>
                   </div>
 
                   <div className="dept-card-body">
@@ -162,7 +164,12 @@ export const FacultyScreen = ({
           <>
             <div className="directory-heading-box">
               <div className="dir-title-text">
-                <div className="dir-eyebrow">{selectedDepartment.name}</div>
+                <div className="dir-eyebrow" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flexWrap: 'wrap' }}>
+                  <span>{selectedDepartment.name}</span>
+                  <span style={{ fontSize: '0.8rem', background: '#1A1A1A', color: '#ffffff', padding: '0.15rem 0.55rem', borderRadius: '9999px', fontWeight: 800 }}>
+                    {getDeptShortName(selectedDepartment)}
+                  </span>
+                </div>
                 <h1 className="dir-title">Faculty Directory</h1>
                 <p className="dir-subtitle">Select a faculty member below to get turn-by-turn navigation to their cabin.</p>
               </div>
@@ -178,7 +185,7 @@ export const FacultyScreen = ({
 
             <div className="faculty-grid">
               {(selectedDepartment.faculties || []).map((fac, idx) => {
-                const photoPath = fac.image_url || fac.photo || getFacultyPhoto(fac.name, selectedDepartment?.code || selectedDepartment?.name);
+                const photoPath = fac.image_url || fac.photo || getFacultyPhoto(fac.name, getDeptShortName(selectedDepartment) || selectedDepartment?.code || selectedDepartment?.name);
 
                 return (
                   <div key={idx} className="faculty-card" onClick={() => onSelectFaculty(fac)}>
@@ -203,13 +210,17 @@ export const FacultyScreen = ({
                         <p className="fac-role">{fac.designation || 'Faculty'}</p>
                         
                         <div className="fac-meta-group">
-                          <div className="fac-meta-item">
-                            <MapPin size={14} className="meta-icon" />
-                            <span>{fac.room ? `Room ${fac.room}` : 'Cabin Location N/A'}</span>
+                          <div className="fac-meta-item" style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', flexWrap: 'wrap' }}>
+                            <MapPin size={14} className="meta-icon" style={{ flexShrink: 0 }} />
+                            <span style={{ wordBreak: 'break-word', flex: 1, minWidth: 0, lineHeight: 1.2 }}>
+                              {fac.room ? (String(fac.room).toLowerCase().includes('room') || String(fac.room).toLowerCase().includes('floor') ? fac.room : `Room ${fac.room}`) : 'Cabin Location N/A'}
+                            </span>
                           </div>
-                          <div className="fac-meta-item">
-                            <Layers size={14} className="meta-icon" />
-                            <span>{fac.floor === 'G' || fac.floor === '0' || fac.floor === 0 ? 'Ground Floor' : `Floor ${fac.floor || 1}`}</span>
+                          <div className="fac-meta-item" style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', flexWrap: 'wrap' }}>
+                            <Layers size={14} className="meta-icon" style={{ flexShrink: 0 }} />
+                            <span style={{ wordBreak: 'break-word', flex: 1, minWidth: 0, lineHeight: 1.2 }}>
+                              {fac.floor === 'G' || fac.floor === '0' || fac.floor === 0 ? 'Ground Floor' : (String(fac.floor).toLowerCase().includes('floor') ? fac.floor : `Floor ${fac.floor || 1}`)}
+                            </span>
                           </div>
                         </div>
                       </div>
@@ -229,14 +240,9 @@ export const FacultyScreen = ({
       </main>
 
       {/* Directory Footer */}
-      <footer className="campus-bottom-footer">
-        <div className="footer-left-info">
-          <MapPin size={16} color="var(--c-sage-mid)" />
-          <span>Christ College of Engineering (Autonomous) | Faculty Directory</span>
-        </div>
-        <div className="footer-right-motto">
-          <span>"Smarter campus. A better you."</span>
-        </div>
+      <footer style={{ background: '#1A1A1A', padding: '1rem', display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '0.5rem', color: '#ffffff', fontSize: '0.8rem', flexShrink: 0, textAlign: 'center', flexWrap: 'wrap' }}>
+        <MapPin size={16} color="#ffffff" />
+        <span>Christ College of Engineering (Autonomous) | Faculty Directory</span>
       </footer>
       </div>
     </section>

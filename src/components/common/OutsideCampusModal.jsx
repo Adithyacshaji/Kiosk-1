@@ -38,7 +38,7 @@ function OutsideCampusModal({ destination, onViewIndoor, onClose }) {
           inset: 0,
           background: "rgba(0,0,0,0.35)",
           zIndex: 2100,
-          backdropFilter: "blur(2px)",
+          
         }}
         onClick={onClose}
       />

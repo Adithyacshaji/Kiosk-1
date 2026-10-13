@@ -3,6 +3,7 @@ import { formatRoomId } from "../../utils/formatRoomId";
 import { memo, useState } from "react";
 import ImageModal from "./ImageModal";
 import { ChevronRight, School, Layers, TestTube, Car, Bath, Library, Users, Coffee, Navigation, User } from "lucide-react";
+import { getDeptShortName } from "../../utils/departmentUtils";
 
 export const normalizeName = (name) => {
   if (!name) return '';
@@ -204,16 +205,16 @@ function BottomSheet({
 
       <div className="grid grid-cols-3 gap-3 mb-8">
         {[
-          { id: "departments", label: "Departments", count: "24", icon: School, color: "text-blue-600", bg: "bg-blue-50" },
+          { id: "departments", label: "Departments", count: "24", icon: School, color: "text-[#1A1A1A]", bg: "bg-gray-100" },
           { id: "classrooms", label: "Classrooms", count: "120", icon: Layers, color: "text-green-600", bg: "bg-green-50" },
           { id: "labs", label: "Labs", count: "48", icon: TestTube, color: "text-purple-600", bg: "bg-purple-50" },
-          { id: "parking", label: "Parking", count: "3 Zones", icon: Car, color: "text-blue-600", bg: "bg-blue-50" },
+          { id: "parking", label: "Parking", count: "3 Zones", icon: Car, color: "text-[#1A1A1A]", bg: "bg-gray-100" },
           // { id: "washrooms", label: "Washrooms", count: "18", icon: Bath, color: "text-orange-600", bg: "bg-orange-50" },
         ].map((item) => (
           <button
             key={item.id}
             onClick={() => onSelectCategory(item.id)}
-            className="flex flex-col items-center justify-center bg-gray-50/50 border border-gray-100 rounded-2xl p-4 gap-4 hover:bg-white hover:shadow-[0_4px_12px_rgb(0,0,0,0.05)] hover:border-gray-200 transition-all text-center group cursor-pointer"
+            className="flex flex-col items-center justify-center bg-gray-50 border border-gray-100 rounded-[28px] p-4 gap-4 hover:bg-white hover:shadow-md hover:border-gray-200 transition-all text-center group cursor-pointer"
           >
             <div className={`w-10 h-10 ${item.bg} rounded-full flex items-center justify-center mb-1 group-hover:scale-110 transition-transform`}>
               <item.icon size={30} className={item.color} />
@@ -236,11 +237,11 @@ function BottomSheet({
       {/* <div className="flex gap-3 overflow-x-auto pb-4 -mx-5 px-5 hide-scrollbar snap-x">
         {[
           { name: "Library", img: "https://images.unsplash.com/photo-1541339907198-e08756dedf3f?auto=format&fit=crop&w=400&q=80", icon: Library, time: "2 min walk", color: "bg-purple-600" },
-          { name: "St. Mary's Block", img: "https://images.unsplash.com/photo-1562774053-701939374585?auto=format&fit=crop&w=400&q=80", icon: School, time: "1 min walk", color: "bg-blue-600" },
+          { name: "St. Mary's Block", img: "https://images.unsplash.com/photo-1562774053-701939374585?auto=format&fit=crop&w=400&q=80", icon: School, time: "1 min walk", color: "bg-[#1A1A1A]" },
           { name: "CSE Department", img: "https://images.unsplash.com/photo-1541829070764-84a7d30dd3f3?auto=format&fit=crop&w=400&q=80", icon: Users, time: "3 min walk", color: "bg-green-600" },
           { name: "Canteen", img: "https://images.unsplash.com/photo-1555939594-58d7cb561ad1?auto=format&fit=crop&w=400&q=80", icon: Coffee, time: "2 min walk", color: "bg-orange-600" },
         ].map((place, idx) => (
-          <div key={idx} className="w-40 shrink-0 bg-white border border-gray-100 rounded-2xl shadow-[0_4px_12px_rgb(0,0,0,0.04)] overflow-hidden snap-start cursor-pointer hover:shadow-[0_8px_24px_rgb(0,0,0,0.08)] transition-shadow">
+          <div key={idx} className="w-40 shrink-0 bg-white border border-gray-100 rounded-[28px] shadow-sm overflow-hidden snap-start cursor-pointer hover:shadow-md transition-shadow">
             <div className="h-22.5 w-full bg-gray-200 relative">
                <img src={place.img} alt={place.name} className="w-full h-full object-cover" />
             </div>
@@ -265,7 +266,7 @@ function BottomSheet({
   return (
     <>
     <Sheet isOpen={open} onClose={onClose}>
-      <Sheet.Container className="rounded-t-[28px]! shadow-[0_-8px_40px_rgb(0,0,0,0.12)]!">
+      <Sheet.Container className="rounded-t-[36px]! shadow-[0_-8px_40px_rgb(0,0,0,0.12)]!">
         <Sheet.Header />
 
         <Sheet.Content>
@@ -278,9 +279,9 @@ function BottomSheet({
 
               {/* Department List */}
               {Array.isArray(data) && title === "Faculty" && !selectedDepartment && data.map((dept) => (
-                <div key={dept.id} className="flex items-center justify-between p-4 mb-3 bg-white rounded-[20px] shadow-[0_2px_10px_rgb(0,0,0,0.05)] border border-gray-100 cursor-pointer hover:shadow-[0_4px_16px_rgb(0,0,0,0.08)] transition-all" onClick={() => setSelectedDepartment(dept)}>
+                <div key={dept.id} className="flex items-center justify-between p-4 mb-3 bg-white rounded-[28px] shadow-sm border border-gray-100 cursor-pointer hover:shadow-md transition-all" onClick={() => setSelectedDepartment(dept)}>
                   <div className="flex items-center gap-4">
-                    <div className={`w-12 h-12 rounded-full flex items-center justify-center shrink-0 overflow-hidden ${dept.image_url ? 'border border-gray-200' : 'bg-blue-50 text-primary'}`}>
+                    <div className={`w-12 h-12 rounded-full flex items-center justify-center shrink-0 overflow-hidden ${dept.image_url ? 'border border-gray-200' : 'bg-gray-100 text-[#1A1A1A]'}`}>
                       {dept.image_url ? (
                         <img src={dept.image_url} alt={dept.name} className="w-full h-full object-cover" />
                       ) : (
@@ -288,7 +289,12 @@ function BottomSheet({
                       )}
                     </div>
                     <div>
-                      <h4 className="text-[16px] font-semibold text-gray-900 leading-tight mb-1">{dept.name}</h4>
+                      <div className="flex items-center gap-2 mb-1">
+                        <h4 className="text-[16px] font-semibold text-gray-900 leading-tight">{dept.name}</h4>
+                        <span className="text-[11px] font-bold px-2 py-0.5 rounded-full bg-gray-100 text-gray-700 tracking-wide shrink-0">
+                          {getDeptShortName(dept)}
+                        </span>
+                      </div>
                       <p className="text-[13px] text-gray-500">{dept.faculties.length} Faculty Members</p>
                     </div>
                   </div>
@@ -302,7 +308,12 @@ function BottomSheet({
                   <button className="self-start text-[15px] font-semibold text-primary mb-4 flex items-center gap-1 hover:opacity-80" onClick={() => setSelectedDepartment(null)}>
                     ← Back
                   </button>
-                  <h3 className="text-[18px] font-bold mb-4">{selectedDepartment.name}</h3>
+                  <div className="flex items-center gap-2 mb-4">
+                    <h3 className="text-[18px] font-bold text-gray-900">{selectedDepartment.name}</h3>
+                    <span className="text-[12px] font-extrabold px-2.5 py-0.5 rounded-full bg-[#1A1A1A] text-white tracking-wide">
+                      {getDeptShortName(selectedDepartment)}
+                    </span>
+                  </div>
                   {selectedDepartment.faculties.map((faculty, index) => {
                     const normalizedName = normalizeName(faculty.name);
                     const photoPath = faculty.image_url || FACULTY_PHOTOS[normalizedName];
@@ -315,7 +326,7 @@ function BottomSheet({
                     );
 
                     return (
-                      <div className="p-4 mb-3 bg-white rounded-[20px] shadow-[0_2px_10px_rgb(0,0,0,0.05)] border border-gray-100 flex flex-col gap-1" key={index}>
+                      <div className="p-4 mb-3 bg-white rounded-[28px] shadow-sm border border-gray-100 flex flex-col gap-1" key={index}>
                         <div className="flex items-center gap-4">
                           <div 
                             className={`w-14 h-14 rounded-full bg-gray-100 flex items-center justify-center shrink-0 border border-gray-200 overflow-hidden ${photoPath ? 'cursor-pointer hover:opacity-80 transition-opacity' : ''}`}
@@ -343,7 +354,7 @@ function BottomSheet({
                             {facultyRoom && <span className="text-[12.5px] text-gray-500 mt-0.5">Room: {facultyRoom}</span>}
                           </div>
                         </div>
-                      <button className="mt-2 h-10 w-full bg-blue-50 hover:bg-blue-100 text-primary font-semibold rounded-full transition-colors text-[14px]" onClick={() => {
+                      <button className="mt-2 h-11 w-full bg-[#1A1A1A] hover:bg-black text-white font-semibold rounded-full transition-colors text-[14px]" onClick={() => {
                         const facultyLocation = {
                           id: faculty.indoorNode || faculty.room,
                           name: faculty.name,
@@ -386,13 +397,20 @@ function BottomSheet({
                 const room = isDept ? formatRoomId((destination?.indoorNode && !destination?.indoorNode?.includes(" ")) ? destination.indoorNode : (item.room || (destination?.room && !destination?.room?.toLowerCase().includes("block") ? destination.room : destination?.indoorNode))) : null;
 
                 return (
-                  <div className="p-4 mb-3 bg-white rounded-[20px] shadow-[0_2px_10px_rgb(0,0,0,0.05)] border border-gray-100 flex flex-col gap-2" key={item.id || index}>
+                  <div className="p-4 mb-3 bg-white rounded-[28px] shadow-sm border border-gray-100 flex flex-col gap-2" key={item.id || index}>
                     {item.image_url && (
-                      <div className="w-full h-32 rounded-xl overflow-hidden mb-2">
+                      <div className="w-full h-32 rounded-[20px] overflow-hidden mb-2">
                         <img src={item.image_url} alt={item.name || item.title} className="w-full h-full object-cover" />
                       </div>
                     )}
-                    <h4 className="text-[16px] font-semibold text-gray-900 leading-tight">{item.name || item.title}</h4>
+                    <div className="flex items-center justify-between gap-2">
+                      <h4 className="text-[16px] font-semibold text-gray-900 leading-tight">{item.name || item.title}</h4>
+                      {isDept && (
+                        <span className="text-[11px] font-bold px-2.5 py-0.5 rounded-full bg-gray-100 text-gray-700 tracking-wide shrink-0">
+                          {getDeptShortName(item)}
+                        </span>
+                      )}
+                    </div>
                     {item.description && <p className="text-[13px] text-gray-600">{item.description}</p>}
                     {isDept && (
                       <div className="flex flex-col gap-0.5 mt-0.5">
@@ -405,7 +423,7 @@ function BottomSheet({
                       <p className="text-[13px] text-gray-500">{formatBuilding(item.building)} {item.floor ? `· ${formatFloor(item.floor)}` : ''}</p>
                     )}
                     {!isDept && item.room && <span className="text-[12px] text-gray-500">Room: {item.room}</span>}
-                    <button className="mt-2 h-10 w-full bg-primary hover:bg-primary-hover text-white font-semibold rounded-full transition-colors shadow-[0_2px_8px_rgb(37,99,235,0.3)] text-[14px]" onClick={() => {
+                    <button className="mt-2 h-11 w-full bg-[#1A1A1A] hover:bg-black text-white font-semibold rounded-full transition-colors shadow-sm text-[14px]" onClick={() => {
                       if (isDept) {
                         if (!destination) return;
                         onNavigate({
@@ -435,10 +453,10 @@ function BottomSheet({
 
               {/* Single item display (e.g. non-array Library) */}
               {!Array.isArray(data) && data && (
-                <div className="p-5 mb-4 bg-white rounded-3xl border border-gray-100 flex flex-col gap-2">
+                <div className="p-5 mb-4 bg-white rounded-[28px] border border-gray-100 shadow-sm flex flex-col gap-2">
                   <h4 className="text-[18px] font-bold text-gray-900">{data.title || data.name}</h4>
                   <p className="text-[14px] text-gray-600 mb-3">{data.description}</p>
-                  <button className="h-11.5 w-full bg-primary hover:bg-primary-hover text-white font-semibold rounded-full transition-colors shadow-[0_2px_8px_rgb(37,99,235,0.3)] text-[14px]" onClick={() => {
+                  <button className="h-11.5 w-full bg-[#1A1A1A] hover:bg-black text-white font-semibold rounded-full transition-colors shadow-sm text-[14px]" onClick={() => {
                     onNavigate(data);
                     onClose();
                   }}>

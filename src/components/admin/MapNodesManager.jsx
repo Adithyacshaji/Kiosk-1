@@ -307,7 +307,7 @@ export default function MapNodesManager() {
         <p className="text-slate-500 mt-2 text-sm">Manage indoor map nodes, custom locations, and QR scan points.</p>
       </div>
 
-      <div className="flex gap-2 mb-6 p-1 bg-slate-200/50 rounded-2xl w-fit">
+      <div className="flex gap-2 mb-6 p-1 bg-slate-200 rounded-2xl w-fit">
         {[
           { id: "indoor_nodes", label: "Indoor Nodes" },
           { id: "locations", label: "Map Locations" },
@@ -319,7 +319,7 @@ export default function MapNodesManager() {
             className={`px-5 py-2.5 rounded-xl font-bold text-sm transition-all duration-200 ${
               activeTab === tab.id 
                 ? "bg-white text-blue-600 shadow-sm" 
-                : "text-slate-500 hover:text-slate-700 hover:bg-slate-200/50"
+                : "text-slate-500 hover:text-slate-700 hover:bg-slate-200"
             }`}
           >
             {tab.label}
@@ -351,7 +351,7 @@ export default function MapNodesManager() {
 
         <div className="overflow-y-auto overflow-x-auto flex-1 custom-scrollbar">
           <table className="w-full text-left border-collapse min-w-[800px]">
-            <thead className="sticky top-0 bg-white/95 backdrop-blur-sm z-10 shadow-[0_1px_2px_rgba(0,0,0,0.02)]">
+            <thead className="sticky top-0 bg-white  z-10 shadow-[0_1px_2px_rgba(0,0,0,0.02)]">
               <tr className="text-slate-500 text-xs uppercase tracking-widest">
                 {renderTableHeaders()}
                 <th className="p-5 font-bold text-right">Actions</th>
@@ -368,7 +368,7 @@ export default function MapNodesManager() {
               </tr>
             ) : (
               filteredData.map((item, idx) => (
-                <tr key={item.id || idx} className="hover:bg-slate-50/50 transition-colors group">
+                <tr key={item.id || idx} className="hover:bg-slate-50 transition-colors group">
                   {renderTableRow(item)}
                   <td className="p-5 flex justify-end gap-2 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity">
                     <button 
@@ -394,7 +394,7 @@ export default function MapNodesManager() {
         </div>
 
         {isFormOpen && (
-          <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-50 flex items-center justify-end md:p-4 animate-in fade-in">
+          <div className="fixed inset-0 bg-slate-900  z-50 flex items-center justify-end md:p-4 animate-in fade-in">
             <div className="bg-white w-full max-w-md h-full md:rounded-3xl rounded-none shadow-2xl flex flex-col overflow-hidden animate-in slide-in-from-right-8 duration-300">
               <div className="p-6 border-b border-slate-100 flex justify-between items-center bg-white z-10 shadow-sm">
                 <h2 className="text-xl font-extrabold text-slate-800">
