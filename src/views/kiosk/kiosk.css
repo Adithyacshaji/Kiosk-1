@@ -1168,6 +1168,12 @@
   max-width: 1600px;
   margin: 0 auto;
   width: 100%;
+  /* Prevent pull-to-refresh when scrolling reaches the top of this container */
+  overscroll-behavior: none;
+  overscroll-behavior-y: none;
+  /* Only allow vertical pan — tells browser not to handle this as a pull gesture */
+  touch-action: pan-y;
+  -webkit-overflow-scrolling: touch;
 }
 
 /* Heading Box */
@@ -1593,9 +1599,11 @@
 #kiosk-app .faculty-grid,
 #kiosk-app .faculty-cards-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
-  gap: 1.5rem;
+  grid-template-columns: repeat(auto-fill, minmax(380px, 1fr));
+  gap: 1.2rem;
   width: 100%;
+  /* Stretch so all cards in the same row are equal height */
+  align-items: stretch;
 }
 
 #kiosk-app .faculty-card {
@@ -1604,14 +1612,18 @@
   -webkit-backdrop-filter: none;
   border: 1px solid rgba(0, 0, 0, 0.07);
   border-radius: var(--radius-xl);
-  padding: 1.4rem;
+  padding: 1.2rem 1.4rem;
   display: flex;
   justify-content: space-between;
-  align-items: center;
+  /* Top-align so content doesn't stretch oddly on tall cards */
+  align-items: flex-start;
   gap: 1rem;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.07);
   cursor: pointer;
   transition: transform var(--transition-fast), background var(--transition-fast), border-color var(--transition-fast);
+  /* Cards must fill the grid cell height so all are equal */
+  height: 100%;
+  box-sizing: border-box;
 }
 
 #kiosk-app .faculty-card:hover {
@@ -1623,8 +1635,11 @@
 
 #kiosk-app .fac-card-left {
   display: flex;
-  align-items: center;
-  gap: 1.2rem;
+  align-items: flex-start;
+  gap: 1rem;
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
 }
 
 #kiosk-app .fac-avatar {
@@ -1653,34 +1668,59 @@
 #kiosk-app .fac-info {
   display: flex;
   flex-direction: column;
+  min-width: 0;
+  flex: 1;
 }
 
 #kiosk-app .fac-name {
-  font-size: 1.2rem;
+  font-size: 1.05rem;
   font-weight: 800;
   color: var(--text-main, #1A1A1A);
-  line-height: 1.2;
+  line-height: 1.25;
+  /* Clamp to 2 lines — prevents card height growth from long names */
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  word-break: break-word;
 }
 
 #kiosk-app .fac-role {
-  font-size: 0.85rem;
+  font-size: 0.78rem;
   font-weight: 700;
   color: #6B7280;
-  margin-bottom: 0.35rem;
+  margin-bottom: 0.3rem;
+  margin-top: 0.1rem;
+  /* Clamp designation to 2 lines */
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
 }
 
 #kiosk-app .fac-meta-group {
   display: flex;
   flex-direction: column;
-  gap: 0.2rem;
+  gap: 0.18rem;
 }
 
 #kiosk-app .fac-meta-item {
   display: flex;
   align-items: center;
-  gap: 0.45rem;
-  font-size: 0.85rem;
+  gap: 0.4rem;
+  font-size: 0.8rem;
   color: #6B7280;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Navigate button always vertically centered on the right */
+#kiosk-app .fac-card-right {
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+  align-self: center;
 }
 
 /* Directory Bottom Footer */
@@ -3567,157 +3607,7 @@
   color: #ffffff !important;
 }
 
-/* ── Virtual Keyboard — Docks at the BOTTOM of the Screen ── */
-.kiosk-vkb-bottom-dock {
-  position: fixed;
-  bottom: 24px;
-  left: 50%;
-  transform: translateX(-50%);
-  width: min(940px, 94vw);
-  z-index: 3500;
-  background: #ffffff;
-  border: 1px solid rgba(0, 0, 0, 0.1);
-  border-radius: 24px;
-  box-shadow: 0 -8px 36px rgba(0, 0, 0, 0.18), 0 0 0 1px rgba(255, 255, 255, 0.8) inset;
-  padding: 14px 20px 20px;
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  animation: vkbSlideUp 0.25s cubic-bezier(0.16, 1, 0.3, 1);
-  pointer-events: auto;
-}
 
-@keyframes vkbSlideUp {
-  from {
-    opacity: 0;
-    transform: translate(-50%, 60px);
-  }
-
-  to {
-    opacity: 1;
-    transform: translate(-50%, 0);
-  }
-}
-
-.kiosk-vkb-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 0 4px 8px 4px;
-  border-bottom: 1px solid rgba(0, 0, 0, 0.06);
-}
-
-.kiosk-vkb-header-title {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  font-size: 14px;
-  font-weight: 600;
-  color: #64748b;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-}
-
-.kiosk-vkb-close-btn {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  background: #f1f5f9;
-  border: 1px solid #e2e8f0;
-  color: #475569;
-  padding: 6px 14px;
-  border-radius: 9999px;
-  font-size: 13px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.15s;
-}
-
-.kiosk-vkb-close-btn:hover {
-  background: #e2e8f0;
-  color: #1e293b;
-}
-
-.kiosk-vkb-keys-grid {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-
-.kiosk-vkb-row {
-  display: flex;
-  justify-content: center;
-  gap: 6px;
-}
-
-.kiosk-vkb-key {
-  background: #ffffff;
-  border: 1px solid #e2e8f0;
-  border-radius: 10px;
-  min-width: 42px;
-  height: 50px;
-  font-size: 19px;
-  font-weight: 600;
-  color: #334155;
-  cursor: pointer;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.03);
-  transition: all 0.1s;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  user-select: none;
-  flex: 1;
-  max-width: 52px;
-}
-
-.kiosk-vkb-key:active {
-  background: #e2e8f0;
-  transform: translateY(2px);
-}
-
-.kiosk-vkb-space {
-  flex: 3;
-  max-width: 260px;
-  font-size: 16px;
-}
-
-.kiosk-vkb-done {
-  flex: 1.5;
-  max-width: 140px;
-  background: #2563eb;
-  color: var(--text-main, #ffffff);
-  border-color: #1d4ed8;
-  font-size: 16px;
-}
-
-.kiosk-vkb-done:active {
-  background: #1d4ed8;
-}
-
-.kiosk-vkb-clear {
-  flex: 1.2;
-  max-width: 100px;
-  background: #f8fafc;
-  color: #64748b;
-  border-color: #cbd5e1;
-  font-size: 15px;
-}
-
-.kiosk-vkb-clear:active {
-  background: #f1f5f9;
-}
-
-.kiosk-vkb-backspace {
-  flex: 1.5;
-  max-width: 80px;
-  background: #fee2e2;
-  color: #ef4444;
-  border-color: #fca5a5;
-}
-
-.kiosk-vkb-backspace:active {
-  background: #fca5a5;
-}
 
 /* ==========================================================================
    ENHANCED CLASSROOM ITEM CARDS
@@ -5241,13 +5131,20 @@
 
 /* ==========================================================================
    SMOOTH TOUCH & SCROLLING CONTROLS FOR KIOSK
+   — overscroll-behavior:none prevents pull-to-refresh on all containers
    ========================================================================== */
 #kiosk-app .directory-main-content,
 #kiosk-app .kiosk-panel-scrollable,
-#kiosk-app .kiosk-side-panel {
+#kiosk-app .kiosk-side-panel,
+#kiosk-app .kiosk-side-panel-scroll,
+#kiosk-app .kiosk-panel-info-main-content,
+#kiosk-app .kiosk-qr-wrapper,
+#kiosk-app .kiosk-fs-chips-wrap {
   -webkit-overflow-scrolling: touch;
   touch-action: pan-y;
-  overscroll-behavior: contain;
+  /* 'none' fully disables pull-to-refresh AND rubber-band bounce at scroll edges */
+  overscroll-behavior: none;
+  overscroll-behavior-y: none;
   scroll-behavior: smooth;
 }
 
@@ -5373,8 +5270,28 @@
   }
 
   #kiosk-app .faculty-grid {
-    grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)) !important;
-    gap: 1.4rem !important;
+    grid-template-columns: repeat(auto-fill, minmax(420px, 1fr)) !important;
+    gap: 1.2rem !important;
+    align-items: stretch !important;
+  }
+
+  /* Consistent card height and button centering on 32-inch */
+  #kiosk-app .faculty-card {
+    height: 100% !important;
+    padding: 1.1rem 1.3rem !important;
+    align-items: flex-start !important;
+  }
+
+  #kiosk-app .fac-card-right {
+    align-self: center !important;
+  }
+
+  #kiosk-app .fac-name {
+    font-size: clamp(0.9rem, 1.3vw, 1.1rem) !important;
+  }
+
+  #kiosk-app .fac-role {
+    font-size: clamp(0.72rem, 1vw, 0.82rem) !important;
   }
 
   #kiosk-app .outdoor-poi-grid {

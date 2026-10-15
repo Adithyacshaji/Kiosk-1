@@ -1930,8 +1930,9 @@ function MainApp() {
     const loc = locOverride || destInfoTarget;
     if (!loc) return;
     const targetBuilding = (loc.building || "").toLowerCase().includes("chavara") ? "chavara" : "stmarys";
-    const rawFloor = loc.floor !== undefined ? String(loc.floor).toUpperCase() : "G";
-    const targetFloor = rawFloor.startsWith("B") ? rawFloor : (rawFloor === "G" || rawFloor === "0" || rawFloor === "GROUND" ? "G" : rawFloor);
+    // Use normalizeFloor so "F1"→"1", "F2"→"2", "G"→"G", "B1"→"B1" etc.
+    // matching the keys in FLOOR_IMAGES / CHAVARA_FLOOR_IMAGES exactly.
+    const targetFloor = normalizeFloor(loc.floor);
 
     // Set destination for the red pin marker in CampusMap
     setDestination(loc);
@@ -3065,7 +3066,8 @@ function MainApp() {
                 designation: fac.designation,
                 type: 'faculty',
                 building: bldg,
-                floor: fac.floor || 'G',
+                // Normalize floor so "F1"→"1" matches FLOOR_IMAGES keys exactly
+                floor: normalizeFloor(fac.floor || 'G'),
                 room: fac.room,
                 indoorNode: fac.indoorNode || fac.id || fac.room,
                 routeNode: fac.routeNode || (isChavaraBuilding(bldg) ? 'chavara' : 'g')
