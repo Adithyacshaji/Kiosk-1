@@ -10,7 +10,7 @@ const CATEGORIES = [
 
 function SearchChips({ onSelectCategory, activeCategory = "all", isKiosk = false }) {
   return (
-    <div className="w-full mx-auto overflow-x-auto custom-scrollbar pointer-events-auto mt-2 pb-2 -mb-2 hide-scrollbar">
+    <div className="w-full mx-auto overflow-x-auto custom-scrollbar pointer-events-auto mt-2 pb-2 -mb-2 hide-scrollbar" style={{ touchAction: 'pan-x', WebkitOverflowScrolling: 'touch', overscrollBehaviorX: 'contain' }}>
       <div className="flex items-center gap-3.5 px-2 pb-1 justify-start">
         {CATEGORIES.map((cat) => {
           const isActive = activeCategory === cat.id;

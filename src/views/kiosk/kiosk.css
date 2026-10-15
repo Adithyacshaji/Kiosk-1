@@ -737,42 +737,42 @@
   backdrop-filter: none;
   -webkit-backdrop-filter: none;
   border: 1px solid rgba(0, 0, 0, 0.07);
-  border-radius: 32px;
-  padding: 1.6rem 1.8rem;
+  border-radius: 28px;
+  padding: 1.5rem 1.8rem;
   display: flex;
   flex-direction: row;
   justify-content: space-between;
   align-items: center;
-  min-height: 160px;
+  min-height: 140px;
   cursor: pointer;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.07);
-  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), background 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
+  transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), background 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease;
 }
 
 #kiosk-app .glass-card:hover {
-  transform: translateY(-6px);
+  transform: translateY(-4px);
   background: #FAFAFA;
-  border-color: rgba(0, 0, 0, 0.12);
-  box-shadow: 0 14px 40px rgba(0, 0, 0, 0.12);
+  border-color: rgba(0, 0, 0, 0.14);
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.10);
 }
 
 #kiosk-app .glass-card-content {
   display: flex;
-  flex-direction: column;
-  align-items: flex-start;
+  flex-direction: row;
+  align-items: center;
   text-align: left;
-  gap: 1.1rem;
+  gap: 1.25rem;
+  flex: 1;
 }
 
 #kiosk-app .glass-card-icon-wrap {
-  width: 58px;
-  height: 58px;
-  border-radius: 16px;
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
   color: var(--text-main, #1A1A1A);
-  box-shadow: none;
   flex-shrink: 0;
 }
 
@@ -786,12 +786,10 @@
 
 #kiosk-app .glass-card-title {
   font-size: 1.4rem;
-  font-weight: 700;
+  font-weight: 800;
   margin: 0;
   color: var(--text-main, #1A1A1A);
-  text-shadow: none;
   line-height: 1.25;
-  text-align: left;
 }
 
 #kiosk-app .glass-card-desc {
@@ -799,12 +797,11 @@
   color: #6B7280;
   margin: 0;
   line-height: 1.4;
-  text-align: left;
 }
 
 #kiosk-app .glass-card-arrow {
-  width: 46px;
-  height: 46px;
+  width: 44px;
+  height: 44px;
   border-radius: 50%;
   background: #F0F0F0;
   border: 1px solid rgba(0, 0, 0, 0.08);
@@ -812,14 +809,18 @@
   align-items: center;
   justify-content: center;
   color: var(--text-main, #1A1A1A);
-  backdrop-filter: none;
   flex-shrink: 0;
-  transition: transform var(--transition-fast), background var(--transition-fast);
+  transition: transform var(--transition-fast), background var(--transition-fast), color var(--transition-fast);
 }
 
 #kiosk-app .glass-card:hover .glass-card-arrow {
   transform: translateX(4px);
-  background: #E0E0E0;
+  background: #1A1A1A;
+  color: #ffffff;
+}
+
+#kiosk-app .glass-card:hover .glass-card-arrow svg {
+  stroke: #ffffff;
 }
 
 /* Quick Tip Banner */
@@ -999,6 +1000,160 @@
 
 #kiosk-app .btn-campus-home:active {
   transform: scale(0.95);
+}
+
+/* ==========================================================================
+   DIRECTORY SEARCH BAR & FILTERS STRIP (Classrooms, Faculty, Outdoor)
+   ========================================================================== */
+#kiosk-app .kiosk-dir-searchbar-strip {
+  width: 100%;
+  background: #FFFFFF;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.07);
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.03);
+  padding: 0.95rem 3.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.5rem;
+  flex-wrap: wrap;
+  z-index: 15;
+  flex-shrink: 0;
+}
+
+#kiosk-app .kiosk-dir-search-wrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+  background: #F3F4F6;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  border-radius: 9999px;
+  padding: 0 1.25rem;
+  height: 52px;
+  min-width: 360px;
+  max-width: 580px;
+  flex: 1;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+#kiosk-app .kiosk-dir-search-wrap:focus-within {
+  background: #FFFFFF;
+  border-color: #1A1A1A;
+  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.1);
+}
+
+#kiosk-app .kiosk-dir-search-icon {
+  color: #9CA3AF;
+  flex-shrink: 0;
+  margin-right: 0.75rem;
+  transition: color 0.2s ease;
+}
+
+#kiosk-app .kiosk-dir-search-wrap:focus-within .kiosk-dir-search-icon {
+  color: #1A1A1A;
+}
+
+#kiosk-app .kiosk-dir-search-input {
+  flex: 1;
+  height: 100%;
+  background: transparent;
+  border: none;
+  outline: none;
+  font-size: 1.02rem;
+  font-weight: 600;
+  color: #1A1A1A;
+  font-family: inherit;
+}
+
+#kiosk-app .kiosk-dir-search-input::placeholder {
+  color: #9CA3AF;
+  font-weight: 500;
+}
+
+#kiosk-app .kiosk-dir-search-clear {
+  background: #E5E7EB;
+  border: none;
+  border-radius: 50%;
+  width: 26px;
+  height: 26px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #4B5563;
+  cursor: pointer;
+  margin-left: 0.5rem;
+  flex-shrink: 0;
+  transition: background 0.15s ease, color 0.15s ease;
+}
+
+#kiosk-app .kiosk-dir-search-clear:hover {
+  background: #1A1A1A;
+  color: #ffffff;
+}
+
+#kiosk-app .kiosk-dir-chip-row {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  flex-wrap: wrap;
+}
+
+#kiosk-app .kiosk-dir-chip {
+  padding: 0.55rem 1.25rem;
+  border-radius: 9999px;
+  font-size: 0.95rem;
+  font-weight: 700;
+  cursor: pointer;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  background: #FFFFFF;
+  color: #1A1A1A;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04);
+  transition: all 0.18s cubic-bezier(0.16, 1, 0.3, 1);
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  user-select: none;
+}
+
+#kiosk-app .kiosk-dir-chip:hover {
+  background: #F3F4F6;
+  border-color: rgba(0, 0, 0, 0.18);
+  transform: translateY(-1px);
+}
+
+#kiosk-app .kiosk-dir-chip.active {
+  background: #1A1A1A;
+  color: #FFFFFF;
+  border-color: #1A1A1A;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.18);
+}
+
+#kiosk-app .kiosk-dir-chip-sm {
+  padding: 0.42rem 0.95rem;
+  font-size: 0.88rem;
+}
+
+#kiosk-app .kiosk-dir-chip-divider {
+  width: 1px;
+  height: 22px;
+  background: rgba(0, 0, 0, 0.12);
+  margin: 0 0.35rem;
+  display: inline-block;
+}
+
+#kiosk-app .kiosk-dir-footer {
+  background: #1A1A1A;
+  padding: 0.85rem 1.5rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 0.6rem;
+  color: #FFFFFF;
+  font-size: 0.85rem;
+  font-weight: 600;
+  flex-shrink: 0;
+  text-align: center;
+  z-index: 10;
+  letter-spacing: 0.02em;
 }
 
 /* Directory Main Content (Scrollable Area) */
@@ -1933,6 +2088,30 @@
   transform: scale(0.95) !important;
 }
 
+/* Floating Kiosk Refresh Button on Map View */
+#kiosk-refresh-btn {
+  transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1) !important;
+}
+
+#kiosk-refresh-btn:hover {
+  background: #F3F4F6 !important;
+  transform: translateY(-2px) !important;
+  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.12) !important;
+}
+
+#kiosk-refresh-btn:hover svg {
+  animation: kioskRefreshSpin 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+#kiosk-refresh-btn:active {
+  transform: scale(0.95) !important;
+}
+
+@keyframes kioskRefreshSpin {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+
 /* Responsive & High-Res Viewport Scaling */
 @media (max-width: 1024px) {
   #kiosk-app .glass-cards-grid {
@@ -2133,38 +2312,45 @@
   box-sizing: border-box;
 }
 
+/* On desktop/kiosk the scroll wrapper must NOT scroll — everything fits in view */
 .kiosk-side-panel-scroll {
   width: 100%;
-  height: 100%;
-  flex: 1;
+  /* Take all remaining height of the panel */
+  flex: 1 1 0;
+  min-height: 0;
   display: flex;
   flex-direction: column;
-  overflow-y: auto;
+  overflow: hidden;           /* No scrolling on 32-inch kiosk */
   overflow-x: hidden;
   scrollbar-width: none;
   padding-left: 30px;
+  box-sizing: border-box;
 }
 
-/* ── DESTINATION INFO PANEL (Matches Screenshot Design Exactly) ─────────── */
+/* ── DESTINATION INFO PANEL ─────────────────────────────────────────────── */
 .kiosk-panel-info {
-  padding: 24px 22px 22px 0px;
+  padding: 20px 22px 20px 0px;
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
   box-sizing: border-box;
-  flex: 1;
-  min-height: 100%;
-  gap: 16px;
+  flex: 1 1 0;
+  min-height: 0;              /* Allow shrinking — critical for no-overflow layout */
+  gap: 12px;
   margin-left: 6px;
 }
 
 .kiosk-panel-info-main-content {
   display: flex;
   flex-direction: column;
-  gap: 14px;
-  flex: 1;
-  justify-content: justify;
-
+  gap: 10px;
+  /* This section fills available space and scrolls internally if content is tall */
+  flex: 1 1 0;
+  min-height: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(0,0,0,0.15) transparent;
+  -webkit-overflow-scrolling: touch;
 }
 
 /* Header Topbar & Title */
@@ -2265,6 +2451,15 @@
   display: flex;
   flex-direction: column;
   gap: 10px;
+  flex-shrink: 0;
+}
+
+/* Wrapper around the QR code — stretches to fill remaining flex space on kiosk */
+.kiosk-qr-section-wrap {
+  margin-top: 8px;
+  display: flex;
+  flex-direction: column;
+  flex: 0 0 auto;
 }
 
 .kiosk-info-row-card {
@@ -2379,12 +2574,16 @@
 }
 
 /* ── CTA Buttons Group ── */
+/* Always pinned to the bottom — never hidden behind overflow */
 .kiosk-panel-cta-group {
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 8px;
+  /* Push to bottom of the flex column, but never overflow the panel */
   margin-top: auto;
-  padding-top: 10px;
+  flex-shrink: 0;             /* Must not be squished */
+  padding-top: 8px;
+  padding-bottom: 4px;
 }
 
 /* Primary View Indoor Button — Solid Rich Emerald Button */
@@ -3310,9 +3509,18 @@
   width: 100%;
   margin-top: 2px;
   overflow-x: auto;
+  overflow-y: hidden;
   display: flex;
   justify-content: flex-start;
   scrollbar-width: none;
+  touch-action: pan-x;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior-x: contain;
+  cursor: grab;
+}
+
+.kiosk-fs-chips-wrap:active {
+  cursor: grabbing;
 }
 
 .kiosk-fs-chips-wrap::-webkit-scrollbar {
@@ -5030,3 +5238,310 @@
   right: 8px !important;
   color: #64748b !important;
 }
+
+/* ==========================================================================
+   SMOOTH TOUCH & SCROLLING CONTROLS FOR KIOSK
+   ========================================================================== */
+#kiosk-app .directory-main-content,
+#kiosk-app .kiosk-panel-scrollable,
+#kiosk-app .kiosk-side-panel {
+  -webkit-overflow-scrolling: touch;
+  touch-action: pan-y;
+  overscroll-behavior: contain;
+  scroll-behavior: smooth;
+}
+
+/* Custom slim modern scrollbar */
+#kiosk-app .directory-main-content::-webkit-scrollbar,
+#kiosk-app .kiosk-panel-scrollable::-webkit-scrollbar,
+#kiosk-app .kiosk-side-panel::-webkit-scrollbar {
+  width: 8px;
+}
+
+#kiosk-app .directory-main-content::-webkit-scrollbar-track,
+#kiosk-app .kiosk-panel-scrollable::-webkit-scrollbar-track,
+#kiosk-app .kiosk-side-panel::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.03);
+  border-radius: 9999px;
+}
+
+#kiosk-app .directory-main-content::-webkit-scrollbar-thumb,
+#kiosk-app .kiosk-panel-scrollable::-webkit-scrollbar-thumb,
+#kiosk-app .kiosk-side-panel::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.16);
+  border-radius: 9999px;
+  border: 2px solid transparent;
+  background-clip: content-box;
+}
+
+#kiosk-app .directory-main-content::-webkit-scrollbar-thumb:hover,
+#kiosk-app .kiosk-panel-scrollable::-webkit-scrollbar-thumb:hover,
+#kiosk-app .kiosk-side-panel::-webkit-scrollbar-thumb:hover {
+  background: rgba(0, 0, 0, 0.32);
+}
+
+/* ==========================================================================
+   32-INCH HORIZONTAL KIOSK ALIGNMENT (Landscape 1920x1080 Viewport)
+   ========================================================================== */
+@media (min-width: 1024px) {
+  /* 1. Instruction Dashboard: Fit strictly in 100vh without vertical overflow */
+  #kiosk-app .glass-dashboard-screen {
+    height: 100vh !important;
+    overflow: hidden !important;
+  }
+
+  #kiosk-app .glass-main-wrapper {
+    max-width: 1720px !important;
+    padding: clamp(1rem, 2vh, 1.8rem) clamp(2rem, 3.5vw, 4rem) !important;
+    height: 100vh !important;
+    max-height: 100vh !important;
+    display: flex !important;
+    flex-direction: column !important;
+    justify-content: space-between !important;
+    box-sizing: border-box !important;
+    overflow-y: hidden !important;
+  }
+
+  #kiosk-app .glass-top-nav {
+    margin-bottom: clamp(0.5rem, 1.4vh, 1.2rem) !important;
+  }
+
+  #kiosk-app .glass-hero-center {
+    margin-bottom: clamp(0.6rem, 1.5vh, 1.4rem) !important;
+  }
+
+  #kiosk-app .glass-serif-title .italic {
+    font-size: clamp(2.4rem, 4.2vh, 3.6rem) !important;
+    line-height: 1.15 !important;
+  }
+
+  #kiosk-app .glass-serif-title .bold {
+    font-size: clamp(2.8rem, 4.8vh, 4rem) !important;
+    line-height: 1.15 !important;
+  }
+
+  #kiosk-app .glass-cta-row {
+    margin-top: clamp(0.6rem, 1.4vh, 1.2rem) !important;
+  }
+
+  #kiosk-app .btn-glass-explore {
+    padding: clamp(0.85rem, 1.4vh, 1.15rem) clamp(2rem, 2.5vw, 2.6rem) !important;
+    font-size: clamp(1.1rem, 1.8vh, 1.28rem) !important;
+  }
+
+  #kiosk-app .glass-cards-grid {
+    grid-template-columns: repeat(3, 1fr) !important;
+    gap: clamp(1rem, 1.8vw, 1.8rem) !important;
+    margin-bottom: clamp(0.6rem, 1.4vh, 1.2rem) !important;
+    width: 100% !important;
+  }
+
+  #kiosk-app .glass-card {
+    min-height: clamp(120px, 15vh, 150px) !important;
+    padding: clamp(1rem, 1.6vh, 1.4rem) clamp(1.4rem, 1.8vw, 1.8rem) !important;
+  }
+
+  #kiosk-app .glass-quick-tip-banner {
+    padding: clamp(0.65rem, 1.2vh, 0.95rem) clamp(1.2rem, 1.8vw, 1.8rem) !important;
+    margin-top: 0 !important;
+    margin-bottom: clamp(0.3rem, 0.8vh, 0.6rem) !important;
+  }
+
+  /* 2. Directory Screens on 32-inch landscape display */
+  #kiosk-app .directory-screen {
+    height: 100vh !important;
+    overflow: hidden !important;
+  }
+
+  #kiosk-app .directory-main-content {
+    max-width: 1720px !important;
+    padding: 1.6rem clamp(2rem, 3.5vw, 4rem) !important;
+  }
+
+  #kiosk-app .kiosk-dir-searchbar-strip {
+    padding: 0.85rem clamp(2rem, 3.5vw, 4rem) !important;
+  }
+
+  #kiosk-app .classrooms-cards-grid {
+    grid-template-columns: repeat(auto-fill, minmax(360px, 1fr)) !important;
+    gap: 1.4rem !important;
+  }
+
+  #kiosk-app .department-cards-grid {
+    grid-template-columns: repeat(auto-fill, minmax(370px, 1fr)) !important;
+    gap: 1.5rem !important;
+  }
+
+  #kiosk-app .faculty-grid {
+    grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)) !important;
+    gap: 1.4rem !important;
+  }
+
+  #kiosk-app .outdoor-poi-grid {
+    grid-template-columns: repeat(auto-fill, minmax(370px, 1fr)) !important;
+    gap: 1.5rem !important;
+  }
+
+  /* 3. Map Viewport on 32-inch kiosk */
+  #kiosk-app .kiosk-map-root {
+    height: 100vh !important;
+    width: 100vw !important;
+    overflow: hidden !important;
+  }
+
+  #kiosk-app .kiosk-map-body.kiosk-split .kiosk-map-col {
+    width: 62% !important;
+    flex: 0 0 62% !important;
+    height: 100% !important;
+  }
+
+  #kiosk-app .kiosk-map-body.kiosk-split .kiosk-panel-col {
+    width: 38% !important;
+    flex: 0 0 38% !important;
+    height: 100% !important;
+    overflow: hidden !important;
+  }
+
+  /* Side panel fits the full 32-inch panel column height without scrolling */
+  #kiosk-app .kiosk-side-panel {
+    height: 100% !important;
+    overflow: hidden !important;
+    border-radius: 0 !important;
+    border: 1px solid rgba(0,0,0,0.08) !important;
+    box-shadow: -4px 0 32px rgba(15,23,42,0.08) !important;
+  }
+
+  #kiosk-app .kiosk-side-panel-scroll {
+    overflow: hidden !important;     /* Strictly no-scroll on 32-inch kiosk */
+    padding-left: 26px !important;
+  }
+
+  /* Tighten up spacing so all content fits in 1080p height */
+  #kiosk-app .kiosk-panel-info {
+    padding: clamp(10px, 1.2vh, 18px) clamp(14px, 1.2vw, 20px) clamp(10px, 1.2vh, 16px) 0 !important;
+    gap: clamp(6px, 0.8vh, 12px) !important;
+  }
+
+  #kiosk-app .kiosk-panel-info-main-content {
+    gap: clamp(5px, 0.7vh, 10px) !important;
+    /* Allow scrolling within the content area — prevents QR from being hard-clipped */
+    overflow-y: auto !important;
+    overflow-x: hidden !important;
+    scrollbar-width: thin !important;
+  }
+
+  /* Info row cards — reduce padding so rows don't push buttons off screen */
+  #kiosk-app .kiosk-info-row-card {
+    padding: clamp(7px, 0.9vh, 11px) clamp(10px, 1vw, 14px) !important;
+    border-radius: 12px !important;
+  }
+
+  #kiosk-app .kiosk-info-row-icon-wrap {
+    width: 34px !important;
+    height: 34px !important;
+  }
+
+  /* Destination name — slightly smaller to fit */
+  #kiosk-app .kiosk-panel-dest-name {
+    font-size: clamp(15px, 1.9vh, 20px) !important;
+  }
+
+  #kiosk-app .kiosk-info-row-value {
+    font-size: clamp(13px, 1.4vh, 15px) !important;
+  }
+
+  /* CTA buttons — always visible at the bottom, no gap */
+  #kiosk-app .kiosk-panel-cta-group {
+    /* Override the default margin-top:auto — sit directly below content, no gap */
+    margin-top: 0 !important;
+    padding-top: clamp(6px, 0.7vh, 10px) !important;
+    gap: clamp(5px, 0.7vh, 9px) !important;
+    flex-shrink: 0 !important;
+    padding-bottom: clamp(6px, 0.8vh, 12px) !important;
+  }
+
+  #kiosk-app .kiosk-btn-view-indoor {
+    height: clamp(42px, 5.2vh, 50px) !important;
+    min-height: clamp(42px, 5.2vh, 50px) !important;
+    font-size: clamp(13px, 1.5vh, 15px) !important;
+    border-radius: 13px !important;
+  }
+
+  #kiosk-app .kiosk-btn-new-search {
+    height: clamp(38px, 4.8vh, 46px) !important;
+    min-height: clamp(38px, 4.8vh, 46px) !important;
+    font-size: clamp(12px, 1.4vh, 13.5px) !important;
+    border-radius: 13px !important;
+  }
+
+  /* QR section wrap — grow to fill all space between rows and buttons */
+  #kiosk-app .kiosk-qr-section-wrap {
+    flex: 1 1 0 !important;
+    min-height: 0 !important;
+    margin-top: 4px !important;
+    display: flex !important;
+    flex-direction: column !important;
+  }
+
+  /* QR code section — fill all the remaining space between info rows and buttons */
+  #kiosk-app .kiosk-qr-wrapper {
+    /* Let the QR section grow to fill leftover vertical space */
+    flex: 1 1 0 !important;
+    min-height: 0 !important;
+    overflow: visible !important;
+    /* Center everything vertically within the expanded area */
+    justify-content: center !important;
+    gap: 10px !important;
+    padding: clamp(12px, 1.5vh, 20px) !important;
+  }
+
+  #kiosk-app .kiosk-qr-canvas-box {
+    padding: clamp(10px, 1.2vh, 16px) !important;
+    display: flex !important;
+    justify-content: center !important;
+    align-items: center !important;
+    /* Make the canvas box fill the qr-wrapper's available height */
+    flex: 1 1 0 !important;
+    min-height: 0 !important;
+    max-height: 280px !important;
+  }
+
+  /* Scale the QR canvas to be large — 32-inch kiosk has plenty of space */
+  #kiosk-app .kiosk-qr-canvas-box canvas {
+    /* 210 is the native render size — go up to it fully */
+    width: min(210px, 22vh) !important;
+    height: min(210px, 22vh) !important;
+  }
+
+  /* QR header — keep compact so canvas gets maximum height */
+  #kiosk-app .kiosk-qr-header {
+    gap: 10px !important;
+    padding-bottom: 0 !important;
+    flex-shrink: 0 !important;
+  }
+
+  #kiosk-app .kiosk-qr-icon-badge {
+    width: 36px !important;
+    height: 36px !important;
+    flex-shrink: 0 !important;
+  }
+
+  #kiosk-app .kiosk-qr-title {
+    font-size: clamp(12px, 1.4vh, 15px) !important;
+  }
+
+  #kiosk-app .kiosk-qr-sub {
+    font-size: clamp(10px, 1.2vh, 13px) !important;
+  }
+
+  /* Top bar header items for split panel view */
+  #kiosk-app .kiosk-panel-info-topbar {
+    padding-top: clamp(4px, 0.6vh, 8px) !important;
+    padding-bottom: clamp(4px, 0.6vh, 8px) !important;
+  }
+
+  #kiosk-app .kiosk-panel-dest-icon-wrap {
+    width: clamp(38px, 4.5vh, 50px) !important;
+    height: clamp(38px, 4.5vh, 50px) !important;
+  }
+}

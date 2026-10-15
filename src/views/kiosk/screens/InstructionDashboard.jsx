@@ -1,4 +1,4 @@
-﻿import React, { useState } from 'react';
+import React, { useState } from 'react';
 import {
   Clock,
   MapPin,
@@ -11,7 +11,7 @@ import {
   VolumeX,
   Compass,
   Sparkles,
-  Monitor
+  Monitor,
 } from 'lucide-react';
 import { MapGuideFlashcard } from '../components/MapGuideFlashcard';
 import { TRANSLATIONS } from '../data/translations';
@@ -28,7 +28,7 @@ export const InstructionDashboard = ({
   currentTime,
   language = 'en',
   soundEnabled,
-  onToggleSound
+  onToggleSound,
 }) => {
   const [isInstructionFlashcardOpen, setIsInstructionFlashcardOpen] = useState(false);
   const t = TRANSLATIONS[language] || TRANSLATIONS.en;
@@ -77,9 +77,17 @@ export const InstructionDashboard = ({
               <div className="glass-menu-divider"></div>
               <button
                 onClick={onToggleSound}
-                title={soundEnabled ? "Mute Sound" : "Enable Sound"}
+                title={soundEnabled ? 'Mute Sound' : 'Enable Sound'}
                 className="glass-audio-btn"
-                style={{ background: 'transparent', border: 'none', color: '#1A1A1A', cursor: 'pointer', display: 'flex', alignItems: 'center', padding: 0 }}
+                style={{
+                  background: 'transparent',
+                  border: 'none',
+                  color: '#1A1A1A',
+                  cursor: 'pointer',
+                  display: 'flex',
+                  alignItems: 'center',
+                  padding: 0,
+                }}
               >
                 {soundEnabled ? <Volume2 size={18} color="#1A1A1A" /> : <VolumeX size={18} color="#6B7280" />}
               </button>
@@ -95,10 +103,7 @@ export const InstructionDashboard = ({
           </h1>
 
           <div className="glass-cta-row">
-            <button
-              className="btn-glass-explore"
-              onClick={() => onViewMap()}
-            >
+            <button className="btn-glass-explore" onClick={() => onViewMap()}>
               <Compass size={26} className="glass-btn-icon-left" color="#ffffff" />
               <span className="glass-btn-label">Explore Interactive Map</span>
               <ArrowRight size={24} className="glass-btn-icon-right" color="#ffffff" />
@@ -106,12 +111,15 @@ export const InstructionDashboard = ({
           </div>
         </div>
 
-        {/* Services Grid */}
+        {/* Services Grid (Clean 32-inch Card View) */}
         <div className="glass-cards-grid">
           {/* Card 1: Classroom */}
           <div className="glass-card" onClick={() => handleCardClick('classrooms')}>
             <div className="glass-card-content">
-              <div className="glass-card-icon-wrap" style={{ background: '#F0F0F0', color: '#1A1A1A', borderRadius: '50%' }}>
+              <div
+                className="glass-card-icon-wrap"
+                style={{ background: '#F0F0F0', color: '#1A1A1A', borderRadius: '50%' }}
+              >
                 <Monitor size={28} color="#1A1A1A" />
               </div>
               <div className="glass-card-text-group">
@@ -127,7 +135,10 @@ export const InstructionDashboard = ({
           {/* Card 2: Faculties */}
           <div className="glass-card" onClick={() => handleCardClick('faculty')}>
             <div className="glass-card-content">
-              <div className="glass-card-icon-wrap" style={{ background: '#F0F0F0', color: '#1A1A1A', borderRadius: '50%' }}>
+              <div
+                className="glass-card-icon-wrap"
+                style={{ background: '#F0F0F0', color: '#1A1A1A', borderRadius: '50%' }}
+              >
                 <User size={28} color="#1A1A1A" />
               </div>
               <div className="glass-card-text-group">
@@ -143,12 +154,15 @@ export const InstructionDashboard = ({
           {/* Card 3: Outdoor Navigation */}
           <div className="glass-card" onClick={() => handleCardClick('outdoor')}>
             <div className="glass-card-content">
-              <div className="glass-card-icon-wrap" style={{ background: '#F0F0F0', color: '#1A1A1A', borderRadius: '50%' }}>
+              <div
+                className="glass-card-icon-wrap"
+                style={{ background: '#F0F0F0', color: '#1A1A1A', borderRadius: '50%' }}
+              >
                 <MapPin size={28} color="#1A1A1A" />
               </div>
               <div className="glass-card-text-group">
                 <h3 className="glass-card-title">Outdoor Navigation</h3>
-                <p className="glass-card-desc">Get turn-by-turn directions across campus blocks & POIs.</p>
+                <p className="glass-card-desc">Get directions across campus blocks & POIs.</p>
               </div>
             </div>
             <div className="glass-card-arrow">
@@ -170,12 +184,17 @@ export const InstructionDashboard = ({
           <div className="glass-tip-vertical-divider"></div>
           <div className="glass-tip-text-content">
             <h4 className="glass-tip-title">Quick Guide</h4>
-            <p className="glass-tip-desc">Select any destination card or use the live search bar on the map screen for turn-by-turn routes.</p>
+            <p className="glass-tip-desc">
+              Select any destination card or use the live search bar on the map screen for turn-by-turn routes.
+            </p>
           </div>
         </div>
 
         {/* Screen Indicators */}
-        <div className="landing-indicators" style={{ alignSelf: 'center', marginTop: '1rem', paddingBottom: '0.5rem' }}>
+        <div
+          className="landing-indicators"
+          style={{ alignSelf: 'center', marginTop: '1rem', paddingBottom: '0.5rem' }}
+        >
           <div className="indicator" onClick={onGoHome} style={{ cursor: 'pointer' }}></div>
           <div className="indicator active"></div>
           <div className="indicator" onClick={onViewMap} style={{ cursor: 'pointer' }}></div>

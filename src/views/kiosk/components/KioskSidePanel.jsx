@@ -1,4 +1,4 @@
-﻿import {
+import {
   Building2,
   Layers,
   MapPin,
@@ -180,7 +180,7 @@ export function KioskSidePanel({
           </div>
 
           {/* Mobile QR Code Section */}
-          <div style={{ marginTop: 8 }}>
+          <div className="kiosk-qr-section-wrap">
             <KioskQRCode destination={destination} />
           </div>
         </div>
