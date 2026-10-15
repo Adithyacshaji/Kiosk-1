@@ -3531,9 +3531,20 @@
   box-shadow: 0 16px 48px rgba(0, 0, 0, 0.16) !important;
   border: 1px solid rgba(0, 0, 0, 0.08) !important;
   background: #ffffff !important;
-
   max-height: min(360px, calc(100vh - 460px)) !important;
   z-index: 2000 !important;
+  /* Prevent pull-to-refresh from bubbling up through the dropdown wrapper */
+  overscroll-behavior: none !important;
+  overscroll-behavior-y: none !important;
+  touch-action: pan-y !important;
+}
+
+/* Inner scroll list — the actual scrollable element */
+.kiosk-floating-search-wrapper .kiosk-fs-input-wrap .rounded-3xl > div {
+  overscroll-behavior: none !important;
+  overscroll-behavior-y: none !important;
+  touch-action: pan-y !important;
+  -webkit-overflow-scrolling: touch !important;
 }
 
 .kiosk-floating-search-wrapper .kiosk-fs-input-wrap .rounded-3xl button {

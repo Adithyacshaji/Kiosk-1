@@ -1,4 +1,4 @@
-﻿import { useState, useRef, useEffect, useMemo, useDeferredValue } from "react";
+import { useState, useRef, useEffect, useMemo, useDeferredValue } from "react";
 import { useDatabase } from "../../../shared/context/DatabaseContext";
 import { Search, X, User, DoorOpen, MapPin, Building2, Mic, QrCode } from "lucide-react";
 import ImageModal from "./ImageModal";
@@ -519,7 +519,15 @@ function SearchBar({ onSelect, currentFloor = "G", isIndoorMode = false, clearRe
       {showResults && (
         <div className="absolute top-18 left-4 right-4 bg-white  rounded-[32px] shadow-md border border-gray-100 overflow-hidden z-2000" ref={resultsRef}>
           {results.length > 0 ? (
-            <div className="py-2 max-h-[60vh] overflow-y-auto custom-scrollbar">
+            <div
+              className="py-2 max-h-[60vh] overflow-y-auto custom-scrollbar"
+              style={{
+                overscrollBehavior: 'none',
+                overscrollBehaviorY: 'none',
+                touchAction: 'pan-y',
+                WebkitOverflowScrolling: 'touch',
+              }}
+            >
               {results.map((location, index) => {
                 const isFaculty = location.type === "faculty";
                 const normalizedName = isFaculty ? normalizeName(location.name) : "";
