@@ -9,14 +9,24 @@
     <meta name="mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <title>Campus Connect - Kiosk</title>
-    <!-- PULL-TO-REFRESH CONTROL:
-         - Touches INSIDE scrollable containers: scroll smoothly up/down, never trigger pull-to-refresh
-         - Touches OUTSIDE scrollable containers: allow normal pull-to-refresh
+    <!-- PERMANENTLY KILL PULL-TO-REFRESH ACROSS APP:
+         Prevents pull-to-refresh when dragging down anywhere at the top of scroll containers or outside,
+         while allowing full smooth up/down scrolling throughout all content.
     -->
     <script>
       (function() {
-        var activeScrollEl = null;
-        var lastTouchY = 0;
+        try {
+          document.documentElement.style.overscrollBehavior = 'none';
+          document.documentElement.style.overscrollBehaviorY = 'none';
+          if (document.body) {
+            document.body.style.overscrollBehavior = 'none';
+            document.body.style.overscrollBehaviorY = 'none';
+          }
+        } catch(e) {}
+
+        var activeScrollInfo = null;
+        var touchStartY = 0;
+        var touchStartX = 0;
 
         function findScrollableParent(target) {
           var el = target;
@@ -25,8 +35,11 @@
               var style = window.getComputedStyle(el);
               var oy = style.overflowY;
               var ox = style.overflowX;
-              if (oy === 'auto' || oy === 'scroll' || ox === 'auto' || ox === 'scroll') {
-                return el;
+              if (oy === 'auto' || oy === 'scroll') {
+                return { el: el, axis: 'y' };
+              }
+              if (ox === 'auto' || ox === 'scroll') {
+                return { el: el, axis: 'x' };
               }
             }
             el = el.parentElement || el.parentNode;
@@ -35,50 +48,51 @@
         }
 
         window.addEventListener('touchstart', function(e) {
-          if (e.touches.length !== 1) {
-            activeScrollEl = null;
-            return;
-          }
-          lastTouchY = e.touches[0].clientY;
-          activeScrollEl = findScrollableParent(e.target);
-
-          // If touching a scroll container currently at top (scrollTop 0),
-          // set scrollTop to 1px so pulling down moves the element rather than chaining to viewport
-          if (activeScrollEl && activeScrollEl.scrollTop === 0 && activeScrollEl.scrollHeight > activeScrollEl.clientHeight) {
-            activeScrollEl.scrollTop = 1;
+          if (e.touches.length === 1) {
+            touchStartY = e.touches[0].clientY;
+            touchStartX = e.touches[0].clientX;
+            activeScrollInfo = findScrollableParent(e.target);
+          } else {
+            activeScrollInfo = null;
           }
         }, { passive: true, capture: true });
 
         window.addEventListener('touchmove', function(e) {
           if (e.touches.length !== 1) return;
-
-          // 1. Outside scroll area: allow natural browser behavior (pull-to-refresh)
-          if (!activeScrollEl) return;
-
-          // 2. Inside scroll area:
           var currentY = e.touches[0].clientY;
-          var dy = currentY - lastTouchY;
-          lastTouchY = currentY;
+          var currentX = e.touches[0].clientX;
+          var dy = currentY - touchStartY;
+          var dx = currentX - touchStartX;
 
-          // If moving finger DOWN while at the top (scrollTop <= 0):
-          // Block pull-to-refresh from taking over the scroll container!
-          if (dy > 0 && activeScrollEl.scrollTop <= 0) {
-            if (e.cancelable) e.preventDefault();
-            if (activeScrollEl.scrollHeight > activeScrollEl.clientHeight) {
-              activeScrollEl.scrollTop = 1;
+          // If horizontal scrolling on chips/horizontal lists:
+          if (activeScrollInfo && activeScrollInfo.axis === 'x') {
+            if (Math.abs(dx) > Math.abs(dy)) {
+              return; // Allow native horizontal scroll
             }
           }
-          // In all other cases:
-          // - dy > 0 and scrollTop > 0: native scroll UP works smoothly
-          // - dy < 0: native scroll DOWN works smoothly
+
+          // If finger is dragging DOWN:
+          if (dy > 0) {
+            // If NOT in a vertical scroll container, OR if the scroll container is at/near top (scrollTop <= 0):
+            // Calling preventDefault physically prevents the browser from initiating pull-to-refresh!
+            if (!activeScrollInfo || activeScrollInfo.axis !== 'y' || activeScrollInfo.el.scrollTop <= 0) {
+              if (e.cancelable) {
+                e.preventDefault();
+              }
+            }
+            // If activeScrollInfo has axis 'y' and scrollTop > 0:
+            // e.preventDefault() is NOT called, so the container scrolls UP smoothly towards 0!
+          }
+          // If dy <= 0 (finger moving UP):
+          // e.preventDefault() is NEVER called, so container scrolls DOWN into content smoothly!
         }, { passive: false, capture: true });
 
         window.addEventListener('touchend', function() {
-          activeScrollEl = null;
+          activeScrollInfo = null;
         }, { passive: true, capture: true });
 
         window.addEventListener('touchcancel', function() {
-          activeScrollEl = null;
+          activeScrollInfo = null;
         }, { passive: true, capture: true });
       })();
     </script>

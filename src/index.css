@@ -33,31 +33,21 @@
   height: 0 !important;
 }
 
-html {
-  width: 100%;
-  height: 100%;
-  margin: 0;
-  padding: 0;
-  /* Allows native pull-to-refresh when dragging outside scroll containers */
-  overscroll-behavior-y: auto;
-}
-
-body {
-  width: 100%;
-  height: 100%;
-  margin: 0;
-  padding: 0;
-  overflow: hidden;
-  touch-action: manipulation;
-  overscroll-behavior-y: auto;
-}
-
+html,
+body,
 #root {
   width: 100%;
   height: 100%;
   margin: 0;
   padding: 0;
   overflow: hidden;
+  /* Completely disable pull-to-refresh on browser viewport */
+  overscroll-behavior: none !important;
+  overscroll-behavior-y: none !important;
+}
+
+body {
+  touch-action: manipulation;
 }
 
 /* All scrollable containers: strictly isolate scrolling so the page does NOT refresh */
