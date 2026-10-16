@@ -25,6 +25,9 @@
   -webkit-tap-highlight-color: transparent;
   scrollbar-width: none !important;
   -ms-overflow-style: none !important;
+  /* Nuclear fix: disable pull-to-refresh on EVERY element globally */
+  overscroll-behavior: none !important;
+  overscroll-behavior-y: none !important;
 }
 
 *::-webkit-scrollbar {
