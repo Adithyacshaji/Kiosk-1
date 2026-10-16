@@ -6,7 +6,44 @@
     <link rel="manifest" href="/manifest.json" />
     <meta name="theme-color" content="#020617" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
     <title>Campus Connect - Kiosk</title>
+    <!-- KILL PULL-TO-REFRESH: runs before React/CSS so the browser never sees the gesture -->
+    <script>
+      // 1. CSS-level kill (fastest path)
+      document.documentElement.style.overscrollBehavior = 'none';
+      document.documentElement.style.overscrollBehaviorY = 'none';
+
+      // 2. JS-level kill — blocks the native pull-to-refresh touchmove gesture.
+      //    Checks if the touched element (or any ancestor) still has scroll room.
+      //    If it's already at the top and the user is pulling down → preventDefault().
+      var _startY = 0;
+      document.addEventListener('touchstart', function(e) {
+        _startY = e.touches[0].clientY;
+      }, { passive: true });
+
+      document.addEventListener('touchmove', function(e) {
+        var dy = e.touches[0].clientY - _startY;
+        // Only block downward pulls (dy > 0 means finger moving down)
+        if (dy <= 0) return;
+        // Walk up the DOM to find the nearest scrollable ancestor
+        var el = e.target;
+        while (el && el !== document.body) {
+          var style = window.getComputedStyle(el);
+          var overflowY = style.overflowY;
+          var isScrollable = (overflowY === 'auto' || overflowY === 'scroll') && el.scrollHeight > el.clientHeight;
+          if (isScrollable) {
+            // Allow scroll only if there's room to scroll up (scrollTop > 0)
+            if (el.scrollTop > 0) return;
+            break; // at top of a scrollable element — block
+          }
+          el = el.parentElement;
+        }
+        // No scrollable ancestor with room, or at the top — block pull-to-refresh
+        if (e.cancelable) e.preventDefault();
+      }, { passive: false });
+    </script>
   </head>
   <body>
     <div id="root"></div>
