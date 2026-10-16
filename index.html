@@ -9,60 +9,54 @@
     <meta name="mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <title>Campus Connect - Kiosk</title>
-    <!-- KILL PULL-TO-REFRESH: runs before React/CSS so the browser never sees the gesture -->
+    <!-- KILL PULL-TO-REFRESH: capture phase fires BEFORE React/Leaflet passive listeners -->
     <script>
-      // Immediately apply CSS overscroll kill on the root element
+      // CSS kill — applied before any stylesheet loads
       document.documentElement.style.overscrollBehavior = 'none';
       document.documentElement.style.overscrollBehaviorY = 'none';
-      document.documentElement.style.touchAction = 'pan-x pan-y';
+      document.body && (document.body.style.overscrollBehavior = 'none');
 
-      // Track touch start position AND snapshot the scrollTop of the nearest
-      // scrollable ancestor at the moment the finger lands (not during move,
-      // since scrollTop can read as 0 mid-frame due to browser timing).
       var _touchStartY = 0;
       var _scrollableEl = null;
       var _scrollTopAtStart = 0;
 
       function findScrollableParent(el) {
         while (el && el !== document.documentElement) {
-          var style = window.getComputedStyle(el);
-          var oy = style.overflowY;
-          if ((oy === 'auto' || oy === 'scroll') && el.scrollHeight > el.clientHeight) {
-            return el;
-          }
+          var oy = window.getComputedStyle(el).overflowY;
+          if ((oy === 'auto' || oy === 'scroll') && el.scrollHeight > el.clientHeight) return el;
           el = el.parentElement;
         }
         return null;
       }
 
-      document.addEventListener('touchstart', function(e) {
+      // Use CAPTURE phase (capture:true) so this runs BEFORE any element's
+      // bubble-phase listeners. React and Leaflet register passive listeners on
+      // the bubble path — if those run first, Chrome marks the event as
+      // non-cancelable before we get a chance to call preventDefault().
+      window.addEventListener('touchstart', function(e) {
         if (e.touches.length !== 1) return;
         _touchStartY = e.touches[0].clientY;
         _scrollableEl = findScrollableParent(e.target);
-        // Snapshot scrollTop NOW (reliable at touchstart, not during move)
-        _scrollTopAtStart = _scrollableEl ? _scrollableEl.scrollTop : 0;
-      }, { passive: true });
+        _scrollTopAtStart = _scrollableEl ? Math.round(_scrollableEl.scrollTop) : 0;
+      }, { passive: true, capture: true });
 
-      document.addEventListener('touchmove', function(e) {
+      window.addEventListener('touchmove', function(e) {
         if (e.touches.length !== 1) return;
         var dy = e.touches[0].clientY - _touchStartY;
+        if (dy <= 0) return; // scrolling down (into content) — always allow
 
-        // Only care about downward pull (dy > 0 = finger moving down = scroll up)
-        if (dy <= 0) return;
-
-        // If there is no scrollable ancestor at all → always block
+        // Finger moving UP on screen = user pulling down = potential pull-to-refresh
         if (!_scrollableEl) {
+          // No scrollable parent at all — definitely block
           if (e.cancelable) e.preventDefault();
           return;
         }
-
-        // If the scrollable element was already at the top when the touch started
-        // → block (this is the pull-to-refresh gesture)
+        // Scrollable parent existed but was already at the very top when touch started
         if (_scrollTopAtStart <= 0) {
           if (e.cancelable) e.preventDefault();
         }
-        // Otherwise: element had scrolled content above → let it scroll normally
-      }, { passive: false });
+        // If scrollTopAtStart > 0 the element had content above → let it scroll up normally
+      }, { passive: false, capture: true });
     </script>
   </head>
   <body>
