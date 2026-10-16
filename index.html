@@ -9,54 +9,78 @@
     <meta name="mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <title>Campus Connect - Kiosk</title>
-    <!-- KILL PULL-TO-REFRESH: capture phase fires BEFORE React/Leaflet passive listeners -->
+    <!-- PULL-TO-REFRESH CONTROL:
+         - Touches INSIDE scrollable containers: scroll smoothly up/down, never trigger pull-to-refresh
+         - Touches OUTSIDE scrollable containers: allow normal pull-to-refresh
+    -->
     <script>
-      // CSS kill — applied before any stylesheet loads
-      document.documentElement.style.overscrollBehavior = 'none';
-      document.documentElement.style.overscrollBehaviorY = 'none';
-      document.body && (document.body.style.overscrollBehavior = 'none');
+      (function() {
+        var activeScrollEl = null;
+        var lastTouchY = 0;
 
-      var _touchStartY = 0;
-      var _scrollableEl = null;
-      var _scrollTopAtStart = 0;
-
-      function findScrollableParent(el) {
-        while (el && el !== document.documentElement) {
-          var oy = window.getComputedStyle(el).overflowY;
-          if ((oy === 'auto' || oy === 'scroll') && el.scrollHeight > el.clientHeight) return el;
-          el = el.parentElement;
+        function findScrollableParent(target) {
+          var el = target;
+          while (el && el !== document.body && el !== document.documentElement) {
+            if (el.nodeType === 1) {
+              var style = window.getComputedStyle(el);
+              var oy = style.overflowY;
+              var ox = style.overflowX;
+              if (oy === 'auto' || oy === 'scroll' || ox === 'auto' || ox === 'scroll') {
+                return el;
+              }
+            }
+            el = el.parentElement || el.parentNode;
+          }
+          return null;
         }
-        return null;
-      }
 
-      // Use CAPTURE phase (capture:true) so this runs BEFORE any element's
-      // bubble-phase listeners. React and Leaflet register passive listeners on
-      // the bubble path — if those run first, Chrome marks the event as
-      // non-cancelable before we get a chance to call preventDefault().
-      window.addEventListener('touchstart', function(e) {
-        if (e.touches.length !== 1) return;
-        _touchStartY = e.touches[0].clientY;
-        _scrollableEl = findScrollableParent(e.target);
-        _scrollTopAtStart = _scrollableEl ? Math.round(_scrollableEl.scrollTop) : 0;
-      }, { passive: true, capture: true });
+        window.addEventListener('touchstart', function(e) {
+          if (e.touches.length !== 1) {
+            activeScrollEl = null;
+            return;
+          }
+          lastTouchY = e.touches[0].clientY;
+          activeScrollEl = findScrollableParent(e.target);
 
-      window.addEventListener('touchmove', function(e) {
-        if (e.touches.length !== 1) return;
-        var dy = e.touches[0].clientY - _touchStartY;
-        if (dy <= 0) return; // scrolling down (into content) — always allow
+          // If touching a scroll container currently at top (scrollTop 0),
+          // set scrollTop to 1px so pulling down moves the element rather than chaining to viewport
+          if (activeScrollEl && activeScrollEl.scrollTop === 0 && activeScrollEl.scrollHeight > activeScrollEl.clientHeight) {
+            activeScrollEl.scrollTop = 1;
+          }
+        }, { passive: true, capture: true });
 
-        // Finger moving UP on screen = user pulling down = potential pull-to-refresh
-        if (!_scrollableEl) {
-          // No scrollable parent at all — definitely block
-          if (e.cancelable) e.preventDefault();
-          return;
-        }
-        // Scrollable parent existed but was already at the very top when touch started
-        if (_scrollTopAtStart <= 0) {
-          if (e.cancelable) e.preventDefault();
-        }
-        // If scrollTopAtStart > 0 the element had content above → let it scroll up normally
-      }, { passive: false, capture: true });
+        window.addEventListener('touchmove', function(e) {
+          if (e.touches.length !== 1) return;
+
+          // 1. Outside scroll area: allow natural browser behavior (pull-to-refresh)
+          if (!activeScrollEl) return;
+
+          // 2. Inside scroll area:
+          var currentY = e.touches[0].clientY;
+          var dy = currentY - lastTouchY;
+          lastTouchY = currentY;
+
+          // If moving finger DOWN while at the top (scrollTop <= 0):
+          // Block pull-to-refresh from taking over the scroll container!
+          if (dy > 0 && activeScrollEl.scrollTop <= 0) {
+            if (e.cancelable) e.preventDefault();
+            if (activeScrollEl.scrollHeight > activeScrollEl.clientHeight) {
+              activeScrollEl.scrollTop = 1;
+            }
+          }
+          // In all other cases:
+          // - dy > 0 and scrollTop > 0: native scroll UP works smoothly
+          // - dy < 0: native scroll DOWN works smoothly
+        }, { passive: false, capture: true });
+
+        window.addEventListener('touchend', function() {
+          activeScrollEl = null;
+        }, { passive: true, capture: true });
+
+        window.addEventListener('touchcancel', function() {
+          activeScrollEl = null;
+        }, { passive: true, capture: true });
+      })();
     </script>
   </head>
   <body>

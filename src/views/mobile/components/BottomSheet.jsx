@@ -1,4 +1,4 @@
-﻿import { Sheet } from "react-modal-sheet";
+import { Sheet } from "react-modal-sheet";
 import { formatRoomId } from "../../../shared/utils/formatRoomId";
 import { memo, useState } from "react";
 import ImageModal from "./ImageModal";
@@ -273,7 +273,15 @@ function BottomSheet({
           <div className="px-5 py-4 pb-[calc(24px+env(safe-area-inset-bottom,0px))] flex flex-col h-full bg-white text-gray-900">
             {title && <h2 className="text-[22px] font-bold tracking-tight mb-5">{title}</h2>}
 
-            <div className="flex-1 overflow-y-auto custom-scrollbar -mx-5 px-5 hide-scrollbar">
+            <div
+              className="flex-1 overflow-y-auto custom-scrollbar -mx-5 px-5 hide-scrollbar"
+              style={{
+                overscrollBehavior: 'contain',
+                overscrollBehaviorY: 'contain',
+                touchAction: 'pan-y',
+                WebkitOverflowScrolling: 'touch',
+              }}
+            >
               {/* Fallback Explore Campus view if no specific data */}
               {!data && !title && renderDefaultExplore()}
 

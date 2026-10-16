@@ -522,8 +522,8 @@ function SearchBar({ onSelect, currentFloor = "G", isIndoorMode = false, clearRe
             <div
               className="py-2 max-h-[60vh] overflow-y-auto custom-scrollbar"
               style={{
-                overscrollBehavior: 'none',
-                overscrollBehaviorY: 'none',
+                overscrollBehavior: 'contain',
+                overscrollBehaviorY: 'contain',
                 touchAction: 'pan-y',
                 WebkitOverflowScrolling: 'touch',
               }}

@@ -25,9 +25,6 @@
   -webkit-tap-highlight-color: transparent;
   scrollbar-width: none !important;
   -ms-overflow-style: none !important;
-  /* Nuclear fix: disable pull-to-refresh on EVERY element globally */
-  overscroll-behavior: none !important;
-  overscroll-behavior-y: none !important;
 }
 
 *::-webkit-scrollbar {
@@ -36,24 +33,56 @@
   height: 0 !important;
 }
 
-html,
-body,
+html {
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  /* Allows native pull-to-refresh when dragging outside scroll containers */
+  overscroll-behavior-y: auto;
+}
+
+body {
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  touch-action: manipulation;
+  overscroll-behavior-y: auto;
+}
+
 #root {
   width: 100%;
   height: 100%;
   margin: 0;
   padding: 0;
-  /* Disable pull-to-refresh on ALL browsers — critical for kiosk touchscreen */
-  overscroll-behavior: none;
-  overscroll-behavior-y: none;
-  scrollbar-width: none !important;
-  -ms-overflow-style: none !important;
+  overflow: hidden;
 }
 
-body {
-  overflow: hidden;
-  /* Prevent the browser from intercepting downward swipe as pull-to-refresh */
-  touch-action: pan-x pan-y;
+/* All scrollable containers: strictly isolate scrolling so the page does NOT refresh */
+.directory-main-content,
+.overflow-y-auto,
+.overflow-x-auto,
+.overflow-auto,
+.custom-scrollbar,
+#kiosk-app .directory-main-content,
+#kiosk-app .kiosk-panel-scrollable,
+#kiosk-app .kiosk-side-panel,
+#kiosk-app .kiosk-side-panel-scroll,
+#kiosk-app .kiosk-panel-info-main-content,
+#kiosk-app .kiosk-qr-wrapper,
+#kiosk-app .kiosk-fs-chips-wrap {
+  overscroll-behavior: contain !important;
+  overscroll-behavior-y: contain !important;
+  touch-action: pan-y !important;
+  -webkit-overflow-scrolling: touch !important;
+}
+
+.overflow-x-auto,
+.kiosk-fs-chips-wrap {
+  touch-action: pan-x !important;
+  overscroll-behavior-x: contain !important;
 }
 
 button,

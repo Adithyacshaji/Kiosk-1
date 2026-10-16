@@ -99,7 +99,7 @@ export const OutdoorScreen = ({
 
         <main
           className="directory-main-content"
-          style={{ flex: 1, overflowY: 'auto', WebkitOverflowScrolling: 'touch', touchAction: 'pan-y', overscrollBehavior: 'none', overscrollBehaviorY: 'none' }}
+          style={{ flex: 1, overflowY: 'auto', WebkitOverflowScrolling: 'touch', touchAction: 'pan-y', overscrollBehavior: 'contain', overscrollBehaviorY: 'contain' }}
         >
           <div className="outdoor-poi-grid">
             {filteredPois.map((poi, idx) => (

@@ -185,7 +185,7 @@ export const ClassroomsScreen = ({
         {/* ── Cards Grid ── */}
         <main
           className="directory-main-content"
-          style={{ flex: 1, overflowY: 'auto', WebkitOverflowScrolling: 'touch', touchAction: 'pan-y', overscrollBehavior: 'none', overscrollBehaviorY: 'none' }}
+          style={{ flex: 1, overflowY: 'auto', WebkitOverflowScrolling: 'touch', touchAction: 'pan-y', overscrollBehavior: 'contain', overscrollBehaviorY: 'contain' }}
         >
           <div className="classrooms-cards-grid">
             {filteredClassrooms.map((cls) => (

@@ -179,7 +179,7 @@ export const FacultyScreen = ({
         {/* ── Main content ── */}
         <main
           className="directory-main-content"
-          style={{ flex: 1, overflowY: 'auto', WebkitOverflowScrolling: 'touch', touchAction: 'pan-y', overscrollBehavior: 'none', overscrollBehaviorY: 'none' }}
+          style={{ flex: 1, overflowY: 'auto', WebkitOverflowScrolling: 'touch', touchAction: 'pan-y', overscrollBehavior: 'contain', overscrollBehaviorY: 'contain' }}
         >
           {/* STAGE 1: DEPARTMENT GRID & DIRECT FACULTY MATCHES */}
           {!selectedDepartment && (
