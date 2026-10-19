@@ -17,6 +17,7 @@
   "dependencies": {
     "@capacitor/app": "^8.1.0",
     "@supabase/supabase-js": "^2.110.8",
+    "@vercel/analytics": "^2.0.1",
     "fuse.js": "^7.5.0",
     "leaflet": "^1.9.4",
     "leaflet-polylinedecorator": "^1.6.0",

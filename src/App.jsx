@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef, useMemo, lazy, Suspense } from "react";
 import { Routes, Route } from "react-router-dom";
 import { Home, Building, Clock, CloudSun, MapPin, ChevronRight } from "lucide-react";
+import { Analytics } from '@vercel/analytics/react';
 
 const CampusMap = lazy(() => import("./shared/components/map/CampusMap"));
 
@@ -4170,12 +4171,15 @@ const ControlPanel = lazy(() => import("./views/admin/ControlPanel"));
 
 export default function AppRouter() {
   return (
-    <Suspense fallback={<LoadingScreen isLoading={true} />}>
-      <Routes>
-        <Route path="/" element={<MainApp />} />
-        <Route path="/admin" element={<AdminLogin />} />
-        <Route path="/admin/dashboard/*" element={<ControlPanel />} />
-      </Routes>
-    </Suspense>
+    <>
+      <Suspense fallback={<LoadingScreen isLoading={true} />}>
+        <Routes>
+          <Route path="/" element={<MainApp />} />
+          <Route path="/admin" element={<AdminLogin />} />
+          <Route path="/admin/dashboard/*" element={<ControlPanel />} />
+        </Routes>
+      </Suspense>
+      <Analytics />
+    </>
   );
 }
